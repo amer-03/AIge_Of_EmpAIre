@@ -1,3 +1,6 @@
+
+
+
 Les classes possibles:
     1. Game
         Attributes:
