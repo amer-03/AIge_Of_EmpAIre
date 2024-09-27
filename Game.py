@@ -11,9 +11,9 @@ import json
 pygame.init()
 
 # Configuration de l'écran et des FPS
-#screen_width = 1920
-#screen_height = 1080
-DISPLAYSURF = pygame.display.set_mode((pygame.display.Info().current_w, pygame.display.Info().current_w,), pygame.FULLSCREEN)
+screen_width = pygame.display.Info().current_h
+screen_height = pygame.display.Info().current_w
+DISPLAYSURF = pygame.display.set_mode((screen_width,screen_height), pygame.FULLSCREEN)
 pygame.display.set_caption('Map Rendering Demo')
 FPSCLOCK = pygame.time.Clock()
 
