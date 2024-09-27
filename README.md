@@ -5,10 +5,10 @@ Les classes possibles:
             players
             map
             game_time
+            menu
+            screen
         Methods:
-            start_game()
-            pause_game()
-            end_game()
+            run()
     
     2. Map
         Attributes:
