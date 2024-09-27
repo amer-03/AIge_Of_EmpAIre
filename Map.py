@@ -20,12 +20,6 @@ mymap=Map("foret","bois",(0,0))
 mymap.generate_map()
 print(mymap)
 
-import pygame
-pygame.init()
-from pygame.locals import *
-
-fenetre = pygame.display.set_mode((200, 200))
-
 
         
 

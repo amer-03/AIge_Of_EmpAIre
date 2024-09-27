@@ -133,3 +133,17 @@ Les classes possibles:
             capacity
         Methods:
             gather()
+        
+    13.Player
+        Attributes:
+            player_id
+            name
+            population
+            resource
+            unit
+            building
+        Methods:
+            gather_resources()
+            build_structure()
+            train_unit()
+            attack()
