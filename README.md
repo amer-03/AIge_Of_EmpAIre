@@ -13,7 +13,7 @@ Les classes possibles:
     2. Map
         Attributes:
             size:120x120
-            terrain_nature (soil, water: ~)
+            terrain_nature soil
             resource (wood, food, gold)
             players_position
         Methods:
