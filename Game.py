@@ -1,8 +1,6 @@
 import pygame
-<<<<<<< HEAD
 from Map import *
 #from Player import *
-=======
 from pygame.locals import *
 import sys
 import numpy as np
@@ -11,7 +9,6 @@ from math import *
 import subprocess
 import os
 import json
->>>>>>> 912b8e75387430229932bc238d7ba7f707ef2c4a
 
 pygame.init()
 
@@ -227,7 +224,6 @@ class Game:
     def show_menu(self):
         """Affiche un menu pour choisir la carte et charger les données sauvegardées."""
         pygame.init()
-<<<<<<< HEAD
         self.name=""
         #self.player=Player
         self.map=Map
@@ -235,17 +231,6 @@ class Game:
         self.running = True
         self.screen=pygame.display.set_mode((pygame.display.Info().current_w, pygame.display.Info().current_h),pygame.FULLSCREEN)
     
-    def run(self):
-        while self.running:
-            for e in pygame.event.get():
-                if e.type==pygame.QUIT: self.running=False
-                #elif e.type == pygame.KEYDOWN: self.running=False
-        
-            self.screen.fill((139,69,19))
-        
-            pygame.display.flip()    
-
-Game().run()  
     #def start_game(self):
     #    if self.is_running:
     #        print("Le jeu '{self.name}' est déjà en route.")
@@ -261,7 +246,6 @@ Game().run()
     #    if self.is_running:
     #        self.is_running = False
     #    print("Le jeu '{self.name}' est terminé. Vous avez joué {self.game_time} minutes.")
-=======
 
         # Définir les couleurs
         WHITE = (255, 255, 255)
@@ -403,4 +387,3 @@ Game().run()
 # Initialisation et lancement du jeu
 game = Game(screen_width, screen_height, map_size = 120)
 game.run()
->>>>>>> 912b8e75387430229932bc238d7ba7f707ef2c4a
