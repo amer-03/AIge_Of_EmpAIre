@@ -1,5 +1,4 @@
 import pygame
-from Map import *
 #from Player import *
 from pygame.locals import *
 import sys
@@ -15,7 +14,7 @@ pygame.init()
 # Configuration de l'écran et des FPS
 screen_width = 1920
 screen_height = 1080
-DISPLAYSURF = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF)
+DISPLAYSURF = pygame.display.set_mode((pygame.display.Info().current_w, pygame.display.Info().current_h),pygame.FULLSCREEN)
 pygame.display.set_caption('Map Rendering Demo')
 FPSCLOCK = pygame.time.Clock()
 
@@ -220,16 +219,7 @@ class Game:
 
         print("-------------",cam_x, cam_y)
         return cam_x, cam_y
-
-    def show_menu(self):
-        """Affiche un menu pour choisir la carte et charger les données sauvegardées."""
-        pygame.init()
-        self.name=""
-        #self.player=Player
-        self.map=Map
-        self.game_time=pygame.time.Clock
-        self.running = True
-        self.screen=pygame.display.set_mode((pygame.display.Info().current_w, pygame.display.Info().current_h),pygame.FULLSCREEN)
+    
     
     #def start_game(self):
     #    if self.is_running:
