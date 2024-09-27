@@ -1,5 +1,4 @@
 import pygame
-#from Player import *
 from pygame.locals import *
 import sys
 import numpy as np
@@ -14,7 +13,7 @@ pygame.init()
 # Configuration de l'écran et des FPS
 screen_width = 1920
 screen_height = 1080
-DISPLAYSURF = pygame.display.set_mode((pygame.display.Info().current_w, pygame.display.Info().current_h),pygame.FULLSCREEN)
+DISPLAYSURF = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF)
 pygame.display.set_caption('Map Rendering Demo')
 FPSCLOCK = pygame.time.Clock()
 
@@ -219,23 +218,10 @@ class Game:
 
         print("-------------",cam_x, cam_y)
         return cam_x, cam_y
-    
-    
-    #def start_game(self):
-    #    if self.is_running:
-    #        print("Le jeu '{self.name}' est déjà en route.")
-    #    elif self.is_running == True: 
-    #        print ("Le jeu '{self.name}' a commencé.")
-    #def pause_game(self):
-    #    if self.is_running:
-    #        self.is_running = False
-    #        print ("Le jeu '{self.name}' est en pause.")
-    #    else: 
-    #        print ("Le jeu '{self.name}' est déjà en pause.")
-    #def end_game(self):
-    #    if self.is_running:
-    #        self.is_running = False
-    #    print("Le jeu '{self.name}' est terminé. Vous avez joué {self.game_time} minutes.")
+
+    def show_menu(self):
+        """Affiche un menu pour choisir la carte et charger les données sauvegardées."""
+        pygame.init()
 
         # Définir les couleurs
         WHITE = (255, 255, 255)
