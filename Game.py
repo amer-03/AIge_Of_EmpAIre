@@ -16,9 +16,9 @@ class Game:
 
         # Charger les tuiles
         self.tile_grass = Tile('Image/grass2.png', 64, 64)
-        #self.tile_wood = Tile('Image/cube_grass - Copie.png', 128, 128)
-        #self.tile_gold = Tile('Image/cube_rocky2.png', 64, 64)
-        #self.tile_test = Tile('Image/cube_dirt.png', 64, 64)
+        self.tile_wood = Tile('Image/tree.png', 128, 128)
+        self.tile_gold = Tile('Image/cube_rocky2.png', 64, 64)
+        self.tile_test = Tile('Image/cube_dirt.png', 64, 64)
 
         # Sélection de la carte
         self.map_size = map_size
