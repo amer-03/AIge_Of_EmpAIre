@@ -17,8 +17,7 @@ class Game:
         # Charger les tuiles
         self.tile_grass = Tile('Image/grass2.png', 64, 64)
         self.tile_wood = Tile('Image/tree.png', 128, 128)
-        self.tile_gold = Tile('Image/cube_rocky2.png', 64, 64)
-        self.tile_test = Tile('Image/cube_dirt.png', 64, 64)
+        self.tile_gold = Tile('Image/gold2.png', 128, 128)
 
         # Sélection de la carte
         self.map_size = map_size
@@ -154,15 +153,15 @@ class Game:
 
                     if event.type == KEYDOWN :
                         if event.key == K_1:
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold, self.tile_test)
+                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
                             self.tile_map.open_second_terminal()
                             menu = False
                         elif event.key == pygame.K_2:
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold, self.tile_test)
+                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
                             # self.tile_map.open_second_terminal()
                             menu = False
                         elif event.key == pygame.K_3:
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold, self.tile_test)
+                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
                             # self.tile_map.open_second_terminal()
                             menu = False
                         elif event.key == pygame.K_4:
@@ -170,6 +169,18 @@ class Game:
                             # Charger les données sauvegardées
                             menu = False
                             load = True
+                        elif event.type == KEYDOWN:
+                            if event.key == K_EQUALS:  # Touche + pour zoom in
+                                self.tile_map = min(self.tile_map + 0.1, 3.0)  # Limite à un zoom maximum de 3x
+                        elif event.key == K_MINUS:  # Touche - pour zoom out
+                            self.tile_map = max(self.tile_map - 0.1, 0.5)  # Limite à un zoom minimum de 0.5x
+
+        # Zoom avec la molette de la souris
+                        elif event.type == MOUSEBUTTONDOWN:
+                            if event.button == 4:  # Molette vers le haut (zoom in)
+                                self.tile_map = min(self.tile_map + 0.1, 3.0)
+                        elif event.button == 5:  # Molette vers le bas (zoom out)
+                            self.tile_map = max(self.tile_map - 0.1, 0.5)
 
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         # Obtenir la position de la souris
@@ -177,15 +188,15 @@ class Game:
 
                         # Vérifier si la souris est sur une option de menu
                         if card1_rect.collidepoint(mouse_pos):
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold, self.tile_test)
+                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
                             self.tile_map.open_second_terminal()
                             menu = False
                         elif card2_rect.collidepoint(mouse_pos):
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold, self.tile_test)
+                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
                             self.tile_map.open_second_terminal()
                             menu = False
                         elif card3_rect.collidepoint(mouse_pos):
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold, self.tile_test)
+                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
                             self.tile_map.open_second_terminal()
                             menu = False
                         elif load_data_rect.collidepoint(mouse_pos):
@@ -197,7 +208,7 @@ class Game:
                 save = self.load_data("save.json")
                 if save:  # Assure-toi que save n'est pas None
                     print(f"Données chargées : {save['taille']}")
-                    self.tile_map = TileMap(save['taille'], self.tile_grass, self.tile_wood, self.tile_gold, self.tile_test)
+                    self.tile_map = TileMap(save['taille'], self.tile_grass, self.tile_wood, self.tile_gold)
                     self.tile_map.open_second_terminal()
                     # Traiter les données chargées
                     load = False
