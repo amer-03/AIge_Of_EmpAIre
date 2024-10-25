@@ -80,6 +80,39 @@ class Camp(Building):
                 f"Functionality: Drop point for resources\n"
                 f"Population Cap Increase: {self.population_cap_increase}")
 
+class Farm(Building):
+    def __init__(self):
+        super().__init__(wood_cost=60, gold_cost=0, construction_time=10, hp=100, size=(2, 2), population_cap_increase=0)
+        self.food_capacity = 300  # Total food available in the farm
+
+    def harvest_food(self, amount):
+        """
+        Harvest a specified amount of food from the farm.
+        
+        :param amount: The amount of food to harvest.
+        :return: The actual amount of food harvested.
+        """
+        if amount <= self.food_capacity:
+            self.food_capacity -= amount
+            print(f"Harvested {amount} food. Remaining food: {self.food_capacity}.")
+            return amount
+        else:
+            harvested = self.food_capacity
+            self.food_capacity = 0
+            print(f"Harvested {harvested} food. The farm is now empty.")
+            return harvested
+
+    def __str__(self):
+        """
+        Returns a string representation of the Farm object.
+        """
+        return (f"Farm Details:\n"
+                f"Cost: {self.wood_cost} wood\n"
+                f"Build Time: {self.construction_time} seconds\n"
+                f"HP: {self.hp}\n"
+                f"Size: {self.size[0]}x{self.size[1]}\n"
+                f"Functionality: Contains {self.food_capacity} food\n"
+                f"Population Cap Increase: {self.population_cap_increase}")
 
 class Barracks(Building):
     def __init__(self):
@@ -121,8 +154,14 @@ class Barracks(Building):
                 f"Size: {self.size[0]}x{self.size[1]}\n"
                 f"Functionality: Spawns Swordsmen\n"
                 f"Population Cap Increase: {self.population_cap_increase}")
-        
-town_center = TownCentre ()
-town_center.create_villager(3)
-barrack = Barracks()
-barrack.spawn_swordsman(3)
+
+
+
+#farm = Farm()
+#print(farm)
+#farm.harvest_food(100)
+#print(farm)
+#town_center = TownCentre () 
+#town_center.create_villager(3)
+#barrack = Barracks()
+#barrack.spawn_swordsman(3)
