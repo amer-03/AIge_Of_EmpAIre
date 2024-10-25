@@ -13,19 +13,6 @@ class Game:
 
     def __init__(self, screen_width, screen_height, map_size, minimap_size):
 
-        pygame.init()
-
-        # Configuration de l'écran et des FPS
-        info = pygame.display.Info()
-        screen_width = info.current_w  # Largeur de l'écran
-        screen_height = info.current_h  # Hauteur de l'écran
-        self.DISPLAYSURF = pygame.display.set_mode((screen_width, screen_height), pygame.DOUBLEBUF)
-        pygame.display.set_caption('Map Rendering Demo')
-        self.FPSCLOCK = pygame.time.Clock()
-
-        # Dimensions des demi-tiles (64x64 => demi-dimension 32)
-        tile_width_half = 32
-        tile_height_half = 32
 
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -140,11 +127,11 @@ class Game:
         # Police et surface
         font = pygame.font.Font(None, 74)
         small_font = pygame.font.Font(None, 36)
-        self.DISPLAYSURF.fill(BLACK)
+        DISPLAYSURF.fill(BLACK)
 
         # Texte du menu
         menu_text = font.render("Choisissez une carte:", True, WHITE)
-        self.DISPLAYSURF.blit(menu_text, (100, 100))
+        DISPLAYSURF.blit(menu_text, (100, 100))
 
         # Options de cartes
         card1_text = small_font.render("Lean", True, WHITE)
@@ -158,10 +145,10 @@ class Game:
         card3_rect = card3_text.get_rect(topleft=(150, 300))
         load_data_rect = load_data_text.get_rect(topleft=(150, 400))
 
-        self.DISPLAYSURF.blit(card1_text, (150, 200))
-        self;DISPLAYSURF.blit(card2_text, (150, 250))
-        self.DISPLAYSURF.blit(card3_text, (150, 300))
-        self.DISPLAYSURF.blit(load_data_text, (150, 400))
+        DISPLAYSURF.blit(card1_text, (150, 200))
+        DISPLAYSURF.blit(card2_text, (150, 250))
+        DISPLAYSURF.blit(card3_text, (150, 300))
+        DISPLAYSURF.blit(load_data_text, (150, 400))
 
         pygame.display.update()
 
@@ -380,21 +367,21 @@ class Game:
                     self.handle_camera_movement(keys)
                     self.handle_mini_camera_movement(keys)
 
-                    self.DISPLAYSURF.fill((0, 0, 0))  # Effacer l'écran
-                    self.tile_map.render(self.DISPLAYSURF, self.cam_x, self.cam_y)
+                    DISPLAYSURF.fill((0, 0, 0))  # Effacer l'écran
+                    self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
                     self.draw_mini_map(display_surface)
                     x_barre = (self.screen_width - self.barres[0].barre_width) // 2
                     y_barre = 40
 
                     # Dessiner la barre noire (rectangle centré)
-                    self.barres[0].barre(self.DISPLAYSURF, x_barre, y_barre)
+                    self.barres[0].barre(DISPLAYSURF, x_barre, y_barre)
 
                     # Afficher chaque image et texte à l'intérieur de la barre
                     total_images = len(self.barres)
                     for i, barre in enumerate(self.barres):
                         ressource = ["bois", "or", "food", "or"][i]
-                        barre.draw(self.DISPLAYSURF, x_barre, y_barre, self.compteurs[ressource], i, total_images)
+                        barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteurs[ressource], i, total_images)
 
                 pygame.display.update()
-                self.FPSCLOCK.tick(60)
+                FPSCLOCK.tick(60)
 
