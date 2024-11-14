@@ -17,6 +17,8 @@ class Building:
         self.size = size  # tuple (width, height)
         self.population_cap_increase = population_cap_increase
     
+    #test
+
     def __str__(self):
         """
         Returns a string representation of the Building object.
@@ -39,3 +41,4 @@ class TownCentre(Building):
         super().__init__(350,0,150,1000,(4,4),5)
     def create_villager(self, count):
         for _ in range(count):
+            pass
