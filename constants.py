@@ -57,13 +57,13 @@ units_images = {
 
 builds_images = {
     'T': {'tile': Tile("images/Town_Center.webp", 200, 128), 'taille': 4},
-    'H': {'tile': Tile("images/House.webp", 32, 32), 'taille': 2},  # Exemple de taille 1
-    'C': {'tile': Tile("images/Camp.png", 32, 32), 'taille': 2},
-    'F': {'tile': Tile("images/Farm - Copie.png", 30, 30), 'taille': 2},
-    'B': {'tile': Tile("images/Barracks.png", 32, 32), 'taille': 3},  # Exemple de taille 2
-    'S': {'tile': Tile("images/Stable.png", 32, 32), 'taille': 3},
-    'A': {'tile': Tile("images/Archery Range.png", 32, 32), 'taille': 3},  # Exemple de taille 3
-    'K': {'tile': Tile("images/Keep.png", 32, 32), 'taille': 1}
+    'H': {'tile': Tile("images/House.webp", 90, 70), 'taille': 2},  # Exemple de taille 1
+    'C': {'tile': Tile("images/Camp.png",  90, 70), 'taille': 2},
+    'F': {'tile': Tile("images/Farm - Copie.png",  90, 70), 'taille': 2},
+    'B': {'tile': Tile("images/Barracks.png", 128, 100), 'taille': 3},  # Exemple de taille 2
+    'S': {'tile': Tile("images/Stable.png", 128, 100), 'taille': 3},
+    'A': {'tile': Tile("images/Archery Range.png", 128, 100), 'taille': 3},  # Exemple de taille 3
+    'K': {'tile': Tile("images/Keep.png", 64, 64), 'taille': 1}
 }
 size=120
 

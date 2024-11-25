@@ -7,32 +7,34 @@ import pygame
 import threading
 import time
 
+
 class TileMap:
     """Classe gérant la carte des tuiles."""
+
     def __init__(self):
-        self.add_wood_patches()
+        # self.add_wood_patches()
         self.position_initiale = (size // 2, size // 2)
 
-    def mode(self,mode):
+    def mode(self, mode):
         if mode == "patches":
             self.add_gold_patches()
-        elif mode == "middle" :
-           self.add_gold_middle()
-
+        elif mode == "middle":
+            self.add_gold_middle()
 
     def add_wood_patches(self):
         """Ajoute des paquets de bois (W) sur la carte."""
+        # print("wood")
         num_patches = random.randint(10, 20)
-        min_patch_size = 3
-        max_patch_size = 7
+        min_patch_size = 7
+        max_patch_size = 15
 
         for _ in range(num_patches):
             patch_size = random.randint(min_patch_size, max_patch_size)
             start_x = random.randint(0, size - 1)
             start_y = random.randint(0, size - 1)
-
             wood_tiles = [(start_x, start_y)]
-            map_data[start_y][start_x] = "W"  # Placer la première tuile de bois
+            if map_data[start_x][start_y] == " ":
+                map_data[start_x][start_y] = "W"  # Placer la première tuile de bois
 
             while len(wood_tiles) < patch_size:
                 tile_x, tile_y = random.choice(wood_tiles)
@@ -41,13 +43,13 @@ class TileMap:
                 new_y = tile_y + direction[1]
 
                 if 0 <= new_x < size and 0 <= new_y < size:
-                    if map_data[new_y][new_x] == " ":  # Placer du bois si la case est d'herbe
-                        map_data[new_y][new_x] = "W"
+                    if map_data[new_x][new_y] == " ":  # Placer du bois si la case est d'herbe
+                        map_data[new_x][new_y] = "W"
                         wood_tiles.append((new_x, new_y))
 
     def add_gold_patches(self):
         """Ajoute des paquets d'or (G) sur la carte."""
-        num_patches = random.randint(5, 10)  # Nombre de paquets d'or à générer
+        num_patches = random.randint(10, 15)  # Nombre de paquets d'or à générer
         min_patch_size = 2  # Taille minimale d'un paquet
         max_patch_size = 5  # Taille maximale d'un paquet
 
@@ -57,8 +59,8 @@ class TileMap:
             start_y = random.randint(0, size - 1)
 
             gold_tiles = [(start_x, start_y)]
-            if map_data[start_y][start_x] == " ":
-                map_data[start_y][start_x] = "G"  # Placer la première tuile d'or
+            if map_data[start_x][start_y] == " ":
+                map_data[start_x][start_y] = "G"  # Placer la première tuile d'or
 
             while len(gold_tiles) < patch_size:
                 tile_x, tile_y = random.choice(gold_tiles)
@@ -67,10 +69,9 @@ class TileMap:
                 new_y = tile_y + direction[1]
 
                 if 0 <= new_x < size and 0 <= new_y < size:
-                    if map_data[new_y][new_x] == " ":
-                        map_data[new_y][new_x] = "G"
+                    if map_data[new_x][new_y] == " ":
+                        map_data[new_x][new_y] = "G"
                         gold_tiles.append((new_x, new_y))
-
 
     def add_gold_middle(self):
         """Ajoute un paquet d'or (G) au centre de la carte."""
@@ -88,11 +89,11 @@ class TileMap:
                 if 0 <= new_x < size and 0 <= new_y < size:
                     map_data[new_y][new_x] = "G"  # Placer une tuile d'or
 
-    def ajouter_unite(self,row, col, unite):
+    def ajouter_unite(self, row, col, unite):
         # Ajoute l'unité si elle n'est pas déjà présente dans la cellule
         map_data[row][col].append(unite)
 
-    def afficher_unite(self,tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface):
+    def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface):
         # Obtenir l'image correspondant au type d'unité
         unit_tile = units_images.get(tile_type)
         if not unit_tile:
@@ -106,19 +107,15 @@ class TileMap:
         iso_x = (cart_x - cart_y) - cam_x + offset_x
         iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
 
-        #print("units", iso_x,iso_y)
+        # print("units", cart_x,cart_y)
 
         # Afficher l'unité
         display_surface.blit(unit_tile.image, (iso_x, iso_y))
 
-    def afficher_buildings(self, tile_type, grid_x, grid_y, cam_x, cam_y, tile_grass, display_surface):
+    def afficher_buildings(self, grid_x, grid_y, cam_x, cam_y, display_surface):
         tuile = tuiles.get((grid_x, grid_y))
         if not tuile or not tuile.get('unites'):
             return
-
-
-
-        #print(grid_x,grid_y)
 
         for joueur, buildings in tuile['unites'].items():
             for tile_type, data in buildings.items():
@@ -136,7 +133,7 @@ class TileMap:
                     centered_col = grid_y - size // 2  # Décalage en X (par rapport à la grille)
                     centered_row = grid_x - size // 2  # Décalage en Y (par rapport à la grille)
 
-                    offset_y =  tile_grass.height_half-unit_tile.height
+                    offset_y = tile_grass.height_half - unit_tile.height
                     offset_x = tile_grass.width_half - unit_tile.width
 
                     # Calcul des coordonnées cartésiennes
@@ -144,13 +141,10 @@ class TileMap:
                     cart_y = centered_row * tile_grass.height_half
 
                     # Conversion en coordonnées isométriques
-                    iso_x = (cart_x - cart_y) - cam_x  #- offset_x
+                    iso_x = (cart_x - cart_y) - cam_x  # - offset_x
                     iso_y = (cart_x + cart_y) / 2 - cam_y + offset_y
 
-
                     display_surface.blit(unit_tile.image, (iso_x, iso_y))
-
-
 
     def render(self, display_surface, cam_x, cam_y):
         """Affiche la carte en fonction de la position de la caméra, centrée au milieu."""
@@ -162,23 +156,21 @@ class TileMap:
                 if tile_type == " ":
                     tile = tile_grass
                     offset_y = 0
-
                 elif tile_type == "W":
                     tile = tile_wood
                     offset_y = tile.height - tile_grass.height
                     if (row, col) not in tuiles:
-                       tuiles[(row, col)] = {'unites': None}  # Initialiser 'unites' à None
-
-                    tuiles[(row, col)]['unites'] = str(tile_type)
+                        tuiles[(row, col)] = {'unites': {}}  # Initialiser 'unites' à un dictionnaire vide
+                    tuiles[(row, col)]['unites'] = "W"
                 elif tile_type == "G":
                     tile = tile_gold
-                    #print(tile_type)
                     offset_y = tile.height - tile_grass.height
                     if (row, col) not in tuiles:
-                        tuiles[(row, col)] = {'unites': None}  # Initialiser 'unites' à None
-
-                    tuiles[(row, col)]['unites'] = str(tile_type)
-
+                        tuiles[(row, col)] = {'unites': {}}  # Initialiser 'unites' à un dictionnaire vide
+                    tuiles[(row, col)]['unites'] = "G"
+                else:
+                    tile = tile_grass
+                    offset_y = 0
 
                 # Coordonnées cartésiennes centrées
                 centered_col = col - half_size  # Décalage en X
@@ -191,70 +183,13 @@ class TileMap:
                 iso_x = (cart_x - cart_y) - cam_x
                 iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
 
-                #print ("test")
                 display_surface.blit(tile.image, (iso_x, iso_y))
-                display_surface.blit(tile_wood.image, (60, 10))
-                if tile_type in ["v", "s", "h", "a"]:
-                    #print(tile_type)
-                    self.afficher_unite(tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface)
 
                 if tile_type in ["T", "H", "C", "F", "B", "S", "A", "K"]:
-                    self.afficher_buildings(tile_type, row, col, cam_x, cam_y, tile_grass, display_surface)
+                    self.afficher_buildings(row, col, cam_x, cam_y, display_surface)
 
-
-
-
-                """
-                if tile_type == "v":  # Unité villageois
-                    unit_tile = units_images['v']  # Assurez-vous que 'v' correspond à l'image du villageois
-                    offset_x = tile_grass.width_half - unit_tile.width // 2
-                    offset_y = tile_grass.height_half - unit_tile.height // 2
-
-                    # Recalculer les coordonnées isométriques pour l'unité
-                    iso_x = (cart_x - cart_y) - cam_x + offset_x
-                    iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y   # Déplacer l'unité juste au-dessus de l'herbe
-
-                    # Afficher l'unité (villageois)
-                    display_surface.blit(unit_tile.image, (iso_x, iso_y))
-
-                if tile_type == "s":
-                    unit_tile = units_images['s']
-                    offset_x = tile_grass.width_half - unit_tile.width // 2
-                    offset_y = tile_grass.height_half - unit_tile.height // 2
-
-                    # Recalculer les coordonnées isométriques pour l'unité
-                    iso_x = (cart_x - cart_y) - cam_x + offset_x
-                    iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
-
-                    # Afficher l'unité (villageois)
-                    display_surface.blit(unit_tile.image, (iso_x, iso_y))
-
-                if tile_type == "h":
-                    unit_tile = units_images['h']
-                    offset_x = tile_grass.width_half - unit_tile.width // 2
-                    offset_y = tile_grass.height_half - unit_tile.height // 2
-
-                    # Recalculer les coordonnées isométriques pour l'unité
-                    iso_x = (cart_x - cart_y) - cam_x + offset_x
-                    iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
-
-                    # Afficher l'unité (villageois)
-                    display_surface.blit(unit_tile.image, (iso_x, iso_y))
-
-                if tile_type == "a":
-                    unit_tile = units_images['a']
-                    offset_x = tile_grass.width_half - unit_tile.width // 2
-                    offset_y = tile_grass.height_half - unit_tile.height // 2
-
-                    # Recalculer les coordonnées isométriques pour l'unité
-                    iso_x = (cart_x - cart_y) - cam_x + offset_x
-                    iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
-
-                    # Afficher l'unité (villageois)
-                    display_surface.blit(unit_tile.image, (iso_x, iso_y))
-
-                """
-
+                if tile_type in ["v", "s", "h", "a"]:
+                    self.afficher_unite(tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface)
 
 
     def move_player(self, direction):
@@ -272,10 +207,6 @@ class TileMap:
 
         self.position_initiale = (x, y)
 
-
     def get_map_data(self):
         """Retourne la carte actuelle pour affichage."""
         return map_data
-
-
-

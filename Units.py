@@ -38,7 +38,7 @@ class Unit:
             angle = angle_increment * i
             cart_x = int(center_x + rayon * math.cos(math.radians(angle)))  # Calcul de la position X
             cart_y = int(center_y + rayon * math.sin(math.radians(angle)))  # Calcul de la position Y
-            positions.append((cart_y, cart_x))  # Ajouter les coordonnées à la liste
+            positions.append((cart_y-2, cart_x-2))  # Ajouter les coordonnées à la liste
         return positions
 
 
@@ -58,15 +58,25 @@ class Unit:
                 for i in range(nombre):
                     identifiant_unite = compteurs_unites[unite]
                     compteurs_unites[unite] += 1
-                    if (x, y) not in tuiles:
+                    if (x, y) not in tuiles or not isinstance(tuiles[(x, y)], dict):
+                        tuiles[(x, y)] = {'unites': {}}
+
+                    if not isinstance(tuiles[(x, y)], dict):
                         tuiles[(x, y)] = {'unites': {}}
 
                     if joueur not in tuiles[(x, y)]['unites']:
                         tuiles[(x, y)]['unites'][joueur] = {}
 
+
+
                     tuile_conflit = ('T' in tuiles[(x, y)]['unites'][joueur]
                                      or 'G' in tuiles[(x, y)]['unites'][joueur]
-                                     or 'W' in tuiles[(x, y)]['unites'][joueur])
+                                     or 'T' in tuiles[(x, y)]['unites'][joueur]
+                                     or 'S' in tuiles[(x, y)]['unites'][joueur]
+                                     or 'K' in tuiles[(x, y)]['unites'][joueur]
+                                     or 'H' in tuiles[(x, y)]['unites'][joueur]
+                                     or 'W' in tuiles[(x, y)]['unites'][joueur]
+                                     or 'B' in tuiles[(x, y)]['unites'][joueur])
 
                     if not tuile_conflit:
                         if unite not in tuiles[(x, y)]['unites'][joueur]:
@@ -74,13 +84,11 @@ class Unit:
                         tuiles[(x, y)]['unites'][joueur][unite].append(identifiant_unite)
                     else:
 
-                        while (x, y) in tuiles and (
-                                'G' in tuiles[(x, y)]['unites'][joueur] or
-                                'W' in tuiles[(x, y)]['unites'][joueur] or
-                                'T' in tuiles[(x, y)]['unites'][joueur]
-                        ):
+                        while (x, y) in tuiles and tuile_conflit:
                             x += 1
                             y += 1
+
+                        #print(tuiles[(x, y)]['unites'][joueur])
 
                         if (x, y) not in tuiles:
                             tuiles[(x, y)] = {'unites': {}}
@@ -139,75 +147,3 @@ class Unit:
                         elif 'W' in unites_joueur:
                             map_data[x][y] = 'W'
 
-
-
-    """
-    def affichage(self, n):
-        # Placer les joueurs sur un cercle
-
-        positions_joueurs = self.placer_joueurs_cercle(n, 50, map_size // 2, map_size // 2)
-        #print (compteurs_joueurs)
-
-        for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
-            x, y = positions_joueurs[idx]
-            print(x,y)
-
-
-            # Afficher les unités pour ce joueur
-            for unite, nombre in data['unites'].items():
-                if nombre > 0:
-                    print(f"Nombre d'unités de type {unite}: {nombre}")
-
-                    # Placer le premier exemplaire d'unité à la position de départ (x, y)
-                    if map_data[x][y] == " ":
-                        map_data[x][y] = unite
-                        print(f"Placé {unite} à la position de départ ({x}, {y})")
-
-                    # Placer les unités restantes en utilisant une expansion en spirale
-                    placed_count = 1  # On commence avec une unité placée
-                    radius = 1  # Rayon d'expansion à chaque étape de la spirale
-
-                    while placed_count < nombre:
-                        # Parcourir les positions dans le rayon actuel autour de (x, y)
-                        for dx in range(-radius, radius + 1):
-                            for dy in range(-radius, radius + 1):
-                                # Calculer la nouvelle position
-                                new_x, new_y = x + dx, y + dy
-
-                                # Vérifier que la position est dans les limites et vide
-                                if (0 <= new_x < len(map_data) and 0 <= new_y < len(map_data[0]) and
-                                        map_data[new_x][new_y] == " "):
-                                    map_data[new_x][new_y] = unite  # Placer l'unité
-                                    print(f"Placé {unite} à ({new_x}, {new_y})")
-                                    placed_count += 1  # Incrémenter le compteur d'unités placées
-
-                                    if placed_count >= nombre:
-                                        break  # Sortir si toutes les unités sont placées
-                            if placed_count >= nombre:
-                                break  # Sortir si toutes les unités sont placées
-                        radius += 1
-
-    """
-
-
-
-"""
-class Villager(Unit):
-    def __init__(self):
-        super().__init__(cost_food=50, cost_gold=0, training_time=25, hp=25, attack=1, speed=0.8)
-        self.image = swordsman_image
-
-class Swordsman(Unit):
-    def __init__(self):
-        super().__init__(cost_food=50, cost_gold=20, training_time=20, hp=40, attack=4, speed=0.9)
-
-
-class Horseman(Unit):
-    def __init__(self):
-        super().__init__(cost_food=80, cost_gold=20, training_time=30, hp=45, attack=4, speed=1.2)
-
-
-class Archer(Unit):
-    def __init__(self):
-        super().__init__(cost_food=25, cost_gold=45, training_time=35, hp=30, attack=4, speed=1.0, range_=4)
-"""
