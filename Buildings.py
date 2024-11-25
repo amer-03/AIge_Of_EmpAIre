@@ -43,7 +43,7 @@ class Buildings:
 
     def initialisation_compteur(self, position):
         print("test", position)
-        print("compteuur", compteurs_joueurs)
+        print("compteur", compteurs_joueurs)
 
         for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
             x, y = position[idx]  # Position initiale pour ce joueur
