@@ -95,7 +95,7 @@ class TileMap:
 
     def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface):
         # Obtenir l'image correspondant au type d'unité
-        unit_tile = units_images.get(tile_type)
+        unit_tile = units_images_test.get(tile_type, {}).get('image')
         if not unit_tile:
             return  # Si l'image n'existe pas, ne rien faire
 
@@ -125,7 +125,7 @@ class TileMap:
                         return
 
                     # Récupérer l'image et les dimensions
-                    unit_tile = builds_images[tile_type]['tile']
+                    unit_tile = builds_images_test.get(tile_type, {}).get('tile')
                     building_width = unit_tile.width  # Largeur du bâtiment
                     building_height = unit_tile.height  # Hauteur du bâtiment
 

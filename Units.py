@@ -80,8 +80,12 @@ class Unit:
 
                     if not tuile_conflit:
                         if unite not in tuiles[(x, y)]['unites'][joueur]:
-                            tuiles[(x, y)]['unites'][joueur][unite] = []
-                        tuiles[(x, y)]['unites'][joueur][unite].append(identifiant_unite)
+                            tuiles[(x, y)]['unites'][joueur][unite] = {}
+
+                        # Ajouter l'unité avec son identifiant et ses attributs (HP, etc.)
+                        tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
+                            'HP': units_images_test[unite]['hp']  # Récupérer les HP depuis units_images
+                        }
                     else:
 
                         while (x, y) in tuiles and tuile_conflit:
@@ -97,8 +101,12 @@ class Unit:
                             tuiles[(x, y)]['unites'][joueur] = {}
 
                         if unite not in tuiles[(x, y)]['unites'][joueur]:
-                            tuiles[(x, y)]['unites'][joueur][unite] = []
-                        tuiles[(x, y)]['unites'][joueur][unite].append(identifiant_unite)
+                            tuiles[(x, y)]['unites'][joueur][unite] = {}
+
+                        # Ajouter l'unité avec son identifiant et ses attributs (HP, etc.)
+                        tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
+                            'HP': units_images_test[unite]['hp']  # Récupérer les HP depuis units_images
+                        }
 
 
 

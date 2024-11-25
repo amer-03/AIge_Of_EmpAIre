@@ -92,13 +92,15 @@ class Buildings:
                         tuiles[tuile_position]['unites'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': True,
-                            'taille': taille
+                            'taille': taille,
+                            'HP': builds_images_test[batiment]['hp']
                         }
                     else:  # Tuiles secondaires
                         tuiles[tuile_position]['unites'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': False,
-                            'parent': (x, y)
+                            'parent': (x, y),
+                            'HP': builds_images_test[batiment]['hp']
                         }
                 elif taille ==3:
 
@@ -106,13 +108,15 @@ class Buildings:
                         tuiles[tuile_position]['unites'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': True,
-                            'taille': taille
+                            'taille': taille,
+                            'HP': builds_images_test[batiment]['hp']
                         }
                     else:  # Tuiles secondaires
                         tuiles[tuile_position]['unites'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': False,
-                            'parent': (x, y)
+                            'parent': (x, y),
+                            'HP': builds_images_test[batiment]['hp']
                         }
                 elif taille ==2:
 
@@ -120,7 +124,8 @@ class Buildings:
                         tuiles[tuile_position]['unites'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': True,
-                            'taille': taille
+                            'taille': taille,
+                            'HP': builds_images_test[batiment]['hp']
                         }
                     else:  # Tuiles secondaires
                         tuiles[tuile_position]['unites'][joueur][batiment] = {
@@ -133,13 +138,15 @@ class Buildings:
                         tuiles[tuile_position]['unites'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': True,
-                            'taille': taille
+                            'taille': taille,
+                            'HP': builds_images_test[batiment]['hp']
                         }
                     else:  # Tuiles secondaires
                         tuiles[tuile_position]['unites'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': False,
-                            'parent': (x, y)
+                            'parent': (x, y),
+                            'HP': builds_images_test[batiment]['hp']
                         }
 
     def generer_offsets(self):
@@ -164,7 +171,6 @@ class Buildings:
         for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
             x, y = position[idx]  # Point central pour ce joueur
             offsets = self.generer_offsets()
-            #print(f"Offsets générés : {offsets}")
 
             for batiment, nombre in data['batiments'].items():
                 taille = builds_images[batiment]['taille']  # Taille du bâtiment (ex. 4 pour un bâtiment 4x4)
@@ -173,9 +179,6 @@ class Buildings:
                     coord_libres = None
                     while coord_libres is None:
                         for offset_x, offset_y in offsets:
-                            #print("offset", offset_x, offset_y)
-                            #print("x, y", x,y)
-                            #print("taille", taille)
                             coord_libres = self.trouver_coordonnees_motif(
                                 x, y, taille, tuiles, size, size, offset_x, offset_y
                             )
@@ -191,8 +194,6 @@ class Buildings:
                         identifiant = f"{batiment}{i}"
                         print(f"Bâtiment {batiment} placé en {coord_libres} avec taille {taille}")
                         self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, tuiles, identifiant)
-                        #print("ok")
-                        #print(tuiles)
 
         return tuiles
 
