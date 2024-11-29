@@ -9,7 +9,7 @@ class Barre_ressources:
         self.text = text
         self.font = pygame.font.Font(None, font_size)  # Police avec la taille donnée
 
-        self.barre_width = 700  # Largeur de la barre
+        self.barre_width = screen_width//3  # Largeur de la barre
         self.barre_height = 80  # Hauteur de la barre
         self.color = (0, 0, 0)  # Couleur noire
         self.color_sous_barre = (100, 100, 100)
@@ -90,5 +90,3 @@ class Barre_ressources:
 
         # Afficher le texte
         surface.blit(texte, (text_x, text_y))
-
-

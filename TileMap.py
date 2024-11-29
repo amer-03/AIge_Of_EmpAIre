@@ -89,13 +89,10 @@ class TileMap:
                 if 0 <= new_x < size and 0 <= new_y < size:
                     map_data[new_y][new_x] = "G"  # Placer une tuile d'or
 
-    def ajouter_unite(self, row, col, unite):
-        # Ajoute l'unité si elle n'est pas déjà présente dans la cellule
-        map_data[row][col].append(unite)
 
     def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface):
         # Obtenir l'image correspondant au type d'unité
-        unit_tile = units_images_test.get(tile_type, {}).get('image')
+        unit_tile = units_dict.get(tile_type, {}).get('image')
         if not unit_tile:
             return  # Si l'image n'existe pas, ne rien faire
 
@@ -114,18 +111,18 @@ class TileMap:
 
     def afficher_buildings(self, grid_x, grid_y, cam_x, cam_y, display_surface):
         tuile = tuiles.get((grid_x, grid_y))
-        if not tuile or not tuile.get('unites'):
+        if not tuile or not tuile.get('batiments'):
             return
 
-        for joueur, buildings in tuile['unites'].items():
+        for joueur, buildings in tuile['batiments'].items():
             for tile_type, data in buildings.items():
                 if isinstance(data, dict) and data.get('principal'):
                     # Vérifiez si les données du bâtiment existent
-                    if tile_type not in builds_images:
+                    if tile_type not in builds_dict:
                         return
 
                     # Récupérer l'image et les dimensions
-                    unit_tile = builds_images_test.get(tile_type, {}).get('tile')
+                    unit_tile = builds_dict.get(tile_type, {}).get('tile')
                     building_width = unit_tile.width  # Largeur du bâtiment
                     building_height = unit_tile.height  # Hauteur du bâtiment
 
@@ -160,14 +157,14 @@ class TileMap:
                     tile = tile_wood
                     offset_y = tile.height - tile_grass.height
                     if (row, col) not in tuiles:
-                        tuiles[(row, col)] = {'unites': {}}  # Initialiser 'unites' à un dictionnaire vide
-                    tuiles[(row, col)]['unites'] = "W"
+                        tuiles[(row, col)] = {'ressources': {}}  # Initialiser 'unites' à un dictionnaire vide
+                    tuiles[(row, col)]['ressources'] = "W"
                 elif tile_type == "G":
                     tile = tile_gold
                     offset_y = tile.height - tile_grass.height
                     if (row, col) not in tuiles:
-                        tuiles[(row, col)] = {'unites': {}}  # Initialiser 'unites' à un dictionnaire vide
-                    tuiles[(row, col)]['unites'] = "G"
+                        tuiles[(row, col)] = {'ressources': {}}  # Initialiser 'unites' à un dictionnaire vide
+                    tuiles[(row, col)]['ressources'] = "G"
                 else:
                     tile = tile_grass
                     offset_y = 0

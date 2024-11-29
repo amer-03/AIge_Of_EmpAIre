@@ -13,6 +13,8 @@ class Unit:
         self.tile_grass = tile_grass
         self.map_data = map_data
         self.compteurs_joueurs = compteurs_joueurs
+        self.unit_list = None
+        self.current_unit_index = 0
 
     def conversion(self, x, y):
         half_size = map_size//2  # Assurez-vous que la taille de la carte est correctement définie
@@ -45,12 +47,9 @@ class Unit:
 
     #pour del : del tuiles[(60, 110)]['unites']['v'][0]
 
-
-    def initialisation_compteur(self,position):
-
+    def initialisation_compteur(self, position):
         for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
             x, y = position[idx]  # Position initiale de chaque joueur
-
 
             for unite, nombre in data['unites'].items():
                 compteurs_unites[unite] = 0
@@ -58,42 +57,47 @@ class Unit:
                 for i in range(nombre):
                     identifiant_unite = compteurs_unites[unite]
                     compteurs_unites[unite] += 1
+
+                    # Si la tuile (x, y) n'existe pas ou n'est pas un dictionnaire, l'initialiser
                     if (x, y) not in tuiles or not isinstance(tuiles[(x, y)], dict):
-                        tuiles[(x, y)] = {'unites': {}}
+                        tuiles[(x, y)] = {}
 
-                    if not isinstance(tuiles[(x, y)], dict):
-                        tuiles[(x, y)] = {'unites': {}}
+                    # Si la clé 'unites' n'existe pas, l'ajouter
+                    if 'unites' not in tuiles[(x, y)]:
+                        tuiles[(x, y)]['unites'] = {}
 
+                    # Si le joueur n'est pas dans 'unites', l'ajouter
                     if joueur not in tuiles[(x, y)]['unites']:
                         tuiles[(x, y)]['unites'][joueur] = {}
 
+                    # Vérifier s'il y a un conflit avec les bâtiments ou ressources
+                    batiments = tuiles[(x, y)].get('batiments', {})
+                    ressources = tuiles[(x, y)].get('ressources', {})
 
+                    # Vérifier s'il y a des bâtiments ou des ressources sur la tuile
+                    tuile_conflit = ('W' in ressources.get(joueur, {}) or
+                                     'G' in ressources.get(joueur, {}) or
+                                     'T' in batiments.get(joueur, {}) or
+                                     'S' in batiments.get(joueur, {}) or
+                                     'K' in batiments.get(joueur, {}) or
+                                     'H' in batiments.get(joueur, {}) or
+                                     'B' in batiments.get(joueur, {}))
 
-                    tuile_conflit = ('T' in tuiles[(x, y)]['unites'][joueur]
-                                     or 'G' in tuiles[(x, y)]['unites'][joueur]
-                                     or 'T' in tuiles[(x, y)]['unites'][joueur]
-                                     or 'S' in tuiles[(x, y)]['unites'][joueur]
-                                     or 'K' in tuiles[(x, y)]['unites'][joueur]
-                                     or 'H' in tuiles[(x, y)]['unites'][joueur]
-                                     or 'W' in tuiles[(x, y)]['unites'][joueur]
-                                     or 'B' in tuiles[(x, y)]['unites'][joueur])
-
+                    # Ajouter l'unité seulement s'il n'y a pas de conflit
                     if not tuile_conflit:
                         if unite not in tuiles[(x, y)]['unites'][joueur]:
                             tuiles[(x, y)]['unites'][joueur][unite] = {}
 
-                        # Ajouter l'unité avec son identifiant et ses attributs (HP, etc.)
                         tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
-                            'HP': units_images_test[unite]['hp']  # Récupérer les HP depuis units_images
+                            'HP': units_dict[unite]['hp']  # Récupérer les HP depuis units_images
                         }
                     else:
-
+                        # Si conflit, trouver une autre position et réessayer
                         while (x, y) in tuiles and tuile_conflit:
                             x += 1
                             y += 1
 
-                        #print(tuiles[(x, y)]['unites'][joueur])
-
+                        # Réinitialiser la tuile (x, y) avec les clés nécessaires
                         if (x, y) not in tuiles:
                             tuiles[(x, y)] = {'unites': {}}
 
@@ -103,55 +107,44 @@ class Unit:
                         if unite not in tuiles[(x, y)]['unites'][joueur]:
                             tuiles[(x, y)]['unites'][joueur][unite] = {}
 
-                        # Ajouter l'unité avec son identifiant et ses attributs (HP, etc.)
                         tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
-                            'HP': units_images_test[unite]['hp']  # Récupérer les HP depuis units_images
+                            'HP': units_dict[unite]['hp']  # Récupérer les HP depuis units_images
                         }
 
+    def decrementer_hp_unite(self):
+        """Décroit les HP de la première unité rencontrée dans le dictionnaire tuiles."""
+        # Vérifier que les tuiles existent et contiennent des unités
+        for (x, y), data in tuiles.items():
+            if isinstance(data, dict) and 'unites' in data:  # Vérifie si la tuile contient des unités
+                unites = data['unites']
+
+                # Parcourir les joueurs
+                for joueur, joueur_unites in unites.items():
+                    # Parcourir les types d'unités
+                    for unite, instances in joueur_unites.items():
+                        # Prendre uniquement la première unité trouvée
+                        for identifiant, stats in instances.items():
+                            if 'HP' in stats:
+                                stats['HP'] -= 4  # Réduire les HP de 4
+                                print(f"Unité {unite} (ID: {identifiant}) à ({x},{y}) a maintenant {stats['HP']} HP.")
+
+                                # Si l'unité est morte, la supprimer
+                                if stats['HP'] <= 0:
+                                    stats['HP'] = 0
+                                    print(f"L'unité {unite} (ID: {identifiant}) est morte.")
+                                    del tuiles[(x, y)]['unites'][joueur][unite][identifiant]
+
+                                    # Supprimer les structures vides
+                                    if not tuiles[(x, y)]['unites'][joueur][unite]:
+                                        del tuiles[(x, y)]['unites'][joueur][unite]
+                                    if not tuiles[(x, y)]['unites'][joueur]:
+                                        del tuiles[(x, y)]['unites'][joueur]
+                                    if not tuiles[(x, y)]['unites']:
+                                        del tuiles[(x, y)]['unites']
+                                return
 
 
 
 
 
-
-    def affichage(self):
-        for (x, y), tuile in tuiles.items():
-            if isinstance(tuile['unites'], dict):  # Vérifie que 'unites' est un dictionnaire
-                for joueur, unites_joueur in tuile['unites'].items():
-
-                    if isinstance(unites_joueur, dict):  # Vérifie que c'est bien un joueur avec des unités
-                        # Parcourir les unités de ce joueur et les afficher
-                        for unite, identifiant in unites_joueur.items():
-                            # Afficher selon le type d'unité/bâtiment
-                            if unite == 'v':
-                                map_data[x][y] = 'v'
-                            elif unite == 's':
-                                map_data[x][y] = 's'
-                            elif unite == 'h':
-                                map_data[x][y] = 'h'
-                            elif unite == 'a':
-                                map_data[x][y] = 'a'
-                            elif unite == 'C':
-                                map_data[x][y] = 'C'
-                            elif unite == 'F':
-                                map_data[x][y] = 'F'
-                            elif unite == 'B':
-                                map_data[x][y] = 'B'
-                            elif unite == 'S':
-                                map_data[x][y] = 'S'
-                            elif unite == 'A':
-                                map_data[x][y] = 'A'
-                            elif unite == 'K':
-                                map_data[x][y] = 'K'
-
-                        # Gestion des bâtiments
-                        # Vérifier si l'unité est un bâtiment comme 'T' et l'afficher
-                        if 'T' in unites_joueur:
-                            map_data[x][y] = 'T'
-                        elif 'H' in unites_joueur:
-                            map_data[x][y] = 'H'
-                        elif 'G' in unites_joueur:
-                            map_data[x][y] = 'G'
-                        elif 'W' in unites_joueur:
-                            map_data[x][y] = 'W'
 

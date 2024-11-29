@@ -89,6 +89,10 @@ class Game:
         # BUILDS
         self.buildings = Buildings()
 
+
+
+
+
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
         # Taille de la moitié de la carte
@@ -251,8 +255,9 @@ class Game:
 
                 self.unit.initialisation_compteur(position)
                 self.buildings.affichage()
+                self.draw_mini_map(DISPLAYSURF)
 
-                print(tuiles)
+                #print(tuiles)
 
     def display_option(self, text, x, y, is_selected):
         """Affiche une option avec un style visuel pour la sélection."""
@@ -274,7 +279,6 @@ class Game:
             self.menu_active = True  # Revenir au menu si le chargement échoue
 
     def draw_mini_map(self, display_surface):
-        """Affiche une version réduite de la carte en bas à gauche, orientée de manière isométrique."""
         losange_surface = pygame.Surface((self.mini_map_size_x, self.mini_map_size_y), pygame.SRCALPHA)
         losange_surface.fill((0, 0, 0, 0))  # Remplir de transparent
 
@@ -286,18 +290,16 @@ class Game:
         for row in range(size):
             for col in range(size):
                 tile_type = map_data[row][col]
-
-                # Couleur des tuiles sur la mini-carte
-                if tile_type == " ":
-                    color = (34, 139, 34)  # Vert pour l'herbe
-                elif tile_type == "W":
+                if tile_type == "W":
                     color = (139, 69, 19)  # Marron pour le bois
                 elif tile_type == "G":
                     color = (255, 215, 0)  # Jaune pour l'or
-                elif tile_type == "T":
+                elif tile_type == "T" or tile_type == "H" or tile_type == "C" or tile_type == "F" or tile_type == "B" or tile_type == "S" or tile_type == "A" or tile_type == "K":
                     color = (128, 128, 128)  # Gris pour le bloc spécial
-                elif tile_type == "B":
-                    color = (128, 128, 128)  # Gris pour le bloc spécial
+                elif tile_type == "v" or tile_type == "a" or tile_type == "s" or tile_type == "h":
+                    color = (255,0,0)
+                else:
+                    color = (34, 139, 34)
 
                 centered_col = col - (size // 2)
                 centered_row = row - (size // 2)
@@ -398,7 +400,8 @@ class Game:
                 compteurs['ressources']['w'] = 200
                 compteurs['ressources']['f'] = 50
                 compteurs['ressources']['g'] = 50
-                compteurs['unites']['v'] = 3
+                compteurs['unites']['v'] = 1
+                compteurs['unites']['a'] = 1
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
                 compteurs['batiments']['T'] = 2
@@ -583,6 +586,9 @@ class Game:
             terminal_thread.daemon = True
             terminal_thread.start()
 
+
+
+
     def run(self):
         """Boucle principale du jeu."""
         running = True
@@ -607,6 +613,12 @@ class Game:
                 if event.type == KEYDOWN and event.key == K_p:
                     self.ouvrir_terminal()
 
+                if event.type == KEYDOWN and event.key == K_KP_MINUS:  # Touche "-"
+                    self.unit.decrementer_hp_unite()
+
+                if event.type == KEYDOWN and event.key == K_KP_PLUS:  # Touche "-"
+                    self.buildings.decrementer_hp_batiments()
+
                 if self.menu_active:
                     self.handle_menu_events(event)
                 else:
@@ -618,7 +630,6 @@ class Game:
                 self.show_menu()
             else:
 
-                pygame.display.update()
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
                 self.draw_mini_map(DISPLAYSURF)
@@ -628,8 +639,11 @@ class Game:
 
                 self.draw_resources()
 
-              
+                self.buildings.affichage()
+                pygame.display.update()
                 pygame.display.flip()
+                #self.unit.initialiser_unit_list()
+                #print(tuiles)
 
 
             pygame.display.update()
