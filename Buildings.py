@@ -330,7 +330,7 @@ class Buildings:
                                 else:
                                     map_data[x][y] = " "
                             break
-                if isinstance(batiments, dict):
+                if map_data[x][y] == " " and isinstance(batiments, dict):
                     for joueur, batiments_joueur in batiments.items():  # Parcours les bâtiments du joueur
                         if isinstance(batiments_joueur, dict):
                             for batiment, details in batiments_joueur.items():
@@ -363,7 +363,7 @@ class Buildings:
                             break
 
                 # Vérification et affichage des ressources (on passe par ressources si elles existent)
-                if isinstance(ressources, dict):
+                if map_data[x][y] == " " and isinstance(ressources, dict):
                     for joueur, ressources_joueur in ressources.items():  # Parcours les ressources du joueur
                         if isinstance(ressources_joueur, dict):
                             for ressource, details in ressources_joueur.items():
@@ -373,5 +373,10 @@ class Buildings:
                                     map_data[x][y] = 'W'
                                 else:
                                     map_data[x][y] = " "
+
+        for i in range(len(map_data)):
+            for j in range(len(map_data[i])):
+                if (i, j) not in tuiles:
+                    map_data[i][j] = " "  # Case vide par défaut
 
 
