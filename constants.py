@@ -26,6 +26,7 @@ screen_height = info.current_h  # Hauteur de l'écran
 
 DISPLAYSURF = pygame.display.set_mode((screen_width, screen_height), pygame.DOUBLEBUF)
 FPSCLOCK = pygame.time.Clock()
+FONT=pygame.font.Font(None,24)
 
 minimap_size = 50
 map_size = 120
@@ -65,6 +66,7 @@ builds_images = {
     'A': {'tile': Tile("images/Archery Range.png", 128, 100), 'taille': 3},  # Exemple de taille 3
     'K': {'tile': Tile("images/Keep.png", 64, 64), 'taille': 1}
 }
+
 size=120
 
 tuiles = {}

@@ -628,9 +628,11 @@ class Game:
 
                 self.draw_resources()
 
-              
+                fps=int(FPSCLOCK.get_fps())
+                fps_text=FONT.render(f"FPS:{fps}",True,(255,255,255)) 
+                DISPLAYSURF.blit(fps_text,(10,10)) 
                 pygame.display.flip()
-
+            
 
             pygame.display.update()
             FPSCLOCK.tick(60)
