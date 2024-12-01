@@ -89,10 +89,6 @@ class Game:
         # BUILDS
         self.buildings = Buildings()
 
-
-
-
-
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
         # Taille de la moitié de la carte
@@ -255,9 +251,8 @@ class Game:
 
                 self.unit.initialisation_compteur(position)
                 self.buildings.affichage()
-                self.draw_mini_map(DISPLAYSURF)
 
-                #print(tuiles)
+                print(tuiles)
 
     def display_option(self, text, x, y, is_selected):
         """Affiche une option avec un style visuel pour la sélection."""
@@ -279,6 +274,7 @@ class Game:
             self.menu_active = True  # Revenir au menu si le chargement échoue
 
     def draw_mini_map(self, display_surface):
+        """Affiche une version réduite de la carte en bas à gauche, orientée de manière isométrique."""
         losange_surface = pygame.Surface((self.mini_map_size_x, self.mini_map_size_y), pygame.SRCALPHA)
         losange_surface.fill((0, 0, 0, 0))  # Remplir de transparent
 
@@ -290,16 +286,18 @@ class Game:
         for row in range(size):
             for col in range(size):
                 tile_type = map_data[row][col]
-                if tile_type == "W":
+
+                # Couleur des tuiles sur la mini-carte
+                if tile_type == " ":
+                    color = (34, 139, 34)  # Vert pour l'herbe
+                elif tile_type == "W":
                     color = (139, 69, 19)  # Marron pour le bois
                 elif tile_type == "G":
                     color = (255, 215, 0)  # Jaune pour l'or
-                elif tile_type == "T" or tile_type == "H" or tile_type == "C" or tile_type == "F" or tile_type == "B" or tile_type == "S" or tile_type == "A" or tile_type == "K":
+                elif tile_type == "T":
                     color = (128, 128, 128)  # Gris pour le bloc spécial
-                elif tile_type == "v" or tile_type == "a" or tile_type == "s" or tile_type == "h":
-                    color = (255,0,0)
-                else:
-                    color = (34, 139, 34)
+                elif tile_type == "B":
+                    color = (128, 128, 128)  # Gris pour le bloc spécial
 
                 centered_col = col - (size // 2)
                 centered_row = row - (size // 2)
@@ -400,8 +398,7 @@ class Game:
                 compteurs['ressources']['w'] = 200
                 compteurs['ressources']['f'] = 50
                 compteurs['ressources']['g'] = 50
-                compteurs['unites']['v'] = 1
-                compteurs['unites']['a'] = 1
+                compteurs['unites']['v'] = 3
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
                 compteurs['batiments']['T'] = 2
@@ -585,9 +582,38 @@ class Game:
             terminal_thread = threading.Thread(target=curses.wrapper, args=(self.draw_map_in_terminal,))
             terminal_thread.daemon = True
             terminal_thread.start()
+    
+    def draw_minimap_viewbox(self, DISPLAYSURF):
+        # Position et taille minimap
+        minimap_x = screen_width - self.mini_map_size_x - 10
+        minimap_y = screen_height - self.mini_map_size_y - 10
+        view_width = self.mini_map_size_x // 4
+        view_height = self.mini_map_size_y // 4
 
+        # Calculer l'échelle comme dans handle_mini_map_click
+        scale_x = size * (tile_grass.width_half * 2) / self.mini_map_size_x
+        scale_y = size * tile_grass.height_half / self.mini_map_size_y
 
+        # Inverser la conversion de handle_mini_map_click
+        # Dans handle_mini_map_click: world_x = (mini_map_x - size_x/2) * scale_x
+        # Donc: mini_map_x = (world_x / scale_x) + size_x/2
+        rect_x = (self.cam_x + screen_width // 2) / scale_x + self.mini_map_size_x // 2
+        rect_y = (self.cam_y + screen_height // 2) / scale_y + self.mini_map_size_y // 2
 
+        # Ajuster aux coordonnées de la minimap
+        rect_x = minimap_x + rect_x - (view_width // 2)
+        rect_y = minimap_y + rect_y - (view_height // 2)
+
+        # Garder dans les limites
+        rect_x = max(minimap_x, min(rect_x, minimap_x + self.mini_map_size_x - view_width))
+        rect_y = max(minimap_y, min(rect_y, minimap_y + self.mini_map_size_y - view_height))
+
+        # Affichage rectangle
+        view_surface = pygame.Surface((view_width, view_height), pygame.SRCALPHA)
+        pygame.draw.rect(view_surface, (255, 255, 255, 100), view_surface.get_rect())
+        DISPLAYSURF.blit(view_surface, (rect_x, rect_y))
+        pygame.draw.rect(DISPLAYSURF, (255, 255, 255), 
+                        (rect_x, rect_y, view_width, view_height), 2)
 
     def run(self):
         """Boucle principale du jeu."""
@@ -613,12 +639,6 @@ class Game:
                 if event.type == KEYDOWN and event.key == K_p:
                     self.ouvrir_terminal()
 
-                if event.type == KEYDOWN and event.key == K_KP_MINUS:  # Touche "-"
-                    self.unit.decrementer_hp_unite()
-
-                if event.type == KEYDOWN and event.key == K_KP_PLUS:  # Touche "-"
-                    self.buildings.decrementer_hp_batiments()
-
                 if self.menu_active:
                     self.handle_menu_events(event)
                 else:
@@ -630,6 +650,7 @@ class Game:
                 self.show_menu()
             else:
 
+                pygame.display.update()
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
                 self.draw_mini_map(DISPLAYSURF)
@@ -638,12 +659,9 @@ class Game:
                 self.handle_camera_movement(keys)
 
                 self.draw_resources()
-
-                self.buildings.affichage()
-                pygame.display.update()
+                self.draw_minimap_viewbox(DISPLAYSURF)
+              
                 pygame.display.flip()
-                #self.unit.initialiser_unit_list()
-                #print(tuiles)
 
 
             pygame.display.update()
