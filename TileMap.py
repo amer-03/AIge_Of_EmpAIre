@@ -6,6 +6,7 @@ import curses
 import pygame
 import threading
 import time
+import numpy as np
 
 
 class TileMap:
@@ -89,25 +90,60 @@ class TileMap:
                 if 0 <= new_x < size and 0 <= new_y < size:
                     map_data[new_y][new_x] = "G"  # Placer une tuile d'or
 
+    def apply_color_filter(self, surface, color):
+        """
+        Applique un filtre de couleur sur une surface pygame.Surface.
+        :param surface: Une surface valide.
+        :param color: Tuple (R, G, B) représentant la couleur du filtre.
+        :return: Une nouvelle surface avec le filtre appliqué.
+        """
+        if not isinstance(surface, pygame.Surface):
+            raise TypeError("L'objet fourni n'est pas une surface pygame.Surface valide.")
 
-    def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface):
+        # Copier la surface d'origine
+        image_with_filter = surface.copy()
+
+        # Créer une surface de filtre avec la couleur souhaitée
+        color_filter = pygame.Surface(surface.get_size(), flags=pygame.SRCALPHA)
+        color_filter.fill(color)  # Ajouter de la transparence pour le mélange
+
+        # Appliquer le filtre sur l'image
+        image_with_filter.blit(color_filter, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+
+        return image_with_filter
+
+    def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface, grid_x, grid_y):
         # Obtenir l'image correspondant au type d'unité
-        unit_tile = units_dict.get(tile_type, {}).get('image')
-        if not unit_tile:
-            return  # Si l'image n'existe pas, ne rien faire
 
-        # Calculer les offsets
-        offset_x = tile_grass.width_half - unit_tile.width // 2
-        offset_y = tile_grass.height_half - unit_tile.height // 2
+        tuile = tuiles.get((grid_x, grid_y))
+        if not tuile or not tuile.get('unites'):
+            return
 
-        # Recalculer les coordonnées isométriques pour l'unité
-        iso_x = (cart_x - cart_y) - cam_x + offset_x
-        iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
+        for joueur, buildings in tuile['unites'].items():
 
-        # print("units", cart_x,cart_y)
+            unit_tile = units_dict.get(tile_type, {}).get('image')
+            if not unit_tile:
+                return  # Si l'image n'existe pas, ne rien faire
 
-        # Afficher l'unité
-        display_surface.blit(unit_tile.image, (iso_x, iso_y))
+            if not unit_tile or not isinstance(unit_tile.image, pygame.Surface):
+                continue  # Si l'image n'est pas valide, passez à l'élément suivant
+
+            # Récupérer la couleur du joueur depuis PLAYER_COLORS
+            player_color = PLAYER_COLORS.get(joueur, (255, 255, 255))  # Blanc par défaut
+
+            # Appliquer un filtre de couleur sur une copie de l'image
+            unit_image_colored = self.apply_color_filter(unit_tile.image, player_color)
+
+            # Calculer les offsets
+            offset_x = tile_grass.width_half - unit_tile.width // 2
+            offset_y = tile_grass.height_half - unit_tile.height // 2
+
+            # Recalculer les coordonnées isométriques pour l'unité
+            iso_x = (cart_x - cart_y) - cam_x + offset_x
+            iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
+
+            # print("units", cart_x,cart_y)
+            display_surface.blit(unit_image_colored, (iso_x, iso_y))
 
     def afficher_buildings(self, grid_x, grid_y, cam_x, cam_y, display_surface):
         tuile = tuiles.get((grid_x, grid_y))
@@ -121,10 +157,15 @@ class TileMap:
                     if tile_type not in builds_dict:
                         return
 
-                    # Récupérer l'image et les dimensions
                     unit_tile = builds_dict.get(tile_type, {}).get('tile')
-                    building_width = unit_tile.width  # Largeur du bâtiment
-                    building_height = unit_tile.height  # Hauteur du bâtiment
+                    if not unit_tile or not isinstance(unit_tile.image, pygame.Surface):
+                        continue  # Si l'image n'est pas valide, passez à l'élément suivant
+
+                    # Récupérer la couleur du joueur depuis PLAYER_COLORS
+                    player_color = PLAYER_COLORS.get(joueur, (255, 255, 255))  # Blanc par défaut
+
+                    # Appliquer un filtre de couleur sur une copie de l'image
+                    unit_image_colored = self.apply_color_filter(unit_tile.image, player_color)
 
                     # Calculer les coordonnées cartésiennes de la tuile
                     centered_col = grid_y - size // 2  # Décalage en X (par rapport à la grille)
@@ -141,11 +182,10 @@ class TileMap:
                     iso_x = (cart_x - cart_y) - cam_x  # - offset_x
                     iso_y = (cart_x + cart_y) / 2 - cam_y + offset_y
 
-                    display_surface.blit(unit_tile.image, (iso_x, iso_y))
+                    display_surface.blit(unit_image_colored, (iso_x, iso_y))
 
     def render(self, display_surface, cam_x, cam_y):
         """Affiche la carte en fonction de la position de la caméra, centrée au milieu."""
-        half_size = size // 2  # La moitié de la taille de la carte
 
         for row in range(size):
             for col in range(size):
@@ -186,8 +226,9 @@ class TileMap:
                     self.afficher_buildings(row, col, cam_x, cam_y, display_surface)
 
                 if tile_type in ["v", "s", "h", "a"]:
-                    self.afficher_unite(tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface)
+                    self.afficher_unite(tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface, row, col)
 
+                #self.test_color_filter(display_surface)
 
     def move_player(self, direction):
         x, y = self.position_initiale

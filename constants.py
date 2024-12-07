@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+import curses
 
 
 class Tile:
@@ -18,20 +19,23 @@ pygame.init()
 
 
 info = pygame.display.Info()
-screen_width = info.current_w  # Largeur de l'écran
-screen_height = info.current_h  # Hauteur de l'écran
+screen_width = info.current_w #-500  # Largeur de l'écran
+screen_height = info.current_h #-500  # Hauteur de l'écran
+
+
 
 DISPLAYSURF = pygame.display.set_mode((screen_width, screen_height), pygame.DOUBLEBUF)
 FPSCLOCK = pygame.time.Clock()
+FPSCLOCK.tick(60)
 
-minimap_size = 50
-map_size = 120
+size = 120
+half_size = size//2
 
-barre_width = screen_width//3  # Largeur de la barre
-barre_height = 80  # Hauteur de la barre
+barre_width = screen_width//2.5  # Largeur de la barre
+barre_height = screen_height//13.5 # Hauteur de la barre
 
-barre_units_width= screen_width//3
-barre_units_height = 40
+barre_units_width= screen_width//2.5
+barre_units_height = screen_height//27
 
 
 tile_grass = Tile('images/cube_grass.png', 64, 64)
@@ -42,6 +46,7 @@ tile_gold = Tile('images/cube_rocky2.png', 64, 64)
 
 swordsman_image = pygame.image.load("images/epeiste.png")  # Remplace "swordsman.png" par le nom de ton fichier
 swordsman_image = pygame.transform.scale(swordsman_image, (32, 32))
+
 
 
 compteurs_joueurs = {}
@@ -143,10 +148,11 @@ builds_dict = {
 }
 
 
-size=120
-
 tuiles = {}
 compteurs_unites = {}
+
+GRAY = (100, 100, 100)
+LIGHT_GRAY = (200, 200, 200)
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -155,7 +161,37 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
 GRAY = (128,128,128)
+ORANGE = (255, 165, 0)
+PURPLE = (128, 0, 128)
+CYAN = (0, 255, 255)
+MAGENTA = (255, 0, 255)
+BROWN = (139, 69, 19)
+PINK = (255, 105, 180)
 
-test_posi = []
+PLAYER_COLORS = {
+    "joueur_1": RED,       # Rouge
+    "joueur_2": GREEN,     # Vert
+    "joueur_3": YELLOW,    # Jaune
+    "joueur_4": BLUE,      # Bleu
+    "joueur_5": ORANGE,    # Orange
+    "joueur_6": PURPLE,    # Violet
+    "joueur_7": CYAN,      # Cyan
+    "joueur_8": MAGENTA,   # Magenta
+    "joueur_9": BROWN,     # Marron
+    "joueur_10": PINK      # Vert clair
+}
+
+MAP_COLORS = {
+    "joueur_1": (1, curses.COLOR_BLACK),
+    "joueur_2": (2, curses.COLOR_BLACK),
+    "joueur_3": (3, curses.COLOR_BLACK),
+    "joueur_4": (4, curses.COLOR_BLACK),
+    "joueur_5": (202, curses.COLOR_BLACK),
+    "joueur_6": (129, curses.COLOR_BLACK),
+    "joueur_7": (51, curses.COLOR_BLACK),
+    "joueur_8": (201, curses.COLOR_BLACK),
+    "joueur_9": (94, curses.COLOR_BLACK),
+    "joueur_10": (218, curses.COLOR_BLACK),
+}
 
 map_data = np.full((size, size), " ")

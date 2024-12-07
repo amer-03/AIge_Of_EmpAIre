@@ -2,18 +2,18 @@ from math import sqrt
 import math
 import pygame
 from constants import *
+from colorama import Fore, Style
 
-from constants import map_size
+from constants import *
 
 class Buildings:
     def __init__(self):
-        self.map_size = map_size
         self.tile_grass = tile_grass
         self.map_data = map_data
         self.compteurs_joueurs = compteurs_joueurs
 
     def conversion(self, x, y):
-        half_size = map_size // 2  # Assurez-vous que la taille de la carte est correctement définie
+        half_size = size // 2  # Assurez-vous que la taille de la carte est correctement définie
 
         # Décalage centré pour le joueur
         centered_col = y - half_size
@@ -198,45 +198,6 @@ class Buildings:
 
         return tuiles
 
-
-    """
-    def decrementer_hp_batiments(self):
-        # Vérifier que les tuiles existent et contiennent des unités
-        for (x, y), data in tuiles.items():
-            if isinstance(data, dict) and 'batiments' in data:  # Vérifie si la tuile contient des unités
-                batiments = data['batiments']
-
-                # Parcourir les joueurs
-                for joueur, joueur_batiments in batiments.items():
-                    # Parcourir les types d'unités
-                    for unite, stats in joueur_batiments.items():
-                        if isinstance(stats, dict):  # Vérifie que stats est un dictionnaire
-                            identifiant = stats.get('id', 'Inconnu')
-                            parent = stats.get('parent', (x, y))
-                            if 'HP' in stats:
-                                stats['HP'] -= 250  # Réduire les HP de 4
-                                print(f"Unité {unite} (ID: {identifiant}) à ({x},{y}) a maintenant {stats['HP']} HP.")
-
-                                # Si l'unité est morte, la supprimer
-                                if stats['HP'] <= 0:
-                                    stats['HP'] = 0
-                                    print(f"L'unité {unite} (ID: {identifiant}) est morte.")
-                                    if identifiant in tuiles[(x, y)]['batiments'][joueur][unite]:
-                                        del tuiles[(x, y)]['batiments'][joueur][unite][identifiant]
-                                    if not tuiles[(x, y)]['batiments'][joueur][unite]:
-                                        del tuiles[(x, y)]['batiments'][joueur][unite]
-                                    if not tuiles[(x, y)]['batiments'][joueur]:
-                                        del tuiles[(x, y)]['batiments'][joueur]
-                                    if not tuiles[(x, y)]['batiments']:
-                                        del tuiles[(x, y)]['batiments']
-
-                                print(tuiles)
-                                # Une seule unité est traitée, donc on sort des boucles
-                                return
-
-        print("Aucune unité à décrémenter.")
-    """
-
     def decrementer_hp_batiments(self):
         """Décroît les HP des bâtiments dans le dictionnaire tuiles, en tenant compte des bâtiments multi-tuiles."""
         traites = set()  # Pour éviter de traiter plusieurs fois le même bâtiment
@@ -260,24 +221,23 @@ class Buildings:
                             traites.add((joueur, identifiant))
 
                             if 'HP' in stats:
-                                stats['HP'] -= 250  # Réduire les HP
-                                print(f"Unité {unite} (ID: {identifiant}) sur sa tuile principale {parent} a maintenant {stats['HP']} HP.")
+                                stats['HP'] -= 250
 
                                 # Si les HP tombent à 0, supprimer le bâtiment
                                 if stats['HP'] <= 0:
                                     stats['HP'] = 0
-                                    print(f"L'unité {unite} (ID: {identifiant}) est détruite.")
                                     self.supprimer_batiment(tuiles, joueur, identifiant, parent)
-                                    print(tuiles)
+                                    if joueur in compteurs_joueurs:
+                                        if unite in compteurs_joueurs[joueur]['batiments'] and \
+                                                compteurs_joueurs[joueur]['batiments'][unite] > 0:
+                                            compteurs_joueurs[joueur]['batiments'][unite] -= 1
                                 return
-
-
-    print("Aucune autre unité à décrémenter.")
 
     def supprimer_batiment(self,tuiles, joueur, identifiant, parent):
         """Supprime un bâtiment multi-tuiles."""
-        print(f"Suppression du bâtiment {identifiant} appartenant à {joueur}, tuile principale {parent}.")
         tuiles_a_supprimer = []
+
+
 
         for (x, y), data in list(tuiles.items()):
             if 'batiments' in data and joueur in data['batiments']:
@@ -286,6 +246,8 @@ class Buildings:
                 for unite, stats in list(batiments.items()):
                     if isinstance(stats, dict) and stats.get('id') == identifiant:
                         del tuiles[(x, y)]['batiments'][joueur][unite]
+
+
 
                         # Si le niveau est vide, marquer pour suppression
                         if not tuiles[(x, y)]['batiments'][joueur]:
@@ -296,8 +258,6 @@ class Buildings:
         # Supprimer les tuiles marquées
         for tuile in tuiles_a_supprimer:
             del tuiles[tuile]
-
-        print(f"Bâtiment {identifiant} supprimé.")
 
     def affichage(self):
         for (x, y), tuile in tuiles.items():
