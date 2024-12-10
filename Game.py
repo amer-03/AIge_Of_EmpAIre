@@ -88,6 +88,8 @@ class Game:
 
         # BUILDS
         self.buildings = Buildings()
+        
+        self.font = pygame.font.Font(None, 36)
 
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
@@ -590,21 +592,18 @@ class Game:
         view_width = self.mini_map_size_x // 4
         view_height = self.mini_map_size_y // 4
 
-        # Calculer l'échelle comme dans handle_mini_map_click
+        #L'échelle comme dans handle_mini_map_click
         scale_x = size * (tile_grass.width_half * 2) / self.mini_map_size_x
         scale_y = size * tile_grass.height_half / self.mini_map_size_y
 
-        # Inverser la conversion de handle_mini_map_click
-        # Dans handle_mini_map_click: world_x = (mini_map_x - size_x/2) * scale_x
-        # Donc: mini_map_x = (world_x / scale_x) + size_x/2
         rect_x = (self.cam_x + screen_width // 2) / scale_x + self.mini_map_size_x // 2
         rect_y = (self.cam_y + screen_height // 2) / scale_y + self.mini_map_size_y // 2
 
-        # Ajuster aux coordonnées de la minimap
+        # On ajuste aux coordonnées de la minimap
         rect_x = minimap_x + rect_x - (view_width // 2)
         rect_y = minimap_y + rect_y - (view_height // 2)
 
-        # Garder dans les limites
+        # On garde dans les limites
         rect_x = max(minimap_x, min(rect_x, minimap_x + self.mini_map_size_x - view_width))
         rect_y = max(minimap_y, min(rect_y, minimap_y + self.mini_map_size_y - view_height))
 
@@ -615,6 +614,13 @@ class Game:
         pygame.draw.rect(DISPLAYSURF, (255, 255, 255), 
                         (rect_x, rect_y, view_width, view_height), 2)
 
+    def draw_fps(self, surface):
+        fps = str(int(FPSCLOCK.get_fps()))
+        fps_text = self.font.render(f'FPS: {fps}', True, (255, 255, 255))
+        fps_rect = fps_text.get_rect()
+        fps_rect.topright = (screen_width - 10, 10)
+        surface.blit(fps_text, fps_rect)
+    
     def run(self):
         """Boucle principale du jeu."""
         running = True
@@ -660,7 +666,8 @@ class Game:
 
                 self.draw_resources()
                 self.draw_minimap_viewbox(DISPLAYSURF)
-              
+
+                self.draw_fps(DISPLAYSURF)
                 pygame.display.flip()
 
 

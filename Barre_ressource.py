@@ -90,5 +90,3 @@ class Barre_ressources:
 
         # Afficher le texte
         surface.blit(texte, (text_x, text_y))
-
-
