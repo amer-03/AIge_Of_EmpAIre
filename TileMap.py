@@ -159,7 +159,7 @@ class TileMap:
                     display_surface.blit(unit_image_colored, (iso_x, iso_y))
 
     def display_map(self, cam_x, cam_y):
-        """Affiche la carte en fonction de la position de la caméra, centrée au milieu."""
+      #  Affiche la carte en fonction de la position de la caméra, centrée au milieu.
         for row in range(size):
             for col in range(size):
                 tile_type = map_data[row][col]
@@ -195,5 +195,5 @@ class TileMap:
 
 
     def get_map_data(self):
-        """Retourne la carte actuelle pour affichage."""
+        #Retourne la carte actuelle pour affichage.
         return map_data
