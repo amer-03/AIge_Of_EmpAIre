@@ -26,17 +26,17 @@ class Unit:
         frame_x = self.frame_index * frame_width 
         frame_y = self.direction_index * frame_height
 
-        return frame_x,frame_y, frame_width, frame_height
+        return frame_x, frame_y, frame_width, frame_height
 
-    def movement(self,nx,cam_x,cam_y):
-        self.coordinates.x-=0.5
-        self.coordinates.y-=0.5
-        niso_x,niso_y=self.coordinates.to_iso(cam_x,cam_y)
-        return niso_x, niso_y
+    def movement(self,cam_x,cam_y):
+        while self.coordinates.x>=-5 and self.coordinates.y<=3: # -5 and 3 to stop the unit
+            self.coordinates.x-=0.04
+            self.coordinates.y+=0.04
+            niso_x,niso_y=self.coordinates.to_iso(cam_x,cam_y)
+            return niso_x, niso_y
             
     
     def diplay_unit(self, cam_x, cam_y, current_time):
-
         #coordonnées isométrique    
         iso_x, iso_y = self.coordinates.to_iso(cam_x, cam_y)
         
@@ -51,5 +51,5 @@ class Unit:
         unit_frame =  unit_image.subsurface(frame_rect)
 
         DISPLAYSURF.blit(unit_frame,(iso_x,iso_y))
-        self.movement(3,cam_x,cam_y)
+        self.movement(cam_x,cam_y)
            

@@ -95,7 +95,7 @@ class Test:
             self.handle_camera_movement(keys)
             self.tile_map.display_map(cam_x, cam_y)
             self.unit.diplay_unit(cam_x,cam_y, pygame.time.get_ticks())
-            
+
             fps = int(FPSCLOCK.get_fps())
             fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
             DISPLAYSURF.blit(fps_text, (10, 10))
