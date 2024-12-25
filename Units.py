@@ -10,10 +10,10 @@ class Unit:
 
         self.frame_index = 0 # indice du frame dans une ligne
         self.direction_index = 0 # indice du frame dans une colonne
-        self.last_time = pygame.time.get_ticks()
+        self.last_time = pygame.time.get_ticks() # dernier moment du sprite (dernière action)
     
     def animation(self,current_time):  # fonction qui modifie l'indice des frames et le dernier temps du frame
-        if current_time - self.last_time > 10//30: #1000//30: 30 frames par 1000 millisecondes
+        if current_time - self.last_time > 1000//30: #1000//30: 30 frames par 1000 millisecondes
             self.last_time = current_time
             self.frame_index = (self.frame_index + 1) % 30
 
@@ -27,6 +27,13 @@ class Unit:
         frame_y = self.direction_index * frame_height
 
         return frame_x,frame_y, frame_width, frame_height
+
+    def movement(self,nx,cam_x,cam_y):
+        self.coordinates.x-=0.5
+        self.coordinates.y-=0.5
+        niso_x,niso_y=self.coordinates.to_iso(cam_x,cam_y)
+        return niso_x, niso_y
+            
     
     def diplay_unit(self, cam_x, cam_y, current_time):
 
@@ -44,13 +51,5 @@ class Unit:
         unit_frame =  unit_image.subsurface(frame_rect)
 
         DISPLAYSURF.blit(unit_frame,(iso_x,iso_y))
-
-
-        
-
-
-
-
-    
-
-                    
+        self.movement(3,cam_x,cam_y)
+           

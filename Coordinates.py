@@ -5,6 +5,12 @@ class Coordinates:
     def __init__(self):
         self.x=0
         self.y=0
+    
+    def get_x(self):
+        return self.x
+    
+    def get_y(self):
+        return self.y
 
     def to_iso(self,cam_x,cam_y):
         iso_x = (int(self.y - self.x)) * tile_grass.width - cam_x
