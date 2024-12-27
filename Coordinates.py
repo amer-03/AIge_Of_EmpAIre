@@ -2,9 +2,9 @@ from TileMap import *
 from constants import *
 
 class Coordinates:
-    def __init__(self):
-        self.x=0
-        self.y=0
+    def __init__(self,x,y):
+        self.x=x
+        self.y=y
     
     def get_x(self):
         return self.x

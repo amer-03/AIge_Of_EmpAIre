@@ -38,17 +38,6 @@ barre_height = screen_height//13.5 # Hauteur de la barre
 barre_units_width= screen_width//2.5
 barre_units_height = screen_height//27
 
-
-
-swordsman_image = pygame.image.load("images/epeiste.png")  # Remplace "swordsman.png" par le nom de ton fichier
-swordsman_image = pygame.transform.scale(swordsman_image, (32, 32))
-
-unit_tile="images/img_1.webp"
-unit_image=  pygame.image.load(unit_tile).convert_alpha()
-
-
-
-
 compteurs_joueurs = {}
 
 units_dict = {

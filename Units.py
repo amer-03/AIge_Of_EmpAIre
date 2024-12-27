@@ -1,9 +1,18 @@
 from TileMap import *
 from constants import *
 from Coordinates import *
+from Global_image_load import *
 
 class Unit:
-    def __init__(self):
+    def __init__(self,position,lettre,cout,hp,temps_entrainement,attaque,vitesse):
+        self.lettre=lettre
+        self.position=position
+        self.cout=cout
+        self.hp=hp
+        self.temps_entrainement=temps_entrainement
+        self.attaque=attaque
+        self.vitesse=vitesse
+
         self.map_data = map_data
         self.tile_map = TileMap()
         self.coordinates = Coordinates()
@@ -16,6 +25,7 @@ class Unit:
         if current_time - self.last_time > 1000//30: #1000//30: 30 frames par 1000 millisecondes
             self.last_time = current_time
             self.frame_index = (self.frame_index + 1) % 30
+            #self.direction_index=(self.direction_index + 1) % 16
 
     def frame_coordinates(self,unit_image):
         #calcul des tailles du chaque frame en divisant la taille de l'image principal par le nombre des frames 
@@ -44,11 +54,11 @@ class Unit:
         self.animation(current_time)
 
         #appel de la fonction frame_coordinates
-        frame_x,frame_y, frame_width, frame_height = self.frame_coordinates(unit_image)
+        frame_x,frame_y, frame_width, frame_height = self.frame_coordinates(h_man1)
 
         #enlever un frame de l'image principal et l'afficher a la fois
         frame_rect = pygame.Rect(frame_x,frame_y, frame_width, frame_height)
-        unit_frame =  unit_image.subsurface(frame_rect)
+        unit_frame =  h_man1.subsurface(frame_rect)
 
         DISPLAYSURF.blit(unit_frame,(iso_x,iso_y))
         self.movement(cam_x,cam_y)
