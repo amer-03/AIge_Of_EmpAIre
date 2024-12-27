@@ -1,12 +1,11 @@
-from TileMap import *
 from constants import *
 from Coordinates import *
 from Global_image_load import *
 
-class Unit:
+class Units:
     def __init__(self,position,lettre,cout,hp,temps_entrainement,attaque,vitesse):
-        self.lettre=lettre
         self.position=position
+        self.lettre=lettre
         self.cout=cout
         self.hp=hp
         self.temps_entrainement=temps_entrainement
@@ -14,8 +13,6 @@ class Unit:
         self.vitesse=vitesse
 
         self.map_data = map_data
-        self.tile_map = TileMap()
-        self.coordinates = Coordinates()
 
         self.frame_index = 0 # indice du frame dans une ligne
         self.direction_index = 0 # indice du frame dans une colonne
@@ -38,17 +35,17 @@ class Unit:
 
         return frame_x, frame_y, frame_width, frame_height
 
-    def movement(self,cam_x,cam_y):
-        while self.coordinates.x>=-5 and self.coordinates.y<=3: # -5 and 3 to stop the unit
-            self.coordinates.x-=0.04
-            self.coordinates.y+=0.04
-            niso_x,niso_y=self.coordinates.to_iso(cam_x,cam_y)
+    def movement(self,nposition,cam_x,cam_y):
+        while self.position.x<nposition.x and self.position.y<nposition.y:
+            self.position.x-=0.04
+            self.position.y+=0.04
+            niso_x,niso_y=self.position.to_iso(cam_x,cam_y)
             return niso_x, niso_y
             
     
     def diplay_unit(self, cam_x, cam_y, current_time):
         #coordonnées isométrique    
-        iso_x, iso_y = self.coordinates.to_iso(cam_x, cam_y)
+        iso_x, iso_y = self.position.to_iso(cam_x, cam_y)
         
         #appel de la fonction de l'animation
         self.animation(current_time)

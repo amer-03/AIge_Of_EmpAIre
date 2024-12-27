@@ -1,4 +1,5 @@
-from Units import *
+from Units import Units
+from TileMap import TileMap
 from constants import *
 import pygame
 import curses
@@ -8,7 +9,7 @@ class Test:
     def __init__(self):
         self.scroll_speed = 30
         self.tile_map = TileMap()
-        self.unit=Unit()    
+        self.unit=Units()    
     
     def center_camera_on_tile(self):
         center_x = size // 2

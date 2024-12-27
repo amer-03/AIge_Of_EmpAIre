@@ -1,4 +1,3 @@
-from TileMap import *
 from constants import *
 
 class Coordinates:
@@ -6,11 +5,8 @@ class Coordinates:
         self.x=x
         self.y=y
     
-    def get_x(self):
-        return self.x
-    
-    def get_y(self):
-        return self.y
+    def __hash__(self):
+        return hash((self.x,self.y))
 
     def to_iso(self,cam_x,cam_y):
         iso_x = (int(self.y - self.x)) * tile_grass.width - cam_x
