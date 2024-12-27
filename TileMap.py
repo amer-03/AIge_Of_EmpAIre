@@ -1,8 +1,7 @@
 import pygame
 import random
 from constants import *
-import pygame
-import numpy as np
+from Units import Units
 
 
 class TileMap:
@@ -86,15 +85,21 @@ class TileMap:
                 if 0 <= new_x < size and 0 <= new_y < size:
                     map_data[new_y][new_x] = "G"  # Placer une tuile d'or
     
-    def add_unit(self,unit_letter):
-        units=[]
-        x=random.randint(0,size-1)
-        y=random.randint(0,size-1)
-        for _ in range(size):
-            if map_data[x][y]==" ":
-                map_data[x][y]=unit_letter
-                units.append((x,y))
-        return units
+    def add_unit(self, unit, quantity, player, position, tiles):
+        for x in range (quantity):
+            for y in range(quantity):
+                tile_position=(position.x+x, position.y+y)
+
+                if tile_position not in tiles:
+                    tiles[tile_position] = {}
+
+                if player not in tiles[tile_position]:
+                    tiles[tile_position][player] = {}
+
+                if not isinstance(unit, Units):
+                    return
+                
+                tiles[tile_position][player]={unit.lettre}
 
     def apply_color_filter(self, surface, color):
         """
@@ -197,3 +202,5 @@ class TileMap:
     def get_map_data(self):
         #Retourne la carte actuelle pour affichage.
         return map_data
+    
+
