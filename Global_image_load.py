@@ -24,5 +24,3 @@ villager1= pygame.image.load("images/sprites/Unit/villager/img_1.webp").convert_
 villager2= pygame.image.load("images/sprites/Unit/villager/img_2.webp").convert_alpha()
 villager3= pygame.image.load("images/sprites/Unit/villager/img_3.webp").convert_alpha()
 villager4= pygame.image.load("images/sprites/Unit/villager/img_4.webp").convert_alpha()
-
-
