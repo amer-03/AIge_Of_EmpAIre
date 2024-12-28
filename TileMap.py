@@ -2,6 +2,7 @@ import pygame
 import random
 from constants import *
 from Units import Units
+from Coordinates import Coordinates
 
 
 class TileMap:
@@ -85,22 +86,23 @@ class TileMap:
                 if 0 <= new_x < size and 0 <= new_y < size:
                     map_data[new_y][new_x] = "G"  # Placer une tuile d'or
     
-    def add_unit(self, unit, quantity, player, position, tiles):
-        for x in range (quantity):
+    def add_unit(self, unit, unit_class, quantity, player, tiles):
+        for x in range (quantity//2):
             for y in range(quantity):
-                tile_position=(position.x+x, position.y+y)
+                tile_position=Coordinates(unit.position.x+x, unit.position.y+y)
 
                 if tile_position not in tiles:
                     tiles[tile_position] = {}
 
                 if player not in tiles[tile_position]:
-                    tiles[tile_position][player] = {}
+                    tiles[tile_position][player] = []
 
                 if not isinstance(unit, Units):
                     return
                 
-                tiles[tile_position][player]={unit.lettre}
-
+                nunit=unit_class(unit.image,tile_position)
+                tiles[tile_position][player].append(nunit)
+                
     def apply_color_filter(self, surface, color):
         """
         Applique un filtre de couleur sur une surface pygame.Surface.
