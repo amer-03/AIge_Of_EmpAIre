@@ -3,7 +3,10 @@ from Coordinates import *
 from Global_image_load import *
 
 class Units:
-    def __init__(self,position,lettre,cout,hp,temps_entrainement,attaque,vitesse):
+    """Classe gérant les unités."""
+
+    def __init__(self,image, position,lettre,cout,hp,temps_entrainement,attaque,vitesse):
+        self.image=image
         self.position=position
         self.lettre=lettre
         self.cout=cout
@@ -13,7 +16,6 @@ class Units:
         self.vitesse=vitesse
 
         self.map_data = map_data
-
         self.frame_index = 0 # indice du frame dans une ligne
         self.direction_index = 0 # indice du frame dans une colonne
         self.last_time = pygame.time.get_ticks() # dernier moment du sprite (dernière action)
@@ -42,21 +44,21 @@ class Units:
             niso_x,niso_y=self.position.to_iso(cam_x,cam_y)
             return niso_x, niso_y
             
-    
-    def diplay_unit(self, cam_x, cam_y, current_time):
+    def diplay_unit(self, cam_x, cam_y, tiles, current_time):             
         #coordonnées isométrique    
         iso_x, iso_y = self.position.to_iso(cam_x, cam_y)
-        
+                    
         #appel de la fonction de l'animation
         self.animation(current_time)
 
         #appel de la fonction frame_coordinates
-        frame_x,frame_y, frame_width, frame_height = self.frame_coordinates(h_man1)
+        frame_x,frame_y, frame_width, frame_height = self.frame_coordinates(self.image)
 
         #enlever un frame de l'image principal et l'afficher a la fois
         frame_rect = pygame.Rect(frame_x,frame_y, frame_width, frame_height)
-        unit_frame =  h_man1.subsurface(frame_rect)
+        self_frame =  self.image.subsurface(frame_rect)
 
-        DISPLAYSURF.blit(unit_frame,(iso_x,iso_y))
-        self.movement(cam_x,cam_y)
-           
+        DISPLAYSURF.blit(self_frame,(iso_x,iso_y))
+        #self.movement(Coordinates(-3,3),cam_x,cam_y)
+
+            

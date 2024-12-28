@@ -1,16 +1,37 @@
 from Units import Units
 from TileMap import TileMap
+from Coordinates import Coordinates
+from Villager import Villager
+from Swordman import Swordman
+from Archer import Archer
+from Horseman import Horseman
+from Global_image_load import *
 from constants import *
 import pygame
-import curses
 from pygame.locals import *
 
 class Test:
     def __init__(self):
         self.scroll_speed = 30
         self.tile_map = TileMap()
-        self.unit=Units()    
+        self.villager = Villager(villager1,Coordinates(0,0))
+        self.villager2 = Villager(villager3,Coordinates(-2,5))
+        self.swordman = Swordman(s_man1,Coordinates(3,3))  
+        self.horseman = Horseman(h_man1,Coordinates(-3,-3))  
+        self.archer = Archer(archer1,Coordinates(-6,-6))
+        self.archer2 = Archer(archer2,Coordinates(3,-5)) 
+         
+        self.tiles={}
     
+        self.tile_map.add_unit(self.villager,Villager,4,1,self.tiles)  
+        self.tile_map.add_unit(self.villager2,Villager,2,1,self.tiles)   
+        self.tile_map.add_unit(self.horseman,Horseman,6,1,self.tiles)   
+        self.tile_map.add_unit(self.archer,Archer,3,1,self.tiles)   
+        self.tile_map.add_unit(self.archer2,Archer,3,1,self.tiles)   
+        self.tile_map.add_unit(self.swordman,Swordman,4,1,self.tiles)
+
+        assert self.tiles!={}, "units not added"  
+
     def center_camera_on_tile(self):
         center_x = size // 2
         center_y = size // 2
@@ -95,17 +116,18 @@ class Test:
             keys = pygame.key.get_pressed()
             self.handle_camera_movement(keys)
             self.tile_map.display_map(cam_x, cam_y)
-            self.unit.diplay_unit(cam_x,cam_y, pygame.time.get_ticks())
 
+            for position,players in self.tiles.items():
+                for player,units in players.items():
+                    for unit in units:
+                        unit.diplay_unit(cam_x,cam_y,self.tiles,pygame.time.get_ticks())
+            
             fps = int(FPSCLOCK.get_fps())
             fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
             DISPLAYSURF.blit(fps_text, (10, 10))
-            print(fps)
+            #print(fps)
+
             pygame.display.update()
             pygame.display.flip()
-            FPSCLOCK.tick(200)
-            
-
-
-
-       
+            FPSCLOCK.tick(600)
+            #print(self.tiles)          
