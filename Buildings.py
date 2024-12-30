@@ -3,6 +3,9 @@ import math
 import pygame
 from constants import *
 from colorama import Fore, Style
+import time
+import asyncio
+
 
 from constants import *
 
@@ -11,6 +14,8 @@ class Buildings:
         self.tile_grass = tile_grass
         self.map_data = map_data
         self.compteurs_joueurs = compteurs_joueurs
+        self.file_attente_batiments = []
+
 
     def conversion(self, x, y):
         half_size = size // 2  # Assurez-vous que la taille de la carte est correctement définie
@@ -40,6 +45,29 @@ class Buildings:
         return positions
 
     # pour del : del tuiles[(60, 110)]['unites']['v'][0]
+    def trouver_position_avec_offset_dynamique(self, x, y, taille, tuiles, size, half_size):
+        portee = 1  # Portée initiale
+        coord_libres = None
+
+        while coord_libres is None:
+            # Générer les offsets pour la portée actuelle
+            offsets = [(dx, dy) for dx in range(-portee, portee + 1) for dy in range(-portee, portee + 1)
+                       if abs(dx) <= portee and abs(dy) <= portee]
+
+            # Essayer chaque offset dans la portée actuelle
+            for offset_x, offset_y in offsets:
+                coord_libres = self.trouver_coordonnees_motif(x, y, taille, tuiles, size, size, offset_x, offset_y)
+                if coord_libres:  # Trouvé une position valide
+                    break
+
+
+            # Si aucune position n'est trouvée, augmenter la portée
+            if not coord_libres:
+                portee += 1
+                if portee > half_size:
+                    raise ValueError("Impossible de trouver une position valide dans la portée maximale autorisée.")
+
+        return coord_libres
 
     def trouver_coordonnees_motif(self, x, y, taille, tuiles, max_x, max_y, offset_x, offset_y):
         start_x = x + offset_x * taille
@@ -72,8 +100,169 @@ class Buildings:
         return None
 
 
-    def ajouter_batiment(self,joueur, batiment, x, y, taille, tuiles, identifiant):
-            # Si toutes les tuiles sont libres, les réserver et placer le bâtiment
+
+    def prochain_id_batiment(self, joueur, batiment, tuiles):
+        """
+        Trouve le prochain identifiant disponible sous la forme f"{batiment}{i}" pour un joueur donné.
+        """
+        ids_existants = set()
+
+        # Parcourt toutes les tuiles pour trouver les IDs existants pour le joueur et le bâtiment
+        for position, data in tuiles.items():
+            if 'batiments' in data and joueur in data['batiments']:
+                for b, info in data['batiments'][joueur].items():
+                    if b == batiment and 'id' in info:
+                        ids_existants.add(info['id'])
+
+        numeros_existants = {
+            int(id[len(batiment):]) for id in ids_existants
+            if id.startswith(batiment) and id[len(batiment):].isdigit()
+        }
+
+        # Trouver le plus petit numéro non utilisé
+        prochain_numero = 0
+        while prochain_numero in numeros_existants:
+            prochain_numero += 1
+
+        # Retourner l'identifiant au format f"{batiment}{i}"
+        return f"{batiment}{prochain_numero}"
+
+    def ajouter_batiment(self, joueur, batiment, x, y, taille, tuiles, status):
+        if status == 0:
+            self.creation_batiments(joueur, batiment, x, y, taille, tuiles)
+        elif status == 1:
+            required_cost = builds_dict[batiment]['cout']
+            if (compteurs_joueurs[joueur]["ressources"]['W'] >= required_cost['W']
+                    and compteurs_joueurs[joueur]["ressources"]['G'] >= required_cost['G']
+                    and compteurs_joueurs[joueur]["ressources"]['F'] >= required_cost['F']):
+                if compteurs_joueurs[joueur]['ressources']['max_pop'] <= 200 - 5:
+                    position = self.trouver_position_avec_offset_dynamique(x, y, taille, tuiles, size, half_size)
+                    if position:
+                        bat_x, bat_y = position
+                        if (bat_x, bat_y) not in tuiles:
+                            tuiles[(bat_x, bat_y)] = {}
+                        elif not isinstance(tuiles[(bat_x, bat_y)], dict):
+                            tuiles[(bat_x, bat_y)] = {}
+
+                        if "building_creation_queue" not in tuiles[(bat_x, bat_y)]:
+                            tuiles[(bat_x, bat_y)]["building_creation_queue"] = []
+
+                        # Vérifier s'il y a des villageois libres
+                        assigned_villagers = self.assign_villagers_to_construction(joueur)
+                        if assigned_villagers:  # Villageois trouvés, commencer immédiatement
+                            tuiles[(bat_x, bat_y)]["building_creation_queue"].append({
+                                "joueur": joueur,
+                                "batiment": batiment,
+                                "taille": taille,
+                                "time_started": time.time(),
+                                "creation_time": builds_dict[batiment]["build_time"],
+                                "ouvriers_assignes": len(assigned_villagers),
+                                "villageois_ids": assigned_villagers,
+                                "position": (bat_x, bat_y)
+                            })
+                        else:  # Aucun villageois, ajouter à la file d'attente
+                            self.file_attente_batiments.append({
+                                "joueur": joueur,
+                                "batiment": batiment,
+                                "taille": taille,
+                                "creation_time": builds_dict[batiment]["build_time"],
+                                "position": (bat_x, bat_y)
+                            })
+
+                        # Déduire les ressources
+                        compteurs_joueurs[joueur]["ressources"]['W'] -= required_cost['W']
+                        compteurs_joueurs[joueur]["ressources"]['F'] -= required_cost['F']
+                        compteurs_joueurs[joueur]["ressources"]['G'] -= required_cost['G']
+                else:
+                    print("maxpop atteinte")
+    def assign_villagers_to_construction(self, joueur_id):
+        """
+        Assigne un nombre donné de villageois libres à la construction.
+        """
+        villagers_free = []
+
+        # Trouver les villageois libres pour le joueur
+        for position, data in tuiles.items():
+            if "unites" in data and joueur_id in data["unites"]:
+                villagers = data["unites"][joueur_id].get("v", {})
+                for villager_id, villager_data in villagers.items():
+                    if villager_data["Status"] == "libre":
+                        villagers_free.append((position, villager_id, villager_data))
+
+        if not villagers_free:  # Aucun villageois disponible
+            return None
+
+        num_to_assign = max(1, math.ceil(len(villagers_free) / 3))
+        assigned_villagers = villagers_free[:num_to_assign]  # Prendre les premiers villageois libres
+
+        # Marquer les villageois sélectionnés comme "occupé"
+        for position, villager_id, villager_data in assigned_villagers:
+            tuiles[position]["unites"][joueur_id]["v"][villager_id]["Status"] = "occupé"
+
+        return assigned_villagers
+
+    def update_creation_times(self):
+        current_time = time.time()
+
+        # 1. Vérifier les bâtiments en attente
+        for unit in self.file_attente_batiments[:]:  # Copie pour éviter les modifications pendant l'itération
+            assigned_villagers = self.assign_villagers_to_construction(unit["joueur"])
+            if assigned_villagers:  # Dès qu'un villageois est disponible
+                unit["ouvriers_assignes"] = len(assigned_villagers)
+                unit["villageois_ids"] = assigned_villagers  # On sauvegarde les villageois assignés
+                unit["time_started"] = current_time  # Démarrer le temps de construction
+                if "building_creation_queue" not in tuiles[unit["position"]]:
+                    tuiles[unit["position"]]["building_creation_queue"] = []
+
+                tuiles[unit["position"]]["building_creation_queue"].append(unit)
+                self.file_attente_batiments.remove(unit)
+
+        # 2. Mettre à jour les constructions en cours
+        for position, tile in tuiles.items():
+            if "building_creation_queue" in tile:
+                queue = tile["building_creation_queue"]
+                completed_units = []
+
+                for unit in queue:
+                    # Temps écoulé depuis le début
+                    elapsed_time = current_time - unit["time_started"]
+                    nominal_time = unit["creation_time"]
+                    num_ouvriers = unit["ouvriers_assignes"]
+
+                    # Temps effectif avec ouvriers
+                    effective_time = (3 * nominal_time) / (num_ouvriers + 2)
+
+                    if elapsed_time >= effective_time:  # Construction terminée
+                        completed_units.append(unit)
+
+                # Retirer les bâtiments terminés et les ajouter au jeu
+                for unit in completed_units:
+                    queue.remove(unit)
+                    self.creation_batiments(
+                        unit["joueur"], unit["batiment"], position[0], position[1], unit["taille"], tuiles
+                    )
+                    if unit['joueur'] in compteurs_joueurs:
+                        if unit['batiment'] in compteurs_joueurs[unit['joueur']]['batiments']:
+                            compteurs_joueurs[unit['joueur']]['batiments'][unit['batiment']] += 1
+
+
+                    if unit['batiment'] == 'T' or unit['batiment'] == 'H':
+                        compteurs_joueurs[unit['joueur']]['ressources']['max_pop'] += 5
+
+
+
+                    # Libérer les villageois assignés
+                    if "villageois_ids" in unit:
+                        for villager_info in unit["villageois_ids"]:
+                            tile_pos, villager_id, villager_data = villager_info
+                            tuiles[tile_pos]["unites"][unit["joueur"]]["v"][villager_id]["Status"] = "libre"
+
+                # Supprimer la file si elle est vide
+                if not queue:
+                    del tile["building_creation_queue"]
+
+    def creation_batiments(self,joueur, batiment, x, y, taille, tuiles):
+        identifiant = self.prochain_id_batiment(joueur, batiment, tuiles)
         for dx in range(taille):
             for dy in range(taille):
                 tuile_position = (x + dx, y + dy)
@@ -83,6 +272,9 @@ class Buildings:
                     tuiles[tuile_position] = {'batiments': {}}
                 if not isinstance(tuiles[tuile_position], dict):
                     tuiles[tuile_position] = {'batiments': {}}
+
+                if "unites" not in tuiles[tuile_position]:
+                    tuiles[tuile_position]["batiments"] = {}
 
                 if joueur not in tuiles[tuile_position]['batiments']:
                     tuiles[tuile_position]['batiments'][joueur] = {}
@@ -94,6 +286,7 @@ class Buildings:
                             'principal': True,
                             'taille': taille,
                             'HP': builds_dict[batiment]['hp']
+
                         }
                     else:  # Tuiles secondaires
                         tuiles[tuile_position]['batiments'][joueur][batiment] = {
@@ -167,8 +360,6 @@ class Buildings:
         #return offsets
 
     def initialisation_compteur(self, position):
-
-
         for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
             x, y = position[idx]  # Point central pour ce joueur
             offsets = self.generer_offsets()
@@ -183,19 +374,19 @@ class Buildings:
                             coord_libres = self.trouver_coordonnees_motif(
                                 x, y, taille, tuiles, size, size, offset_x, offset_y
                             )
+
                             if coord_libres:  # Trouvé une position valide
                                 break
+
 
                         if not coord_libres:
                                 raise ValueError(
                                     f"Impossible de trouver un emplacement libre pour le bâtiment {batiment}."
-                                    f"Impossible de trouver un emplacement libre pour le bâtiment {batiment}."
                                 )
                     if coord_libres:
                         bat_x, bat_y = coord_libres
-                        identifiant = f"{batiment}{i}"
-                        self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, tuiles, identifiant)
-
+                        in_game = 0
+                        self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, tuiles, in_game)
         return tuiles
 
     def decrementer_hp_batiments(self):
@@ -261,6 +452,10 @@ class Buildings:
 
     def affichage(self):
         for (x, y), tuile in tuiles.items():
+            if not isinstance(tuile, dict):
+                #print(f"Avertissement : tuile à la position {x,y} n'est pas un dictionnaire. Valeur : {tuile}")
+                continue
+
             batiments = tuile.get('batiments', {})
             unites = tuile.get('unites', {})
             ressources = tuile.get('ressources', {})
