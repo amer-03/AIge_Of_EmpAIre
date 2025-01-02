@@ -3,6 +3,7 @@ import random
 from constants import *
 from Units import Units
 from Coordinates import Coordinates
+from Villager import Villager
 
 
 class TileMap:
@@ -86,22 +87,32 @@ class TileMap:
                 if 0 <= new_x < size and 0 <= new_y < size:
                     map_data[new_y][new_x] = "G"  # Placer une tuile d'or
     
-    def add_unit(self, unit, unit_class, quantity, player, tiles):
-        for x in range (quantity//2):
+    def add_unit(self, unit, unit_class, quantity, player, unit_tiles):
+        """Ajoute une unité dans la carte"""
+        for x in range (quantity):
             for y in range(quantity):
                 tile_position=Coordinates(unit.position.x+x, unit.position.y+y)
 
-                if tile_position not in tiles:
-                    tiles[tile_position] = {}
+                if tile_position not in unit_tiles:
+                    unit_tiles[tile_position] = {}
 
-                if player not in tiles[tile_position]:
-                    tiles[tile_position][player] = []
+                if player not in unit_tiles[tile_position]:
+                    unit_tiles[tile_position][player] = []
 
                 if not isinstance(unit, Units):
                     return
                 
+                #création à chaque fois d'une nouvelle instance et l'ajouter dans le dictionnaire tiles
                 nunit=unit_class(unit.image,tile_position)
-                tiles[tile_position][player].append(nunit)
+                unit_tiles[tile_position][player].append(nunit)
+        
+        for position, players in unit_tiles.items():
+            for player,units in players.items():
+                for unit in units:
+                    # vérifier si la position de l'unité et disponible ou pas et l'ajouter si dispo
+                    if Coordinates.to_tuple(position)[0] < size and Coordinates.to_tuple(position)[0] < size:
+                        if map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[0]] == " ":
+                            map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[1]] = unit.lettre
                 
     def apply_color_filter(self, surface, color):
         """
@@ -166,7 +177,7 @@ class TileMap:
                     display_surface.blit(unit_image_colored, (iso_x, iso_y))
 
     def display_map(self, cam_x, cam_y):
-      #  Affiche la carte en fonction de la position de la caméra, centrée au milieu.
+        """Affiche la carte en fonction de la position de la caméra, centrée au milieu."""
         for row in range(size):
             for col in range(size):
                 tile_type = map_data[row][col]

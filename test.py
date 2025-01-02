@@ -1,4 +1,5 @@
 from Units import Units
+import time
 from TileMap import TileMap
 from Coordinates import Coordinates
 from Villager import Villager
@@ -30,7 +31,10 @@ class Test:
         self.tile_map.add_unit(self.archer2,Archer,3,1,self.tiles)   
         self.tile_map.add_unit(self.swordman,Swordman,4,1,self.tiles)
 
-        assert self.tiles!={}, "units not added"  
+        assert self.tiles!={}, "units not added"
+
+        self.tile_map.add_wood_patches()
+        self.tile_map.add_gold_middle()
 
     def center_camera_on_tile(self):
         center_x = size // 2
@@ -43,18 +47,6 @@ class Test:
         cam_y = -(iso_y + screen_height // 2)
         return cam_x, cam_y
     
-    def handle_camera_movement(self, keys):
-        min_cam_x, min_cam_y, max_cam_x, max_cam_y = self.calculate_camera_limits()
-        cam_x,cam_y=self.center_camera_on_tile()
-        speed = self.scroll_speed * 2 if keys[K_LSHIFT] or keys[K_RSHIFT] else self.scroll_speed
-        if keys[K_q]:
-            cam_x = max(cam_x - speed, min_cam_x)
-        if keys[K_d]:
-            cam_x = min(cam_x + speed, max_cam_x) 
-        if keys[K_z]:
-            cam_y = max(cam_y - speed, min_cam_y)  
-        if keys[K_s]:
-            cam_y = min(cam_y + speed, max_cam_y)
         
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
@@ -80,19 +72,140 @@ class Test:
 
         return min_cam_x, min_cam_y, max_cam_x, max_cam_y
     
-    def move_player(self, direction):
-        x,y=self.tile_map.position_initiale
-        map_data[y][x] = " "
-        if direction == 'up' and y > 0:
-            y -= 1
-        elif direction == 'down' and y < size - 1:
-            y += 1
-        elif direction == 'left' and x > 0:
-            x -= 1
-        elif direction == 'right' and x < len(map_data[y]) - 1:
-            x += 1
-        self.tile_map.position_initiale=(x,y)
-       
+    def handle_camera_movement(self, keys):
+        min_cam_x, min_cam_y, max_cam_x, max_cam_y = self.calculate_camera_limits()
+        speed = self.scroll_speed * 2 if keys[K_LSHIFT] or keys[K_RSHIFT] else self.scroll_speed
+        if keys[K_q]:
+            self.cam_x = max(self.cam_x - speed, min_cam_x)  # Déplace à gauche
+        if keys[K_d]:
+            self.cam_x = min(self.cam_x + speed, max_cam_x)  # Déplace à droite
+        if keys[K_z]:
+            self.cam_y = max(self.cam_y - speed, min_cam_y)  # Déplace vers le haut
+        if keys[K_s]:
+            self.cam_y = min(self.cam_y + speed, max_cam_y)  # Déplace vers le bas
+
+        def draw_map_in_terminal(self, stdscr):
+            self.init_player_colors()
+            stdscr.clear()
+            stdscr.nodelay(1)
+            stdscr.timeout(500)
+
+            max_rows, max_cols = stdscr.getmaxyx()
+            map_rows = size
+            map_cols = size
+
+            while self.terminal_active:
+                stdscr.clear()
+
+                player_x, player_y = self.tile_map.position_initiale
+                view_top = max(0, min(player_x - max_rows // 2, map_rows - max_rows))
+                view_left = max(0, min(player_y - max_cols // 2, map_cols - max_cols))
+
+                for row in range(view_top, min(view_top + max_rows, map_rows)):
+                    for col in range(view_left, min(view_left + max_cols, map_cols)):
+
+                        if (row, col) == (player_x, player_y):
+                            #print(curses.color_pair(1))
+                            stdscr.addstr(row - view_top, col - view_left, "P",
+                                        curses.color_pair(1))  # Rouge pour le joueur
+                        else:
+
+                            tile = tuiles.get((row, col), {})
+                            char = " "  # Espace vide par défaut
+                            color = 0  # Pas de couleur par défaut
+
+                            # Déterminer le caractère à afficher pour cette tuile
+
+                            if "batiments" in tile:
+                                for joueur, batiments_joueur in tile["batiments"].items():
+                                    #print(row, col ,batiments_joueur)
+                                    for batiment_type, details in batiments_joueur.items():
+
+                                        if batiment_type == "T":
+                                            char = "T"
+                                            color = self.get_player_color(joueur)
+                                        elif batiment_type == "H":
+                                            char = "H"
+                                            color = self.get_player_color(joueur)
+                                        elif batiment_type == "C":
+                                            char = "C"
+                                            color = self.get_player_color(joueur)
+                                        elif batiment_type == "F":
+                                            char = "F"
+                                            color = self.get_player_color(joueur)
+                                        elif batiment_type == "B":
+                                            char = "B"
+                                            color = self.get_player_color(joueur)
+                                        elif batiment_type == "S":
+                                            char = "S"
+                                            color = self.get_player_color(joueur)
+                                        elif batiment_type == "A":
+                                            char = "A"
+                                            color = self.get_player_color(joueur)
+                                        elif batiment_type == "K":
+                                            char = "K"
+                                            color = self.get_player_color(joueur)
+                                        else :
+                                            char = " "
+                                        break
+                                    break
+
+
+                            elif "unites" in tile:
+                                for joueur, unites_joueur in tile["unites"].items():
+                                    for unite_type, details in unites_joueur.items():
+                                        if unite_type == "v":
+                                            char = "v"
+                                            color = self.get_player_color(joueur)
+                                            #print(color)
+                                        elif unite_type == "a":
+                                            char = "a"
+                                            color = self.get_player_color(joueur)
+                                        elif unite_type == "h":
+                                            char = "h"
+                                            color = self.get_player_color(joueur)
+                                        elif unite_type == "s":
+                                            char = "s"
+                                            color = self.get_player_color(joueur)
+                                        else :
+                                            char = " "
+
+                                        break
+                                    break
+
+                            # Déterminer les ressources
+                            elif "ressources" in tile:
+                                ressource = tile["ressources"]
+                                if ressource == "G":
+                                    char = "G"
+                                elif ressource == "W":
+                                    char = "W"
+                                else:
+                                    char = " "
+                            if color != 0:
+                                stdscr.addstr(row - view_top, col - view_left, char,
+                                            color)
+                            else:
+                                stdscr.addstr(row - view_top, col - view_left, char)  # Pas de couleur
+                stdscr.refresh()
+
+
+                # Gestion des touches pour déplacer le joueur
+                key = stdscr.getch()  # Attendre une touche
+                if key == ord('q'):  # Haut
+                    self.tile_map.move_player('up')
+                elif key == ord('d'):  # Bas
+                    self.tile_map.move_player('down')
+                elif key == ord('z'):  # Gauche
+                    self.tile_map.move_player('left')
+                elif key == ord('s'):  # Droite
+                    self.tile_map.move_player('right')
+
+                elif key == ord('p'):
+                    self.ouvrir_terminal()
+
+                time.sleep(0.1)
+     
     def run(self):
         cam_x,cam_y=self.center_camera_on_tile()
         running=True
@@ -100,28 +213,24 @@ class Test:
             for event in pygame.event.get():
                 if event.type== pygame.QUIT:
                     running=False
-                elif event.type == pygame.KEYDOWN:
-                    if event.type == pygame.K_z:  # Haut
-                        self.tile_map.move_player('up')
-                    elif event.type == pygame.K_s:  # Bas
-                        self.tile_map.move_player('down')
-                    elif event.type == pygame.K_q:  # Gauche
-                        self.tile_map.move_player('left')
-                    elif event.type == pygame.K_d:  # Droite
-                        self.tile_map.move_player('right')
 
             DISPLAYSURF.fill(BLACK)
 
+            # affichage iso de la map
+            self.tile_map.display_map(cam_x, cam_y)  
 
-            keys = pygame.key.get_pressed()
-            self.handle_camera_movement(keys)
-            self.tile_map.display_map(cam_x, cam_y)
-
+            #affichage des unités          
             for position,players in self.tiles.items():
                 for player,units in players.items():
                     for unit in units:
-                        unit.diplay_unit(cam_x,cam_y,self.tiles,pygame.time.get_ticks())
-            
+                        unit.diplay_unit(cam_x,cam_y,pygame.time.get_ticks())
+
+            # affichage de la carte dans un terminal
+            with open("map.txt","w") as file:
+                for i in range(len(map_data)):
+                   for j in range(len(map_data[i])):
+                        file.write(map_data[i][j])
+
             fps = int(FPSCLOCK.get_fps())
             fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
             DISPLAYSURF.blit(fps_text, (10, 10))
@@ -130,4 +239,4 @@ class Test:
             pygame.display.update()
             pygame.display.flip()
             FPSCLOCK.tick(600)
-            #print(self.tiles)          
+            # print(self.tiles)        

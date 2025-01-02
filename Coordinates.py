@@ -7,8 +7,9 @@ class Coordinates:
         self.x=x
         self.y=y
     
-    def __hash__(self):
-        return hash((self.x,self.y))
+    def to_tuple(self):
+        t=(self.x,self.y)
+        return t
 
     def __str__(self):
         return f"Position: {self.x},{self.y}"

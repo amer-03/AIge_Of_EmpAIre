@@ -1,5 +1,5 @@
 from constants import *
-from Coordinates import *
+from Coordinates import Coordinates
 from Global_image_load import *
 
 class Units:
@@ -15,7 +15,6 @@ class Units:
         self.attaque=attaque
         self.vitesse=vitesse
 
-        self.map_data = map_data
         self.frame_index = 0 # indice du frame dans une ligne
         self.direction_index = 0 # indice du frame dans une colonne
         self.last_time = pygame.time.get_ticks() # dernier moment du sprite (dernière action)
@@ -44,7 +43,7 @@ class Units:
             niso_x,niso_y=self.position.to_iso(cam_x,cam_y)
             return niso_x, niso_y
             
-    def diplay_unit(self, cam_x, cam_y, tiles, current_time):             
+    def diplay_unit(self, cam_x, cam_y, current_time):             
         #coordonnées isométrique    
         iso_x, iso_y = self.position.to_iso(cam_x, cam_y)
                     
