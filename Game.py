@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import *
 <<<<<<< Updated upstream
 import sys
-from math import *
 import json
 from Map import *
 =======
@@ -22,21 +21,12 @@ import threading
 class Game:
     """Classe principale gérant le jeu."""
 
-    def __init__(self, screen_width, screen_height, map_size):
-        self.screen_width = screen_width
-        self.screen_height = screen_height
+    def __init__(self):
+
+        # MAP
         self.scroll_speed = 30
-
-        # Charger les tuiles
-        self.tile_grass = Tile('Image/grass2.png', 64, 64)
-        self.tile_wood = Tile('Image/tree.png', 128, 128)
-        self.tile_gold = Tile('Image/gold2.png', 128, 128)
-
-        # Sélection de la carte
-        self.map_size = map_size
         self.tile_map = None
-
-        # Initialisation des coordonnées de la caméra
+        self.tile_map = TileMap()
         self.cam_x, self.cam_y = self.center_camera_on_tile()
 
 <<<<<<< Updated upstream
@@ -116,13 +106,13 @@ class Game:
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
         # Taille de la moitié de la carte
-        map_size_half = self.map_size // 2
+        map_size_half = size // 2
 
         # Calcul des coins en coordonnées cartésiennes
-        min_cart_x = -map_size_half * self.tile_grass.width_half
-        max_cart_x = map_size_half * self.tile_grass.width_half
-        min_cart_y = -map_size_half * self.tile_grass.height_half
-        max_cart_y = map_size_half * self.tile_grass.height_half
+        min_cart_x = -map_size_half * tile_grass.width_half
+        max_cart_x = map_size_half * tile_grass.width_half
+        min_cart_y = -map_size_half * tile_grass.height_half
+        max_cart_y = map_size_half * tile_grass.height_half
 
         # Conversion des coins en isométriques
         min_iso_x = min_cart_x - max_cart_y
@@ -131,96 +121,234 @@ class Game:
         max_iso_y = (max_cart_x + max_cart_y) // 2
 
         # Ajustement pour la taille de l'écran
-        min_cam_x = min_iso_x - (self.screen_width // 2) + screen_width // 2 + (-5 * self.tile_grass.width_half)
-        max_cam_x = max_iso_x - (self.screen_width // 2) - screen_width // 2 + 5 * self.tile_grass.width_half
-        min_cam_y = min_iso_y - (self.screen_height // 2) + screen_height // 2 + (-5 * self.tile_grass.width_half)
-        max_cam_y = max_iso_y - (self.screen_height // 2) - screen_height // 2 + 5 * self.tile_grass.width_half
+        min_cam_x = min_iso_x - (screen_width // 2) + screen_width // 2 + (-5 * tile_grass.width_half)
+        max_cam_x = max_iso_x - (screen_width // 2) - screen_width // 2 + 5 * tile_grass.width_half
+        min_cam_y = min_iso_y - (screen_height // 2) + screen_height // 2 + (-5 * tile_grass.width_half)
+        max_cam_y = max_iso_y - (screen_height // 2) - screen_height // 2 + 5 * tile_grass.width_half
 
         return min_cam_x, min_cam_y, max_cam_x, max_cam_y
 
     def center_camera_on_tile(self):
         """Centre la caméra sur la tuile centrale de la carte."""
-        center_x = self.map_size // 2
-        center_y = self.map_size // 2
+        center_x = size // 2
+        center_y = size // 2
 
         # Conversion des coordonnées de la tuile centrale en isométriques
-        tile_width_half = self.tile_grass.width_half
-        tile_height_half = self.tile_grass.height_half
+        tile_width_half = tile_grass.width_half
+        tile_height_half = tile_grass.height_half
         cart_x = center_x * tile_width_half
         cart_y = center_y * tile_height_half
         iso_x = (cart_x - cart_y)
-        iso_y = (cart_x - cart_y)//2
-        print("iso_x:", iso_x)
-        print ("iso_y:",iso_y)
+        iso_y = (cart_x - cart_y) // 2
 
-        # Calculer la position de la caméra pour centrer cette tuile sur l'écran
-        cam_x = (iso_x - self.screen_width // 2) + tile_width_half
-        cam_y = -(iso_y + self.screen_height // 2 )
+        cam_x = (iso_x - screen_width // 2) + tile_width_half
+        cam_y = -(iso_y + screen_height // 2)
 
-        print("-------------",cam_x, cam_y)
         return cam_x, cam_y
 
     def show_menu(self):
         """Affiche un menu pour choisir la carte et charger les données sauvegardées."""
-        pygame.init()
-
-        # Définir les couleurs
-        WHITE = (255, 255, 255)
-        BLACK = (0, 0, 0)
-        RED = (255, 0, 0)
-        GREEN = (0, 255, 0)
-
-        # Police et surface
         font = pygame.font.Font(None, 74)
         small_font = pygame.font.Font(None, 36)
-        DISPLAYSURF.fill(BLACK)
 
-        # Texte du menu
-        menu_text = font.render("Choisissez une carte:", True, WHITE)
-        DISPLAYSURF.blit(menu_text, (100, 100))
+        fond_image = pygame.image.load('images/test4.jpg')
+        fond_image = pygame.transform.scale(fond_image, (screen_width, screen_height))
+        DISPLAYSURF.blit(fond_image, (0, 0))
 
-        # Options de cartes
-        card1_text = small_font.render("Lean", True, WHITE)
-        card2_text = small_font.render("Mean", True, WHITE)
-        card3_text = small_font.render("Marines", True, WHITE)
-        load_data_text = small_font.render("4. Charger la partie sauvegarder", True, GREEN)
+        menu_text = font.render("Menu Principal", True, BLACK)
+        menu_text_rect = menu_text.get_rect(center=(screen_width // 2, 100))
+        DISPLAYSURF.blit(menu_text, menu_text_rect)
 
-        # Positions des textes
-        card1_rect = card1_text.get_rect(topleft=(150, 200))
-        card2_rect = card2_text.get_rect(topleft=(150, 250))
-        card3_rect = card3_text.get_rect(topleft=(150, 300))
-        load_data_rect = load_data_text.get_rect(topleft=(150, 400))
+        card_color1 = YELLOW if self.selected_unit == "Lean" else BLACK
+        card_color2 = YELLOW if self.selected_unit == "Mean" else BLACK
+        card_color3 = YELLOW if self.selected_unit == "Marines" else BLACK
+        card_color4 = YELLOW if self.selected_map == "Map 1" else BLACK
+        card_color5 = YELLOW if self.selected_map == "Map 2" else BLACK
 
-        DISPLAYSURF.blit(card1_text, (150, 200))
-        DISPLAYSURF.blit(card2_text, (150, 250))
-        DISPLAYSURF.blit(card3_text, (150, 300))
-        DISPLAYSURF.blit(load_data_text, (150, 400))
+        card1_text = small_font.render("Lean", True, card_color1)
+        card2_text = small_font.render("Mean", True, card_color2)
+        card3_text = small_font.render("Marines", True, card_color3)
+        card4_text = small_font.render("Map 1", True, card_color4)
+        card5_text = small_font.render("Map 2", True, card_color5)
+        start_text = small_font.render("Commencer la Partie", True, GREEN)
+
+        self.card1_rect = card1_text.get_rect(topleft=(screen_width // 2 - 150, 200))
+        self.card2_rect = card2_text.get_rect(topleft=(screen_width // 2 - 150, 250))
+        self.card3_rect = card3_text.get_rect(topleft=(screen_width // 2 - 150, 300))
+        self.card4_rect = card4_text.get_rect(topleft=(screen_width // 2 + 50, 200))
+        self.card5_rect = card5_text.get_rect(topleft=(screen_width // 2 + 50, 250))
+        self.start_rect = start_text.get_rect(center=(screen_width // 2, 500))
+
+        DISPLAYSURF.blit(card1_text, self.card1_rect.topleft)
+        DISPLAYSURF.blit(card2_text, self.card2_rect.topleft)
+        DISPLAYSURF.blit(card3_text, self.card3_rect.topleft)
+        DISPLAYSURF.blit(card4_text, self.card4_rect.topleft)
+        DISPLAYSURF.blit(card5_text, self.card5_rect.topleft)
+        DISPLAYSURF.blit(start_text, self.start_rect.topleft)
+
+        mini_texte = pygame.font.Font(None, 24)
+        # Affiche le bouton de la liste déroulante
+        dropdown_text = mini_texte.render(f"{self.n} joueurs", True, BLACK)
+        pygame.draw.rect(DISPLAYSURF, GRAY, self.dropdown_rect)
+        DISPLAYSURF.blit(dropdown_text, (self.dropdown_rect.x + 10, self.dropdown_rect.y + 5))
+
+        # Si la liste déroulante est ouverte, afficher les options de 2 à 10
+        if self.dropdown_open:
+            for i in range(2, 11):
+                option_rect = pygame.Rect(self.dropdown_rect.x, self.dropdown_rect.y + (i - 1) * 30 + 30, 100, 30)
+                self.options_rects.append(option_rect)
+                pygame.draw.rect(DISPLAYSURF, WHITE, option_rect)
+                option_text = mini_texte.render(f"{i} joueurs", True, BLACK)
+                DISPLAYSURF.blit(option_text, (option_rect.x + 10, option_rect.y + 5))
 
         pygame.display.update()
 
-        return card1_rect, card2_rect, card3_rect, load_data_rect
+    def handle_menu_events(self, event):
+        """Gère les événements liés au menu principal."""
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            # Vérifier la sélection des unités
+            x, y = event.pos
 
-    def load_data(self, path):
-        try:
-            with open(path, 'r') as fichier:
-                print(f"Données chargées depuis {path}")
-                data = json.load(fichier)  # Charger le contenu JSON
-                print(f"Données lues : {data}")  # Affiche les données lues
-                return data
-        except Exception as e:
-            print(f"Erreur lors du chargement des données : {e}")
-        return None
+            if self.dropdown_rect.collidepoint(x, y):
+                self.dropdown_open = not self.dropdown_open  # Ouvrir ou fermer la liste déroulante
+
+            # Si la liste déroulante est ouverte, vérifier si clic sur une option
+            elif self.dropdown_open:
+                for i, option_rect in enumerate(self.options_rects, start=2):
+                    if option_rect.collidepoint(x, y):
+                        self.n = i  # Met à jour le nombre de joueurs
+                        self.dropdown_open = False  # Ferme la liste déroulante
+                        self.options_rects = []  # Réinitialise les rectangles des options
+                        break  # Sortir de la boucle pour éviter les vérifications inutiles
+
+
+            # Si clic en dehors de la liste déroulante, fermer la liste
+            else:
+                self.dropdown_open = False
+
+            if self.card1_rect.collidepoint(event.pos):
+                self.selected_unit = "Lean"
+                self.initialize_resources(self.selected_unit)
+            elif self.card2_rect.collidepoint(event.pos):
+                self.selected_unit = "Mean"
+                self.initialize_resources(self.selected_unit)
+            elif self.card3_rect.collidepoint(event.pos):
+                self.selected_unit = "Marines"
+                self.initialize_resources(self.selected_unit)
+
+            elif self.card4_rect.collidepoint(event.pos):
+                self.selected_map = "Map 1"
+            elif self.card5_rect.collidepoint(event.pos):
+                self.selected_map = "Map 2"
+
+            elif self.start_rect.collidepoint(event.pos) and self.selected_unit and self.selected_map:
+                self.menu_active = False
+                if self.selected_map == 'Map 1':
+                    self.tile_map.mode("patches")
+                else:
+                    self.tile_map.mode("middle")
+
+                self.tile_map.add_wood_patches()
+
+                self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
+                #pygame.display.update()
+
+                with open("test.txt", 'w') as f:
+                    for row in map_data:
+                        # Convertir chaque ligne en une chaîne de caractères avec des espaces entre les éléments
+                        f.write(" ".join(str(cell) for cell in row) + "\n")
+
+                position = self.unit.placer_joueurs_cercle(self.n, 40, map_size // 2, map_size // 2)
+                self.initialize_resources(self.selected_unit)
+
+                self.buildings.initialisation_compteur(position)
+
+                self.unit.initialisation_compteur(position)
+                self.buildings.affichage()
+
+                print(tuiles)
+
+    def display_option(self, text, x, y, is_selected):
+        """Affiche une option avec un style visuel pour la sélection."""
+        color = (0, 255, 0) if is_selected else (255, 255, 255)
+        option_text = self.small_font.render(text, True, color)
+        option_rect = option_text.get_rect(topleft=(x, y))
+        DISPLAYSURF.blit(option_text, option_rect)
+        return option_rect
+
+    def load_game_data(self):
+        """Charge les données sauvegardées, si disponible."""
+        save_data = self.load_data("save.json")
+        if save_data:
+            print(f"Données chargées : {save_data['taille']}")
+
+            self.load_active = False
+        else:
+            print("Aucune donnée n'a été chargée.")
+            self.menu_active = True  # Revenir au menu si le chargement échoue
+
+    def draw_mini_map(self, display_surface):
+        """Affiche une version réduite de la carte en bas à gauche, orientée de manière isométrique."""
+        losange_surface = pygame.Surface((self.mini_map_size_x, self.mini_map_size_y), pygame.SRCALPHA)
+        losange_surface.fill((0, 0, 0, 0))  # Remplir de transparent
+
+        mini_map_surface = pygame.Surface((self.mini_map_size_x, self.mini_map_size_y), pygame.SRCALPHA)
+        mini_map_surface.fill((0, 0, 0, 0))  # Fond transparent
+        tile_width_half = 1
+        tile_height_half = 1
+
+        for row in range(size):
+            for col in range(size):
+                tile_type = map_data[row][col]
+
+                # Couleur des tuiles sur la mini-carte
+                if tile_type == " ":
+                    color = (34, 139, 34)  # Vert pour l'herbe
+                elif tile_type == "W":
+                    color = (139, 69, 19)  # Marron pour le bois
+                elif tile_type == "G":
+                    color = (255, 215, 0)  # Jaune pour l'or
+                elif tile_type == "T":
+                    color = (128, 128, 128)  # Gris pour le bloc spécial
+                elif tile_type == "B":
+                    color = (128, 128, 128)  # Gris pour le bloc spécial
+
+                centered_col = col - (size // 2)
+                centered_row = row - (size // 2)
+
+                cart_x = centered_col * tile_width_half * self.mini_map_scale
+                cart_y = centered_row * tile_height_half * self.mini_map_scale
+
+                iso_x = (cart_x - cart_y) / 2 + self.mini_map_size_x // 2
+                iso_y = (cart_x + cart_y) / 4 + self.mini_map_size_y // 2
+
+                # Dessin de la tuile sur la mini-carte
+                pygame.draw.rect(mini_map_surface, color, (iso_x, iso_y, self.mini_map_scale, self.mini_map_scale))
+
+        losange_points = [
+            (self.mini_map_size_x // 2 + 2, 12),  # Point supérieur
+            (self.mini_map_size_x + 1, self.mini_map_size_y // 2),  # Point droit
+            (self.mini_map_size_x // 2 + 2, self.mini_map_size_y - 12),  # Point inférieur
+            (2, self.mini_map_size_y // 2)  # Point gauche
+        ]
+
+        pygame.draw.polygon(losange_surface, (0, 0, 0), losange_points, 2)  # Contour noir de 2 pixels
+        losange_surface.blit(mini_map_surface, (0, 0))  # Positionner la mini-carte sur le losange
+
+        # Afficher le losange sur l'écran principal
+        display_surface.blit(losange_surface, (
+            screen_width - self.mini_map_size_x - 10, screen_height - self.mini_map_size_y - 10))
 
     def handle_camera_movement(self, keys):
-        """Gère le mouvement de la caméra avec des limites."""
         min_cam_x, min_cam_y, max_cam_x, max_cam_y = self.calculate_camera_limits()
+        speed = self.scroll_speed * 2 if keys[K_LSHIFT] or keys[K_RSHIFT] else self.scroll_speed
 
         if keys[K_q]:
-            self.cam_x = max(self.cam_x - self.scroll_speed, min_cam_x)
+            self.cam_x = max(self.cam_x - speed, min_cam_x)  # Déplace à gauche
         if keys[K_d]:
-            self.cam_x = min(self.cam_x + self.scroll_speed, max_cam_x)
+            self.cam_x = min(self.cam_x + speed, max_cam_x)  # Déplace à droite
         if keys[K_z]:
-            self.cam_y = max(self.cam_y - self.scroll_speed, min_cam_y)
+            self.cam_y = max(self.cam_y - speed, min_cam_y)  # Déplace vers le haut
         if keys[K_s]:
 <<<<<<< Updated upstream
             self.cam_y = min(self.cam_y + self.scroll_speed, max_cam_y)
@@ -485,81 +613,43 @@ class Game:
     def run(self):
         """Boucle principale du jeu."""
         running = True
-        menu = True
         load = False
+        pygame.display.set_caption("Carte et mini-carte")
 
         while running:
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if (event.type == KEYDOWN and event.key == K_ESCAPE) or event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                if menu:
-                    card1_rect, card2_rect, card3_rect, load_data_rect = self.show_menu()
+                if event.type == KEYDOWN and event.key == K_F1:
+                    self.f1_active = not self.f1_active
 
-                    if event.type == KEYDOWN :
-                        if event.key == K_1:
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
-                            self.tile_map.open_second_terminal()
-                            menu = False
-                        elif event.key == pygame.K_2:
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
-                            # self.tile_map.open_second_terminal()
-                            menu = False
-                        elif event.key == pygame.K_3:
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
-                            # self.tile_map.open_second_terminal()
-                            menu = False
-                        elif event.key == pygame.K_4:
-                            print("Chargement des données sauvegardées")
-                            # Charger les données sauvegardées
-                            menu = False
-                            load = True
-                        elif event.type == KEYDOWN:
-                            if event.key == K_EQUALS:  # Touche + pour zoom in
-                                self.tile_map = min(self.tile_map + 0.1, 3.0)  # Limite à un zoom maximum de 3x
-                        elif event.key == K_MINUS:  # Touche - pour zoom out
-                            self.tile_map = max(self.tile_map - 0.1, 0.5)  # Limite à un zoom minimum de 0.5x
+                if event.type == KEYDOWN and event.key == K_F2:
+                    self.f2_active = not self.f2_active
 
-        # Zoom avec la molette de la souris
-                        elif event.type == MOUSEBUTTONDOWN:
-                            if event.button == 4:  # Molette vers le haut (zoom in)
-                                self.tile_map = min(self.tile_map + 0.1, 3.0)
-                        elif event.button == 5:  # Molette vers le bas (zoom out)
-                            self.tile_map = max(self.tile_map - 0.1, 0.5)
+                if event.type == KEYDOWN and event.key == K_F3:
+                    self.f3_active = not self.f3_active
 
-                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                        # Obtenir la position de la souris
-                        mouse_pos = pygame.mouse.get_pos()
+                if event.type == KEYDOWN and event.key == K_p:
+                    self.ouvrir_terminal()
 
-                        # Vérifier si la souris est sur une option de menu
-                        if card1_rect.collidepoint(mouse_pos):
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
-                            self.tile_map.open_second_terminal()
-                            menu = False
-                        elif card2_rect.collidepoint(mouse_pos):
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
-                            self.tile_map.open_second_terminal()
-                            menu = False
-                        elif card3_rect.collidepoint(mouse_pos):
-                            self.tile_map = TileMap(self.map_size, self.tile_grass, self.tile_wood, self.tile_gold)
-                            self.tile_map.open_second_terminal()
-                            menu = False
-                        elif load_data_rect.collidepoint(mouse_pos):
-                            print("Chargement des données sauvegardées")
-                            menu = False
-                            load = True
-
-            if load:
-                save = self.load_data("save.json")
-                if save:  # Assure-toi que save n'est pas None
-                    print(f"Données chargées : {save['taille']}")
-                    self.tile_map = TileMap(save['taille'], self.tile_grass, self.tile_wood, self.tile_gold)
-                    self.tile_map.open_second_terminal()
-                    # Traiter les données chargées
-                    load = False
+                if self.menu_active:
+                    self.handle_menu_events(event)
                 else:
-                    print("Aucune donnée n'a été chargée.")
-            elif not menu:
+                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                        mouse_pos = pygame.mouse.get_pos()
+                        if not self.menu_active:
+                            self.handle_mini_map_click(mouse_pos)
+            if self.menu_active:
+                self.show_menu()
+            else:
+
+                pygame.display.update()
+                DISPLAYSURF.fill(BLACK)
+                self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
+                self.draw_mini_map(DISPLAYSURF)
+
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
 
