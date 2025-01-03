@@ -23,6 +23,8 @@ info = pygame.display.Info()
 screen_width = info.current_w #-500  # Largeur de l'écran
 screen_height = info.current_h #-500  # Hauteur de l'écran
 
+action_a_executer=[]
+
 
 
 DISPLAYSURF = pygame.display.set_mode((screen_width, screen_height), pygame.DOUBLEBUF)

@@ -1,13 +1,14 @@
 from math import sqrt
 import math
 import pygame
+
 from TileMap import *
 from constants import *
 from Coordinates import *
 import random
 import time
+from Global_image_load import *
 
-from pygame.mixer_music import queue
 
 
 class Unit:
@@ -20,29 +21,40 @@ class Unit:
 
         self.tile_map = TileMap()
         self.coordinates = Coordinates()
-
-
         self.id = None  # Identifiant unique pour l'unité
 
-        #self.position = (60, 60)  # Position initiale de l'unité (60, 60)
+        self.position = None
         self.target_position = None
         self.moving = False
+        self.deplacement_termine = False
         self.move_start_time = 0
         self.move_duration = 0
         self.frame_index = 0
         self.direction_index = 0
         self.last_time = pygame.time.get_ticks()
+        self.destination = None
+        self.moving_unit=None
+
+        self.start_time_offset = 0
+
+
+    def get_unit_initial_position(self, joueur, type_unite, id_unite):
+        for position, data in tuiles.items():
+            if 'unites' in data and joueur in data['unites'] and type_unite in data['unites'][joueur]:
+                if id_unite in data['unites'][joueur][type_unite]:
+                    return position
+        return None
+
+
+    def initialize_unit(self, joueur, type_unite, id_unite):
+        initial_position = self.get_unit_initial_position(joueur, type_unite, id_unite)
+        if initial_position:
+            self.position = initial_position
+            print(f"Position initiale de l'unité : {self.position}")
+        else:
+            print(f"Aucune position trouvée pour l'unité {id_unite} du joueur {joueur}")
 
     def deplacer_unite(self, joueur, type_unite, id_unite, nouvelle_position):
-        """
-        Déplace une unité d'une position à une autre dans map_data.
-
-        :param joueur: Nom du joueur (ex. 'joueur_1').
-        :param type_unite: Type de l'unité (ex. 'v', 'a', 's', etc.).
-        :param id_unite: Identifiant unique de l'unité à déplacer.
-        :param nouvelle_position: Nouvelle position (x, y) de l'unité.
-        """
-        # Rechercher l'unité dans map_data
         position_actuelle = None
         for position, data in tuiles.items():
             if 'unites' in data and joueur in data['unites'] and type_unite in data['unites'][joueur]:
@@ -55,10 +67,7 @@ class Unit:
             print(f"Unité {id_unite} non trouvée pour le joueur {joueur}.")
             return
 
-        # Récupérer les données de l'unité
         unite_data = tuiles[position_actuelle]['unites'][joueur][type_unite].pop(id_unite)
-
-        # Si aucune autre unité n'existe à cette position, nettoyez les entrées inutiles
         if not tuiles[position_actuelle]['unites'][joueur][type_unite]:
             del tuiles[position_actuelle]['unites'][joueur][type_unite]
         if not tuiles[position_actuelle]['unites'][joueur]:
@@ -66,59 +75,76 @@ class Unit:
         if position_actuelle in tuiles:
             if 'unites' in tuiles[position_actuelle]:
                 del tuiles[position_actuelle]['unites']
-            if not tuiles[position_actuelle]:  # Si la tuile est vide, la supprimer
-                del tuiles[position_actuelle]
 
-        # Ajouter l'unité à la nouvelle position
-        if nouvelle_position not in tuiles:
-            tuiles[nouvelle_position] = {'unites': {}}
-        if 'unites' not in tuiles[nouvelle_position]:
-            tuiles[nouvelle_position]['unites'] = {}
-        if joueur not in tuiles[nouvelle_position]['unites']:
-            tuiles[nouvelle_position]['unites'][joueur] = {}
-        if type_unite not in tuiles[nouvelle_position]['unites'][joueur]:
-            tuiles[nouvelle_position]['unites'][joueur][type_unite] = {}
 
-        tuiles[nouvelle_position]['unites'][joueur][type_unite][id_unite] = unite_data
-
-        # Mettre à jour la position de l'unité dans votre instance
+        self.target_position = nouvelle_position
         self.start_moving(nouvelle_position[0], nouvelle_position[1])
 
-        print(f"Unité {id_unite} déplacée de {position_actuelle} à {nouvelle_position}.")
+        self.moving_unit = {
+            "nouvelle_position": nouvelle_position,
+            "joueur": joueur,
+            "type_unite": type_unite,
+            "id_unite": id_unite,
+            "unite_data": unite_data
+        }
 
-    def start_moving(self, new_x, new_y, duration=1000):
-        """Démarre l'animation de déplacement de l'unité."""
+    def start_moving(self, new_x, new_y, duration=2000):
         self.target_position = (new_x, new_y)
         self.move_start_time = pygame.time.get_ticks()
+        self.start_time_offset = self.move_start_time
         self.move_duration = duration
         self.moving = True
-        print(f"Déplacement vers la position: {new_x}, {new_y}")
 
-    def update_position(self, start_x, start_y):
-        """Met à jour la position de l'unité pendant le mouvement."""
+    def update_position(self):
         if not self.moving:
             return
 
         current_time = pygame.time.get_ticks()
-        elapsed_time = current_time - self.move_start_time
+        elapsed_time = current_time - self.start_time_offset
 
-        # Si le mouvement est terminé, on arrête l'animation
+
         if elapsed_time >= self.move_duration:
             self.position = self.target_position
             self.moving = False
-            print(f"Arrivée à la position: {self.position}")
-            return
 
-        # Sinon, on calcule la position intermédiaire en fonction du temps écoulé
-        progress = elapsed_time / self.move_duration
-        #start_x, start_y = self.position
-        target_x, target_y = self.target_position
+            if self.moving_unit:
+                nouvelle_position = self.moving_unit["nouvelle_position"]
+                joueur = self.moving_unit["joueur"]
+                type_unite = self.moving_unit["type_unite"]
+                id_unite = self.moving_unit["id_unite"]
+                unite_data = self.moving_unit["unite_data"]
 
-        # L'animation fait progresser l'unité entre sa position actuelle et la cible
-        new_x = start_x + (target_x - start_x) * progress
-        new_y = start_y + (target_y - start_y) * progress
-        self.position = (new_x, new_y)
-        self.animation(current_time)
+                if nouvelle_position not in tuiles:
+                    tuiles[nouvelle_position] = {'unites': {}}
+                if 'unites' not in tuiles[nouvelle_position]:
+                    tuiles[nouvelle_position]['unites'] = {}
+                if joueur not in tuiles[nouvelle_position]['unites']:
+                    tuiles[nouvelle_position]['unites'][joueur] = {}
+                if type_unite not in tuiles[nouvelle_position]['unites'][joueur]:
+                    tuiles[nouvelle_position]['unites'][joueur][type_unite] = {}
+
+                tuiles[nouvelle_position]['unites'][joueur][type_unite][id_unite] = unite_data
+                self.moving_unit = None
+                self.deplacement_termine = True
+
+
+            if self.deplacement_termine and action_a_executer:
+                action = action_a_executer.pop(0)
+                action()
+
+        else:
+
+            progress = elapsed_time / self.move_duration
+            start_x, start_y = self.position
+            target_x, target_y = self.target_position
+
+            new_x = start_x + (target_x - start_x) * progress
+            new_y = start_y + (target_y - start_y) * progress
+            self.position = (new_x, new_y)
+
+
+
+
 
     def animation(self, current_time):  # fonction qui modifie l'indice des frames et le dernier temps du frame
         if current_time - self.last_time > 1000 // 30:  # 1000//30: 30 frames par 1000 millisecondes
@@ -139,8 +165,8 @@ class Unit:
 
     def diplay_unit(self,position_x, position_y, cam_x, cam_y, current_time, unit_image):
         # coordonnées isométrique
-        self.update_position(position_x,position_y)
-        iso_x, iso_y = self.coordinates.to_iso(position_x, position_y, cam_x, cam_y)
+        self.update_position()
+        iso_x, iso_y = self.coordinates.to_iso(position_x, position_y, cam_x, cam_y,unit_image)
 
         # appel de la fonction de l'animation
         self.animation(current_time)
@@ -149,10 +175,11 @@ class Unit:
         frame_x, frame_y, frame_width, frame_height = self.frame_coordinates(unit_image)
 
         # enlever un frame de l'image principal et l'afficher a la fois
-        #frame_rect = pygame.Rect(frame_x, frame_y, frame_width, frame_height)
-        #unit_frame = unit_image.subsurface(frame_rect)
+        frame_rect = pygame.Rect(frame_x, frame_y, frame_width, frame_height)
+        unit_frame = unit_image.subsurface(frame_rect)
 
-        #DISPLAYSURF.blit(unit_frame, (iso_x, iso_y))
+        DISPLAYSURF.blit(unit_frame, (iso_x, iso_y))
+
 
     def conversion(self, x, y):
 
@@ -198,14 +225,10 @@ class Unit:
                     # Si la tuile (x, y) n'existe pas ou n'est pas un dictionnaire, l'initialiser
                     if (x, y) not in tuiles or not isinstance(tuiles[(x, y)], dict):
                         tuiles[(x, y)] = {}
-
-                    # Si la clé 'unites' n'existe pas, l'ajouter
-                    if 'unites' not in tuiles[(x, y)]:
                         tuiles[(x, y)]['unites'] = {}
-
-                    # Si le joueur n'est pas dans 'unites', l'ajouter
-                    if joueur not in tuiles[(x, y)]['unites']:
                         tuiles[(x, y)]['unites'][joueur] = {}
+
+
 
                     # Vérifier s'il y a un conflit avec les bâtiments ou ressources
                     batiments = tuiles[(x, y)].get('batiments', {})
@@ -229,7 +252,21 @@ class Unit:
                     if not tuile_conflit:
                         if unite not in tuiles[(x, y)]['unites'][joueur]:
                             tuiles[(x, y)]['unites'][joueur][unite] = {}
-
+                        """
+                        if unite == 'v':
+                            hp = self.villager.hp
+                        elif unite == 's':
+                            hp = self.swordman.hp
+                        elif unite == 'h':
+                            hp = self.horseman.hp
+                        elif unite == 'a':
+                            hp = self.archer.hp
+                        tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
+                            'HP': hp,  # Récupérer les HP depuis units_images
+                            'Status': 'libre',
+                            'capacite': '0'
+                        }
+                        """
                         tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
                             'HP': units_dict[unite]['hp'],  # Récupérer les HP depuis units_images
                             'Status': 'libre',
@@ -256,7 +293,6 @@ class Unit:
                             'Status': 'libre',
                             'capacite': '0'
                         }
-
                         #tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
                         #    'occupé': False  # Récupérer les HP depuis units_images
                         #}
@@ -491,3 +527,21 @@ class Unit:
 
 
 
+class Villager(Unit):
+    def __init__(self, image, lettre='v', cout={'Gold': 0, 'Food': 50, 'Wood': 0}, hp=25, temps_entrainement= 25,attaque=2, vitesse=0.8):
+        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
+
+
+class Swordman(Unit):
+    def __init__(self, image, lettre='s', cout={'Gold': 20, 'Food': 50, 'Wood': 0}, hp=40, temps_entrainement= 20,attaque=4, vitesse=0.9):
+        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
+
+
+class Horseman(Unit):
+    def __init__(self,image, lettre='h', cout={'Gold': 20, 'Food': 80, 'Wood': 0}, hp=45, temps_entrainement= 30,attaque=4, vitesse=1.2):
+        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
+
+
+class Archer(Unit):
+    def __init__(self, image, lettre='a', cout={'Gold': 45, 'Food': 0, 'Wood': 25}, hp=30, temps_entrainement= 35, attaque=4, vitesse=1):
+        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)

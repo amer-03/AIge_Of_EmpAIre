@@ -20,6 +20,7 @@ import threading
 import webbrowser
 import os
 from colorama import Fore, Style
+from collections import deque
 
 
 class Game:
@@ -66,6 +67,8 @@ class Game:
         # UNITS
         # self.swordsman = Units.Swordsman()
         self.unit = Unit()
+        self.tiles = {}
+        self.test = deque()
 
         # RECOLTE_RESSOURCES
         self.recolte = Recolte_ressources()
@@ -280,18 +283,10 @@ class Game:
                 self.Initialisation_compteur.initialize_resources(self.selected_unit, self.n)
 
                 self.buildings.initialisation_compteur(position)
-                self.buildings.affichage()
 
                 self.unit.initialisation_compteur(position)
-                #self.ajouter_unite(
-                #    joueur='joueur_1',
-                #    type_unite='s',
-                #    id_unite=8,  # Nouvel identifiant unique
-                #    position=(60, 60),
-                #    hp=25,
-                #    status='libre'
-                #)
                 self.draw_mini_map(DISPLAYSURF)
+                #print(tuiles)
 
 
     def draw_mini_map(self, display_surface):
@@ -585,7 +580,7 @@ class Game:
             cart_x = (iso_x + 2 * iso_y) / 2
             cart_y = (2 * iso_y - iso_x) / 2  # Formule inverse pour obtenir cart_y
 
-            half_size = len(self.tile_map.get_map_data()) // 2  # Taille centrée de la carte
+            half_size = size // 2  # Taille centrée de la carte
 
             centered_col = int(cart_y / tile_grass.height_half)  # Indice de la colonne
             centered_row = int(cart_x / tile_grass.width_half)  # Indice de la ligne
@@ -600,6 +595,7 @@ class Game:
             terminal_thread = threading.Thread(target=curses.wrapper, args=(self.draw_map_in_terminal,))
             terminal_thread.daemon = True
             terminal_thread.start()
+
 
     def run(self):
         """Boucle principale du jeu."""
@@ -630,29 +626,41 @@ class Game:
                     taille = builds_dict["T"]['taille']
                     in_game = 1
                     self.buildings.ajouter_batiment("joueur_2", "T", 60, 60, taille, tuiles, in_game)
-                    # self.buildings.add_building_to_queue("joueur_1", "Maison", (5, 5), 30, villagers=2)
-                    # print(tuiles)
                 if event.type == KEYDOWN and event.key == K_y:
                     self.unit.creation_unite('a', 'joueur_1')
                     self.unit.creation_unite('v', 'joueur_1')
                     self.unit.creation_unite('h', 'joueur_1')
                     self.unit.creation_unite('s', 'joueur_1')
 
-                if event.type == KEYDOWN and event.key == K_k:
+                if event.type == KEYDOWN and event.key == K_h:
                     joueur = 'joueur_1'
                     type_unite = 'v'
                     id_unite = 0
 
+                    self.unit.initialize_unit(joueur, type_unite, id_unite)
+
                     position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='W')
-                    self.unit.deplacer_unite(joueur='joueur_1',
-                                             type_unite='v',
-                                             id_unite=0,
-                                             nouvelle_position=position,
-                                             )
+
+                    self.unit.deplacer_unite(joueur, type_unite, id_unite, position)
+                    action_a_executer.append(
+                        lambda posress=position: self.recolte.recolter_ressource_plus_proche_via_trouver(joueur, type_unite, id_unite, posress=posress))
+                    def action_apres_deplacement():
+                        if int(tuiles[self.unit.position]['unites'][joueur][type_unite][id_unite]['capacite']) == 20:
+                            pos_batiment = self.recolte.trouver_plus_proche_batiment(joueur, type_unite, id_unite)
+                            if pos_batiment:
+
+                                self.unit.deplacer_unite(joueur, type_unite, id_unite, pos_batiment)
+
+                    action_a_executer.append(action_apres_deplacement)
+
+                    def deposer_ressources_in_batiment():
+                            quantite = 20
+                            ressource = 'W'
+                            self.recolte.deposer_ressources(quantite, joueur, type_unite, id_unite, ressource)
+
+                    action_a_executer.append(deposer_ressources_in_batiment)
 
 
-                    self.recolte.recolter_ressource_plus_proche_via_trouver(joueur, type_unite,
-                                                                                             id_unite, ressource='W', posress=position)
                 if event.type == KEYDOWN and event.key == K_KP_MINUS:  # Touche "-"
                     self.unit.decrementer_hp_unite()
 
@@ -694,18 +702,30 @@ class Game:
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
                 self.draw_mini_map(DISPLAYSURF)
 
-                # self.unit.update_position()
+                self.unit.update_position()
                 current_time = pygame.time.get_ticks()
-                # self.unit.display_unit(self.cam_x, self.cam_y, current_time, unit_image, DISPLAYSURF)
 
-                self.unit.diplay_unit(60,60, self.cam_x, self.cam_y, current_time, unit_image)
+                for position, data in tuiles.items():
+                    if 'unites' in data:
+                        position_x, position_y=position
+                        self.unit.update_position()
+                        self.unit.diplay_unit(position_x, position_y, self.cam_x, self.cam_y, current_time, unit_image)
+
+                if self.unit.position:
+                    self.unit.diplay_unit(
+                        self.unit.position[0],
+                        self.unit.position[1],
+                        self.cam_x,
+                        self.cam_y,
+                        current_time,
+                        unit_image
+                    )
 
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
 
                 self.Initialisation_compteur.draw_ressources()
 
-                self.buildings.affichage()
                 self.Initialisation_compteur.update_compteur()
                 pygame.display.update()
                 pygame.display.flip()

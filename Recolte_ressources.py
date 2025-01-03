@@ -44,6 +44,7 @@ class Recolte_ressources:
         return plus_proche
 
     def trouver_plus_proche_batiment(self, joueur, type_unite, id_unite):
+        # Trouver la position de l'unité
         position_unite = None
         for position, data in tuiles.items():
             if 'unites' in data and joueur in data['unites']:
@@ -55,13 +56,16 @@ class Recolte_ressources:
         if position_unite is None:
             return None  # Unité non trouvée
 
+        # Rechercher les positions des bâtiments appartenant au joueur
         positions_batiments = []
         for position, data in tuiles.items():
-            if 'batiments' in data:
-                for joueur_batiment, batiments in data['batiments'].items():
-                    for type_b, infos in batiments.items():
-                        if type_b in ['T', 'C']:  # Rechercher uniquement les types 'T' et 'C'
-                            positions_batiments.append(position)
+            if 'batiments' in data and joueur in data['batiments']:
+                for type_b, infos in data['batiments'][joueur].items():
+                    if type_b in ['T', 'C']:  # Rechercher uniquement les types 'T' et 'C'
+                        positions_batiments.append(position)
+
+        if not positions_batiments:
+            return None  # Aucun bâtiment appartenant au joueur trouvé
 
         # Trouver le bâtiment le plus proche
         def distance(pos1, pos2):
@@ -77,13 +81,10 @@ class Recolte_ressources:
 
         return plus_proche
 
-    def recolter_ressource_plus_proche_via_trouver(self, joueur, type_unite, id_unite, ressource, posress,
+    def recolter_ressource_plus_proche_via_trouver(self, joueur, type_unite, id_unite, posress,
                                                    recolte_max=20):
-
         if posress is None:
             return "Aucune ressource disponible à proximité."
-
-        # Trouver la position de l'unité
         position_unite = None
         for position, data in tuiles.items():
             if 'unites' in data and joueur in data['unites']:
@@ -96,25 +97,29 @@ class Recolte_ressources:
             return "Unité introuvable."
 
         details_ressource = tuiles[posress]
-
-
         quantite_a_recolter = min(recolte_max, details_ressource['quantite'])
-
         details_ressource['quantite'] -= quantite_a_recolter
-
         if details_ressource is None or 'quantite' not in details_ressource or details_ressource['quantite'] <= 0:
             del tuiles[posress]['ressources']
             del tuiles[posress]['quantite']# Supprimer la tuile si la quantité est 0
 
         unite = tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
+
         unite['capacite'] = str(int(unite['capacite']) + quantite_a_recolter)
 
-        if int(unite['capacite']) >= 20:
-            pos = self.trouver_plus_proche_batiment(joueur, type_unite, id_unite)
-            self.unit.deplacer_unite(joueur, type_unite, id_unite, pos)
-            self.deposer_ressources(quantite_a_recolter, ressource, joueur, pos, type_unite, id_unite)
-            unite['capacite'] = 0
-    def deposer_ressources(self, quantite, ressource, joueur, position_unite, type_unite, id_unite):
+        if action_a_executer:
+            action = action_a_executer.pop(0)
+            action()
+
+
+    def deposer_ressources(self, quantite, joueur, type_unite, id_unite, ressource):
+        position_unite = None
+        for position, data in tuiles.items():
+            if 'unites' in data and joueur in data['unites']:
+                unites_joueur = data['unites'][joueur]
+                if type_unite in unites_joueur and id_unite in unites_joueur[type_unite]:
+                    position_unite = position
+                    break
         compteurs_joueurs[joueur]['ressources'][ressource] += quantite
         unite = tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
         unite['capacite'] = 0

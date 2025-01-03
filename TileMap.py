@@ -151,6 +151,7 @@ class TileMap:
             # Recalculer les coordonnées isométriques pour l'unité
             iso_x = (cart_x - cart_y) - cam_x + offset_x
             iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
+            #print("reel",iso_x, iso_y)
 
             # print("units", cart_x,cart_y)
             display_surface.blit(unit_image_colored, (iso_x, iso_y))
@@ -243,8 +244,9 @@ class TileMap:
                 if tile_type in ["T", "H", "C", "F", "B", "S", "A", "K"]:
                     self.afficher_buildings(row, col, cam_x, cam_y, display_surface)
 
-                if tile_type in ["v", "s", "h", "a"]:
-                    self.afficher_unite(tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface, row, col)
+                #if tile_type in ["v", "s", "h", "a"]:
+                    #print("reel",cart_x, cart_y)
+                    #self.afficher_unite(tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface, row, col)
 
     def move_player(self, direction):
         x, y = self.position_initiale
@@ -256,11 +258,7 @@ class TileMap:
             y += 1
         elif direction == 'left' and x > 0:
             x -= 1
-        elif direction == 'right' and x < len(tuiles[y]) - 1:
+        elif direction == 'right' and x < size - 1:
             x += 1
 
         self.position_initiale = (x, y)
-
-    def get_map_data(self):
-        """Retourne la carte actuelle pour affichage."""
-        return map_data
