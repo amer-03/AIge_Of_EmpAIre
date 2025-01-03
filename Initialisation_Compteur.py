@@ -48,10 +48,11 @@ class Initialisation_Compteur:
             compteurs_joueurs[f'joueur_{i}'] = {
                 # Ressources
                 'ressources': {
-                    'w': 0,  # Bois
-                    'f': 0,  # Nourriture
-                    'g': 0,  # Or
-                    'U': 0  # Unités générales (ou autre ressource spéciale)
+                    'W': 0,  # Bois
+                    'F': 0,  # Nourriture
+                    'G': 0,  # Or
+                    'U': 0,  # Unités générales (ou autre ressource spéciale)
+                    'max_pop': 195
                 },
                 # Unités
                 'unites': {
@@ -82,10 +83,10 @@ class Initialisation_Compteur:
         # Parcourt chaque joueur dans le dictionnaire pour initialiser les ressources
         for joueur, compteurs in compteurs_joueurs.items():
             if unit == "Lean":
-                compteurs['ressources']['w'] = 200
-                compteurs['ressources']['f'] = 50
-                compteurs['ressources']['g'] = 50
-                compteurs['unites']['v'] = 1
+                compteurs['ressources']['W'] = 6000
+                compteurs['ressources']['F'] = 1150
+                compteurs['ressources']['G'] = 1150
+                compteurs['unites']['v'] = 8
                 compteurs['unites']['a'] = 1
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
@@ -94,20 +95,21 @@ class Initialisation_Compteur:
                 compteurs['batiments']['S'] = 2
                 compteurs['batiments']['K'] = 2
                 compteurs['batiments']['H'] = 2
+                compteurs['batiments']['A'] = 1
 
             elif unit == "Mean":
-                compteurs['ressources']['w'] = 2000
-                compteurs['ressources']['f'] = 2000
-                compteurs['ressources']['g'] = 2000
+                compteurs['ressources']['W'] = 2000
+                compteurs['ressources']['F'] = 2000
+                compteurs['ressources']['G'] = 2000
                 compteurs['unites']['v'] = 3
                 compteurs['unites']['a'] = 3
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
                 compteurs['batiments']['T'] = 1
             elif unit == "Marines":
-                compteurs['ressources']['w'] = 20000
-                compteurs['ressources']['f'] = 20000
-                compteurs['ressources']['g'] = 20000
+                compteurs['ressources']['W'] = 20000
+                compteurs['ressources']['F'] = 20000
+                compteurs['ressources']['G'] = 20000
                 compteurs['unites']['v'] = 15
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
@@ -138,9 +140,14 @@ class Initialisation_Compteur:
             if self.f1_active:
                 self.barres[0].barre(DISPLAYSURF, x_barre, y_barre)
                 for i, barre in enumerate(self.barres):
-                    type = ["w", "g", "f", "U"][i]
-                    barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
-                               total_images)
+                    type = ["W", "G", "F", "U"][i]
+                    if type == "U":
+                        max_value=self.compteur[joueur]['ressources']['max_pop']
+                        barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
+                               total_images,max_value)
+                    else :
+                        barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
+                                   total_images, None)
 
             # Affiche les unités (f2_active)
             if self.f2_active:
@@ -149,7 +156,8 @@ class Initialisation_Compteur:
                 for i, barre in enumerate(self.barre_units):
                     type = ["v", "s", "h", "a"][i]
                     barre.draw_barre_units(DISPLAYSURF, x_barre, y_barre + barre_height,
-                                           self.compteur[joueur]['unites'][type], i, total_images)
+                                       self.compteur[joueur]['unites'][type], i, total_images)
+
 
             # Affiche les constructions (f3_active)
             if self.f3_active:
