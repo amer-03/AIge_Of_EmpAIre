@@ -7,7 +7,7 @@ import Units
 from constants import *
 from TileMap import TileMap
 from Barre_ressource import Barre_ressources
-from Units import Unit
+from Units import Units
 from Buildings import Buildings
 
 from Initialisation_Compteur import Initialisation_Compteur
@@ -29,7 +29,6 @@ class Game:
         self.scroll_speed = 30
         self.tile_map = None
         self.tile_map = TileMap()
-        self.cam_x, self.cam_y = self.center_camera_on_tile()
 
         # MINIMAP
         self.mini_map_size_x = 490  # Largeur de la mini-carte
@@ -66,7 +65,7 @@ class Game:
 
         # UNITS
         # self.swordsman = Units.Swordsman()
-        self.unit = Unit()
+        self.unit = Units()
 
         # BUILDS
         self.buildings = Buildings()
