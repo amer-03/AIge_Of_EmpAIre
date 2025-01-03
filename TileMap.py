@@ -2,8 +2,9 @@ import pygame
 import random
 from constants import *
 from Units import Units
+from Buildings import Buildings
 from Coordinates import Coordinates
-from Villager import Villager
+
 
 
 class TileMap:
@@ -114,6 +115,33 @@ class TileMap:
                         if map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[0]] == " ":
                             map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[1]] = unit.lettre
                 
+    def add_building(self, build, build_class, quantity, player, build_tiles):
+        """Ajoute un building dans la carte"""
+        # Si toutes les tuiles sont libres, les réserver et placer le bâtiment
+        for x in range(quantity):
+            for y in range(quantity):
+                tile_position=Coordinates(build.position.x+x, build.position.y+y)
+
+                # Initialiser la tuile si nécessaire
+                if tile_position not in build_tiles:
+                    build_tiles[tile_position] = {}
+
+                if player not in build_tiles[tile_position]:
+                    build_tiles[tile_position][player] = []
+
+                if not isinstance(build, Buildings):
+                    return
+                
+                nbuild=build_class(build.image, tile_position)
+                build_tiles[tile_position][player].append(nbuild)
+
+        for position, players in build_tiles.items():
+            for player,builds in players.items():
+                for build in builds:
+                    if Coordinates.to_tuple(position)[0] < size and Coordinates.to_tuple(position)[0] < size:
+                        if map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[0]] == " ":
+                            map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[1]] = build.lettre
+    
     def apply_color_filter(self, surface, color):
         """
         Applique un filtre de couleur sur une surface pygame.Surface.
@@ -135,46 +163,6 @@ class TileMap:
         image_with_filter.blit(color_filter, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
         return image_with_filter
-
-
-    def afficher_buildings(self, grid_x, grid_y, cam_x, cam_y, display_surface):
-        tuile = tuiles.get((grid_x, grid_y))
-        if not tuile or not tuile.get('batiments'):
-            return
-
-        for joueur, buildings in tuile['batiments'].items():
-            for tile_type, data in buildings.items():
-                if isinstance(data, dict) and data.get('principal'):
-                    # Vérifiez si les données du bâtiment existent
-                    if tile_type not in builds_dict:
-                        return
-
-                    unit_tile = builds_dict.get(tile_type, {}).get('tile')
-                    if not unit_tile or not isinstance(unit_tile.image, pygame.Surface):
-                        continue  # Si l'image n'est pas valide, passez à l'élément suivant
-
-                    # Récupérer la couleur du joueur depuis PLAYER_COLORS
-                    player_color = PLAYER_COLORS.get(joueur, (255, 255, 255))  # Blanc par défaut
-
-                    # Appliquer un filtre de couleur sur une copie de l'image
-                    unit_image_colored = self.apply_color_filter(unit_tile.image, player_color)
-
-                    # Calculer les coordonnées cartésiennes de la tuile
-                    centered_col = grid_y - size // 2  # Décalage en X (par rapport à la grille)
-                    centered_row = grid_x - size // 2  # Décalage en Y (par rapport à la grille)
-
-                    offset_y = tile_grass.height_half - unit_tile.height
-                    offset_x = tile_grass.width_half - unit_tile.width
-
-                    # Calcul des coordonnées cartésiennes
-                    cart_x = centered_col * tile_grass.width_half
-                    cart_y = centered_row * tile_grass.height_half
-
-                    # Conversion en coordonnées isométriques
-                    iso_x = (cart_x - cart_y) - cam_x  # - offset_x
-                    iso_y = (cart_x + cart_y) / 2 - cam_y + offset_y
-
-                    display_surface.blit(unit_image_colored, (iso_x, iso_y))
 
     def display_map(self, cam_x, cam_y):
         """Affiche la carte en fonction de la position de la caméra, centrée au milieu."""
@@ -210,7 +198,6 @@ class TileMap:
                 DISPLAYSURF.blit(tile.image, (iso_x, iso_y))
 
                 #self.test_color_filter(display_surface)
-
 
     def get_map_data(self):
         #Retourne la carte actuelle pour affichage.

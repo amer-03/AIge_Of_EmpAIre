@@ -16,7 +16,6 @@ class Test:
     def __init__(self):
         self.position_init= (size // 2, size // 2)
         self.camera=Camera()
-
         self.tile_map = TileMap()
         self.villager = Villager(villager1,Coordinates(0,0))
         self.villager2 = Villager(villager3,Coordinates(-2,5))

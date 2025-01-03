@@ -6,7 +6,7 @@ def ajouter_unite(self, row, col, unite):
         # Ajoute l'unité si elle n'est pas déjà présente dans la cellule
         map_data[row][col].append(unite)
 
-    def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface):
+def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface):
         # Obtenir l'image correspondant au type d'unité
         unit_tile = units_images.get(tile_type)
         if not unit_tile:
@@ -26,7 +26,7 @@ def ajouter_unite(self, row, col, unite):
         display_surface.blit(unit_tile.image, (iso_x, iso_y))
 
 
-    def afficher_buildings(self, grid_x, grid_y, cam_x, cam_y, display_surface):
+def afficher_buildings(self, grid_x, grid_y, cam_x, cam_y, display_surface):
         tuile = tuiles.get((grid_x, grid_y))
         if not tuile or not tuile.get('unites'):
             return
@@ -61,13 +61,13 @@ def ajouter_unite(self, row, col, unite):
                     display_surface.blit(unit_tile.image, (iso_x, iso_y))
 
 
-    def mode(self, mode):
+def mode(self, mode):
         if mode == "patches":
             self.add_gold_patches()
         elif mode == "middqle":
             self.add_gold_middle()
 
-            def add_wood_patches(self):
+def add_wood_patches(self):
         """Ajoute des paquets de bois (W) sur la carte."""
         num_patches = random.randint(10, 20)
         min_patch_size = 7
@@ -92,7 +92,7 @@ def ajouter_unite(self, row, col, unite):
                         map_data[new_x][new_y] = "W"
                         wood_tiles.append((new_x, new_y))
 
-    def add_gold_patches(self):
+def add_gold_patches(self):
         """Ajoute des paquets d'or (G) sur la carte."""
         num_patches = random.randint(10, 15)  # Nombre de paquets d'or à générer
         min_patch_size = 2  # Taille minimale d'un paquet
@@ -118,7 +118,7 @@ def ajouter_unite(self, row, col, unite):
                         map_data[new_x][new_y] = "G"
                         gold_tiles.append((new_x, new_y))
 
-    def add_gold_middle(self):
+def add_gold_middle(self):
         """Ajoute un paquet d'or (G) au centre de la carte."""
         center_x = size // 2
         center_y = size // 2
@@ -134,7 +134,7 @@ def ajouter_unite(self, row, col, unite):
                 if 0 <= new_x < size and 0 <= new_y < size:
                     map_data[new_y][new_x] = "G"  # Placer une tuile d'or
 
-    def render(self, display_surface, cam_x, cam_y):
+def render(self, display_surface, cam_x, cam_y):
         """Affiche la carte en fonction de la position de la caméra, centrée au milieu."""
         half_size = size // 2  # La moitié de la taille de la carte
 
@@ -180,7 +180,7 @@ def ajouter_unite(self, row, col, unite):
                     self.afficher_unite(tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface)
 
 
-    def move_player(self, direction):
+def move_player(self, direction):
         x, y = self.position_initiale
         map_data[y][x] = " "  # Efface l'ancienne position
 
@@ -195,11 +195,11 @@ def ajouter_unite(self, row, col, unite):
 
         self.position_initiale = (x, y)
 
-    def get_map_data(self):
+def get_map_data(self):
         """Retourne la carte actuelle pour affichage."""
         return map_data
 
-    def conversion(self, x, y):
+def conversion(self, x, y):
         half_size = map_size // 2  # Assurez-vous que la taille de la carte est correctement définie
 
         # Décalage centré pour le joueur
@@ -215,7 +215,7 @@ def ajouter_unite(self, row, col, unite):
 
         return iso_x, iso_y
 
-    def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface, grid_x, grid_y):
+def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface, grid_x, grid_y):
         # Obtenir l'image correspondant au type d'unité
 
         tuile = tuiles.get((grid_x, grid_y))
@@ -247,3 +247,199 @@ def ajouter_unite(self, row, col, unite):
 
             # print("units", cart_x,cart_y)
             display_surface.blit(unit_image_colored, (iso_x, iso_y))
+
+def afficher_buildings(self, grid_x, grid_y, cam_x, cam_y, display_surface):
+        tuile = tuiles.get((grid_x, grid_y))
+        if not tuile or not tuile.get('batiments'):
+            return
+
+        for joueur, buildings in tuile['batiments'].items():
+            for tile_type, data in buildings.items():
+                if isinstance(data, dict) and data.get('principal'):
+                    # Vérifiez si les données du bâtiment existent
+                    if tile_type not in builds_dict:
+                        return
+
+                    unit_tile = builds_dict.get(tile_type, {}).get('tile')
+                    if not unit_tile or not isinstance(unit_tile.image, pygame.Surface):
+                        continue  # Si l'image n'est pas valide, passez à l'élément suivant
+
+                    # Récupérer la couleur du joueur depuis PLAYER_COLORS
+                    player_color = PLAYER_COLORS.get(joueur, (255, 255, 255))  # Blanc par défaut
+
+                    # Appliquer un filtre de couleur sur une copie de l'image
+                    unit_image_colored = self.apply_color_filter(unit_tile.image, player_color)
+
+                    # Calculer les coordonnées cartésiennes de la tuile
+                    centered_col = grid_y - size // 2  # Décalage en X (par rapport à la grille)
+                    centered_row = grid_x - size // 2  # Décalage en Y (par rapport à la grille)
+
+                    offset_y = tile_grass.height_half - unit_tile.height
+                    offset_x = tile_grass.width_half - unit_tile.width
+
+                    # Calcul des coordonnées cartésiennes
+                    cart_x = centered_col * tile_grass.width_half
+                    cart_y = centered_row * tile_grass.height_half
+
+                    # Conversion en coordonnées isométriques
+                    iso_x = (cart_x - cart_y) - cam_x  # - offset_x
+                    iso_y = (cart_x + cart_y) / 2 - cam_y + offset_y
+
+                    display_surface.blit(unit_image_colored, (iso_x, iso_y))
+
+def affichage(self):
+        for (x, y), tuile in tuiles.items():
+            batiments = tuile.get('batiments', {})
+            unites = tuile.get('unites', {})
+            ressources = tuile.get('ressources', {})
+
+            if not tuile:  # Vérifie si le dictionnaire est vide
+                map_data[x][y] = " "
+                continue  # Passe à la prochaine tuile
+
+
+            if isinstance(batiments, dict) or isinstance(unites, dict) or isinstance(ressources, dict):
+                if isinstance(unites, dict):
+                    for joueur, unites_joueur in unites.items():  # Parcours les unités du joueur
+                        if isinstance(unites_joueur, dict):  # Si c'est bien un dictionnaire d'unités
+                            for unite, identifiants in unites_joueur.items():  # Parcours chaque type d'unité
+                                if unite == 'v':
+                                    map_data[x][y] = 'v'
+                                    break  # Sortir de la boucle des unités dès qu'une unité est trouvée
+                                elif unite == 's':
+                                    map_data[x][y] = 's'
+                                    break  # Sortir de la boucle des unités dès qu'une unité est trouvée
+                                elif unite == 'h':
+                                    map_data[x][y] = 'h'
+                                    break  # Sortir de la boucle des unités dès qu'une unité est trouvée
+                                elif unite == 'a':
+                                    map_data[x][y] = 'a'
+                                    break  # Sortir de la boucle des unités dès qu'une unité est trouvée
+                                else:
+                                    map_data[x][y] = " "
+                            break
+                if map_data[x][y] == " " and isinstance(batiments, dict):
+                    for joueur, batiments_joueur in batiments.items():  # Parcours les bâtiments du joueur
+                        if isinstance(batiments_joueur, dict):
+                            for batiment, details in batiments_joueur.items():
+                                if batiment == 'T':  # Vérifier le type de bâtiment
+                                    map_data[x][y] = 'T'
+                                    break
+                                elif batiment == 'H':
+                                    map_data[x][y] = 'H'
+                                    break
+                                elif batiment == 'C':
+                                    map_data[x][y] = 'C'
+                                    break
+                                elif batiment == 'F':
+                                    map_data[x][y] = 'F'
+                                    break
+                                elif batiment == 'B':
+                                    map_data[x][y] = 'B'
+                                    break
+                                elif batiment == 'S':
+                                    map_data[x][y] = 'S'
+                                    break
+                                elif batiment == 'A':
+                                    map_data[x][y] = 'A'
+                                    break
+                                elif batiment == 'K':
+                                    map_data[x][y] = 'K'
+                                    break
+                                else:
+                                    map_data[x][y] = " "
+                            break
+
+                # Vérification et affichage des ressources (on passe par ressources si elles existent)
+                if map_data[x][y] == " " and isinstance(ressources, dict):
+                    for joueur, ressources_joueur in ressources.items():  # Parcours les ressources du joueur
+                        if isinstance(ressources_joueur, dict):
+                            for ressource, details in ressources_joueur.items():
+                                if ressource == 'G':
+                                    map_data[x][y] = 'G'
+                                elif ressource == 'W':
+                                    map_data[x][y] = 'W'
+                                else:
+                                    map_data[x][y] = " "
+
+        for i in range(len(map_data)):
+            for j in range(len(map_data[i])):
+                if (i, j) not in tuiles:
+                    map_data[i][j] = " "  # Case vide par défaut
+
+def conversion(self, x, y):
+        half_size = size // 2  # Assurez-vous que la taille de la carte est correctement définie
+
+        # Décalage centré pour le joueur
+        centered_col = y - half_size
+        centered_row = x - half_size
+
+        # Conversion en coordonnées isométriques
+        cart_x = centered_row * tile_grass.width_half
+        cart_y = centered_col * tile_grass.height_half
+
+        iso_x = cart_x - cart_y  # Ne pas soustraire cam_x ici
+        iso_y = (cart_x + cart_y) / 2  # Ne pas soustraire cam_y ici
+
+        return iso_x, iso_y
+
+def decrementer_hp_batiments(self):
+        """Décroît les HP des bâtiments dans le dictionnaire tuiles, en tenant compte des bâtiments multi-tuiles."""
+        traites = set()  # Pour éviter de traiter plusieurs fois le même bâtiment
+
+        for (x, y), data in list(tuiles.items()):
+            if isinstance(data, dict) and 'batiments' in data:
+                batiments = data['batiments']
+
+                for joueur, joueur_batiments in list(batiments.items()):
+                    for unite, stats in list(joueur_batiments.items()):
+                        if isinstance(stats, dict):
+                            # Identifier la tuile principale
+                            parent = stats.get('parent', (x, y))
+                            identifiant = stats.get('id', 'Inconnu')
+
+                            # Si déjà traité, passer
+                            if (joueur, identifiant) in traites:
+                                continue
+
+                            # Ajouter à la liste des traités
+                            traites.add((joueur, identifiant))
+
+                            if 'HP' in stats:
+                                stats['HP'] -= 250
+
+                                # Si les HP tombent à 0, supprimer le bâtiment
+                                if stats['HP'] <= 0:
+                                    stats['HP'] = 0
+                                    self.supprimer_batiment(tuiles, joueur, identifiant, parent)
+                                    if joueur in compteurs_joueurs:
+                                        if unite in compteurs_joueurs[joueur]['batiments'] and \
+                                                compteurs_joueurs[joueur]['batiments'][unite] > 0:
+                                            compteurs_joueurs[joueur]['batiments'][unite] -= 1
+                                return
+
+def supprimer_batiment(self,tuiles, joueur, identifiant, parent):
+        """Supprime un bâtiment multi-tuiles."""
+        tuiles_a_supprimer = []
+
+
+
+        for (x, y), data in list(tuiles.items()):
+            if 'batiments' in data and joueur in data['batiments']:
+                batiments = data['batiments'][joueur]
+
+                for unite, stats in list(batiments.items()):
+                    if isinstance(stats, dict) and stats.get('id') == identifiant:
+                        del tuiles[(x, y)]['batiments'][joueur][unite]
+
+
+
+                        # Si le niveau est vide, marquer pour suppression
+                        if not tuiles[(x, y)]['batiments'][joueur]:
+                            del tuiles[(x, y)]['batiments'][joueur]
+                        if not tuiles[(x, y)]['batiments']:
+                            tuiles_a_supprimer.append((x, y))
+
+        # Supprimer les tuiles marquées
+        for tuile in tuiles_a_supprimer:
+            del tuiles[tuile]
