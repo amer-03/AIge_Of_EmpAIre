@@ -5,9 +5,17 @@ from colorama import Fore, Style
 from constants import *
 
 class Buildings:
-    def __init__(self):
+    def __init__(self, image, position, letter, cost, construction_time, hp, size, walkable):
+        self.image = image
+        self.position = position
+        self.letter = letter
+        self.cost = cost
+        self.construction_time = construction_time
+        self.hp = hp
+        self.size = size  # tuple (width, height)
+        self.walkable = walkable
+        
         self.tile_grass = tile_grass
-        self.map_data = map_data
         self.compteurs_joueurs = compteurs_joueurs
 
     def placer_joueurs_cercle(self, players, rayon, center_x, center_y):
@@ -20,8 +28,6 @@ class Buildings:
             cart_y = int(center_y + rayon * math.sin(math.radians(angle)))  # Calcul de la position Y
             positions.append((cart_y-2, cart_x-2))  # Ajouter les coordonnées à la liste
         return positions
-
-    # pour del : del tuiles[(60, 110)]['unites']['v'][0]
 
     def trouver_coordonnees_motif(self, x, y, taille, tuiles, max_x, max_y, offset_x, offset_y):
         start_x = x + offset_x * taille
