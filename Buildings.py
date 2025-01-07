@@ -20,14 +20,14 @@ class Buildings:
 
     def placer_joueurs_cercle(self, players, rayon, center_x, center_y):
         """Calcule les positions cartésiennes pour `n` joueurs répartis en cercle autour du centre."""
-        positions = []
+        player_positions = []
         angle_increment = 360 / players  # Divise le cercle en n parties égales
         for i in range(players):
             angle = angle_increment * i
             cart_x = int(center_x + rayon * math.cos(math.radians(angle)))  # Calcul de la position X
             cart_y = int(center_y + rayon * math.sin(math.radians(angle)))  # Calcul de la position Y
-            positions.append((cart_y-2, cart_x-2))  # Ajouter les coordonnées à la liste
-        return positions
+            player_positions.append((cart_x-2, cart_y-2))  # Ajouter les coordonnées à la liste
+        return player_positions
 
     def trouver_coordonnees_motif(self, x, y, taille, tuiles, max_x, max_y, offset_x, offset_y):
         start_x = x + offset_x * taille
@@ -58,7 +58,6 @@ class Buildings:
                 return start_x, start_y
 
         return None
-
 
     def generer_offsets(self):
         for joueur, compteurs in compteurs_joueurs.items():
@@ -103,10 +102,12 @@ class Buildings:
                     if coord_libres:
                         bat_x, bat_y = coord_libres
                         identifiant = f"{batiment}{i}"
-                        self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, tuiles, identifiant)
+                        #self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, tuiles, identifiant)
 
         return tuiles
-
     
-
-
+    def display_building(self, cam_x, cam_y):             
+        #coordonnées isométrique    
+        iso_x, iso_y = self.position.to_iso(cam_x, cam_y)
+        
+        DISPLAYSURF.blit(self.image,(iso_x,iso_y))

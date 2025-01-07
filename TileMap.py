@@ -140,7 +140,7 @@ class TileMap:
                 for build in builds:
                     if Coordinates.to_tuple(position)[0] < size and Coordinates.to_tuple(position)[0] < size:
                         if map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[0]] == " ":
-                            map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[1]] = build.lettre
+                            map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[1]] = build.letter
     
     def apply_color_filter(self, surface, color):
         """

@@ -2,10 +2,14 @@ from Units import Units
 import time
 from TileMap import TileMap
 from Coordinates import Coordinates
+from Buildings import Buildings
 from Villager import Villager
 from Swordman import Swordman
 from Archer import Archer
 from Horseman import Horseman
+from TownCenter import TownCenter
+from House import House
+from ArcheryRange import ArcheryRange
 from Camera import Camera
 from Global_image_load import *
 from constants import *
@@ -17,23 +21,34 @@ class Test:
         self.position_init= (size // 2, size // 2)
         self.camera=Camera()
         self.tile_map = TileMap()
+
         self.villager = Villager(villager1,Coordinates(0,0))
         self.villager2 = Villager(villager3,Coordinates(-2,5))
         self.swordman = Swordman(s_man1,Coordinates(3,3))  
         self.horseman = Horseman(h_man1,Coordinates(-3,-3))  
         self.archer = Archer(archer1,Coordinates(-6,-6))
         self.archer2 = Archer(archer2,Coordinates(3,-5)) 
-         
+        
         self.tiles={}
-    
+        
         self.tile_map.add_unit(self.villager,Villager,4,1,self.tiles)  
         self.tile_map.add_unit(self.villager2,Villager,2,1,self.tiles)   
         self.tile_map.add_unit(self.horseman,Horseman,6,1,self.tiles)   
         self.tile_map.add_unit(self.archer,Archer,3,1,self.tiles)   
         self.tile_map.add_unit(self.archer2,Archer,3,1,self.tiles)   
         self.tile_map.add_unit(self.swordman,Swordman,4,1,self.tiles)
-
+        
         assert self.tiles!={}, "units not added"
+        
+        self.towncenter1= TownCenter(Tile("images/Town_Center.webp", 200, 128).image,Coordinates(0,20))
+        self.towncenter2= TownCenter(Tile("images/Town_Center.webp", 200, 128).image,Coordinates(0,-20))
+        
+        self.build_tiles={}
+        
+        self.tile_map.add_building(self.towncenter1,TownCenter,1,1,self.build_tiles)
+        self.tile_map.add_building(self.towncenter2,TownCenter,1,2,self.build_tiles)
+        
+        assert self.build_tiles!={}, "buildings not added"
 
         self.tile_map.add_wood_patches()
         self.tile_map.add_gold_middle()
@@ -73,13 +88,20 @@ class Test:
                 self.move_player('r')
 
             # affichage iso de la map
-            self.tile_map.display_map(self.camera.cam_x, self.camera.cam_y)  
-
+            self.tile_map.display_map(self.camera.cam_x, self.camera.cam_y)
+            
+            #affichage des buildings
+            for position,players in self.build_tiles.items():
+                for player,buildings in players.items():
+                    for building in buildings:
+                        building.display_building(self.camera.cam_x, self.camera.cam_y) 
+            
             #affichage des unités          
             for position,players in self.tiles.items():
                 for player,units in players.items():
                     for unit in units:
                         unit.diplay_unit(self.camera.cam_x, self.camera.cam_y,pygame.time.get_ticks())
+           
 
             # affichage de la carte dans un terminal
             with open("map.txt","w") as file:
@@ -95,4 +117,4 @@ class Test:
             pygame.display.update()
             pygame.display.flip()
             FPSCLOCK.tick(600)
-            # print(self.tiles)        
+            # print(self.tiles)       
