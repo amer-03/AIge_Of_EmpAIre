@@ -89,3 +89,17 @@ class Units:
             other.image=image
         
         #time.sleep(1)  # Pause for better visualization
+    def attack_building(self, building):
+        while self.is_alive() and building.hp > 0:
+            if self.distance_to(building) <= self.range:
+                # L'unité inflige des dégâts au bâtiment
+                building.hp -= self.attaque
+                print(f"{self.lettre} attacks {building.letter} for {self.attaque} damage. {building.letter} has {building.hp} HP left.")
+            
+            # Attente pour simuler un délai entre les attaques
+            time.sleep(1)
+
+        if building.hp <= 0:
+            # Le bâtiment est détruit, on supprime l'image du bâtiment (ou on la remplace par une image vide)
+            building.image = None
+            print(f"{building.letter} has been destroyed!")
