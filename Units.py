@@ -1,11 +1,14 @@
 from constants import *
 from Coordinates import Coordinates
 from Global_image_load import *
+import math
+import time
+
 
 class Units:
     """Classe gérant les unités."""
 
-    def __init__(self,image, position,lettre,cout,hp,temps_entrainement,attaque,vitesse):
+    def __init__(self,image, position,lettre,cout,hp,temps_entrainement,attaque,range,vitesse):
         self.image=image
         self.position=position
         self.lettre=lettre
@@ -13,10 +16,11 @@ class Units:
         self.hp=hp
         self.temps_entrainement=temps_entrainement
         self.attaque=attaque
+        self.range=range
         self.vitesse=vitesse
 
         self.frame_index = 0 # indice du frame dans une ligne
-        self.direction_index = 0 # indice du frame dans une colonne
+        self.direction_index = 8 # indice du frame dans une colonne
         self.last_time = pygame.time.get_ticks() # dernier moment du sprite (dernière action)
     
     def animation(self,current_time):  # fonction qui modifie l'indice des frames et le dernier temps du frame
@@ -60,4 +64,28 @@ class Units:
         DISPLAYSURF.blit(self_frame,(iso_x,iso_y))
         #self.movement(Coordinates(-3,3),cam_x,cam_y)
 
+    def is_alive(self):
+        return self.hp > 0
+
+    def take_damage(self, other, damage):
+        self.hp -= damage
+        print(f"{self.lettre} attacks {other.lettre} for {self.attaque} damage. {other.lettre} has {other.hp} HP left.")
+
+    def distance_to(self, other):
+        return math.sqrt((Coordinates.to_tuple(self.position)[0] - Coordinates.to_tuple(other.position)[0]) ** 2 + (Coordinates.to_tuple(self.position)[1] - Coordinates.to_tuple(other.position)[1]) ** 2)
+    
+    def attack(self, other, image):
+        while self.is_alive() and other.is_alive():            
+            # Unit 1 moves or attacks
+            if self.distance_to(other) <= self.range:
+                self.take_damage(other, other.attaque)
+            if other.distance_to(self) <= other.range:
+                other.take_damage(self, self.attaque)
+        
+        if not self.is_alive():
+            self.image=image
             
+        elif not other.is_alive():
+            other.image=image
+        
+        #time.sleep(1)  # Pause for better visualization

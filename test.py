@@ -22,22 +22,14 @@ class Test:
         self.camera=Camera()
         self.tile_map = TileMap()
 
-        self.villager = Villager(villager1,Coordinates(0,0))
-        self.villager2 = Villager(villager3,Coordinates(-2,5))
-        self.swordman = Swordman(s_man1,Coordinates(3,3))  
-        self.horseman = Horseman(h_man1,Coordinates(-3,-3))  
-        self.archer = Archer(archer1,Coordinates(-6,-6))
-        self.archer2 = Archer(archer2,Coordinates(3,-5)) 
+        self.villager = Villager(villager2, Coordinates(0,0))
+        self.archer = Archer(archer2, Coordinates(1,0)) 
         
         self.tiles={}
         
-        self.tile_map.add_unit(self.villager,Villager,4,1,self.tiles)  
-        self.tile_map.add_unit(self.villager2,Villager,2,1,self.tiles)   
-        self.tile_map.add_unit(self.horseman,Horseman,6,1,self.tiles)   
-        self.tile_map.add_unit(self.archer,Archer,3,1,self.tiles)   
-        self.tile_map.add_unit(self.archer2,Archer,3,1,self.tiles)   
-        self.tile_map.add_unit(self.swordman,Swordman,4,1,self.tiles)
-        
+        self.tile_map.add_unit(self.villager,Villager,1,1,self.tiles)        
+        self.tile_map.add_unit(self.archer,Archer,1,2,self.tiles)
+               
         assert self.tiles!={}, "units not added"
         
         self.towncenter1= TownCenter(Tile("images/Town_Center.webp", 200, 128).image,Coordinates(0,20))
@@ -91,18 +83,19 @@ class Test:
             self.tile_map.display_map(self.camera.cam_x, self.camera.cam_y)
             
             #affichage des buildings
-            for position,players in self.build_tiles.items():
-                for player,buildings in players.items():
-                    for building in buildings:
-                        building.display_building(self.camera.cam_x, self.camera.cam_y) 
+            #for position,players in self.build_tiles.items():
+             #   for player,buildings in players.items():
+              #      for building in buildings:
+               #         building.display_building(self.camera.cam_x, self.camera.cam_y) 
             
             #affichage des unités          
             for position,players in self.tiles.items():
                 for player,units in players.items():
                     for unit in units:
-                        unit.diplay_unit(self.camera.cam_x, self.camera.cam_y,pygame.time.get_ticks())
-           
+                        unit.attack(unit,villager3)
+                        unit.diplay_unit(self.camera.cam_x, self.camera.cam_y, pygame.time.get_ticks())
 
+           
             # affichage de la carte dans un terminal
             with open("map.txt","w") as file:
                 for i in range(len(map_data)):
