@@ -15,6 +15,7 @@ from Global_image_load import *
 from constants import *
 import pygame
 from pygame.locals import *
+from sauvegarde_pickle import Save_and_load
 
 class Test:
     def __init__(self):
@@ -44,6 +45,8 @@ class Test:
 
         self.tile_map.add_wood_patches()
         self.tile_map.add_gold_middle()
+
+        self.sal = Save_and_load()
 
     def move_player(self,direction):
         x, y = self.position_init
@@ -78,6 +81,11 @@ class Test:
                 self.move_player('l')
             elif key[pygame.K_d]:  # Droite
                 self.move_player('r')
+
+            if key[pygame.K_SPACE]:
+                print("Sauvegarde en cours...")
+                self.sal.sauvegarder_jeu(self.tiles, self.build_tiles)
+                print("Sauvegarde terminée !")
 
             # affichage iso de la map
             self.tile_map.display_map(self.camera.cam_x, self.camera.cam_y)
