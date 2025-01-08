@@ -8,7 +8,7 @@ from Coordinates import *
 import random
 import time
 from Global_image_load import *
-
+from numpy.random import poisson
 
 
 class Unit:
@@ -38,22 +38,6 @@ class Unit:
         self.start_time_offset = 0
 
 
-    def get_unit_initial_position(self, joueur, type_unite, id_unite):
-        for position, data in tuiles.items():
-            if 'unites' in data and joueur in data['unites'] and type_unite in data['unites'][joueur]:
-                if id_unite in data['unites'][joueur][type_unite]:
-                    return position
-        return None
-
-
-    def initialize_unit(self, joueur, type_unite, id_unite):
-        initial_position = self.get_unit_initial_position(joueur, type_unite, id_unite)
-        if initial_position:
-            self.position = initial_position
-            print(f"Position initiale de l'unité : {self.position}")
-        else:
-            print(f"Aucune position trouvée pour l'unité {id_unite} du joueur {joueur}")
-
     def deplacer_unite(self, joueur, type_unite, id_unite, nouvelle_position):
         position_actuelle = None
         for position, data in tuiles.items():
@@ -61,6 +45,8 @@ class Unit:
                 if id_unite in data['unites'][joueur][type_unite]:
 
                     position_actuelle = position
+                    self.position = position
+                    print(position_actuelle)
                     break
 
         if not position_actuelle:
@@ -181,6 +167,7 @@ class Unit:
         DISPLAYSURF.blit(unit_frame, (iso_x, iso_y))
 
 
+
     def conversion(self, x, y):
 
         # Décalage centré pour le joueur
@@ -246,27 +233,16 @@ class Unit:
                                      'S' in batiments.get(joueur, {}) or
                                      'K' in batiments.get(joueur, {}) or
                                      'H' in batiments.get(joueur, {}) or
-                                     'B' in batiments.get(joueur, {}))
+                                     'B' in batiments.get(joueur, {}) or
+                                     'C' in batiments.get(joueur, {}) or
+                                     'F' in batiments.get(joueur, {}) or
+                                     'A' in batiments.get(joueur, {}) )
 
                     # Ajouter l'unité seulement s'il n'y a pas de conflit
                     if not tuile_conflit:
                         if unite not in tuiles[(x, y)]['unites'][joueur]:
                             tuiles[(x, y)]['unites'][joueur][unite] = {}
-                        """
-                        if unite == 'v':
-                            hp = self.villager.hp
-                        elif unite == 's':
-                            hp = self.swordman.hp
-                        elif unite == 'h':
-                            hp = self.horseman.hp
-                        elif unite == 'a':
-                            hp = self.archer.hp
-                        tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
-                            'HP': hp,  # Récupérer les HP depuis units_images
-                            'Status': 'libre',
-                            'capacite': '0'
-                        }
-                        """
+
                         tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
                             'HP': units_dict[unite]['hp'],  # Récupérer les HP depuis units_images
                             'Status': 'libre',
@@ -297,8 +273,190 @@ class Unit:
                         #    'occupé': False  # Récupérer les HP depuis units_images
                         #}
 
+    def is_alive(self):
+        return self.hp > 0
+
+    def take_damage(self, other, damage):
+        self.hp -= damage
+        print(f"{self.lettre} attacks {other.lettre} for {self.attaque} damage. {other.lettre} has {other.hp} HP left.")
+
+    def distance_to(self, other):
+        return math.sqrt((Coordinates.to_tuple(self.position)[0] - Coordinates.to_tuple(other.position)[0]) ** 2 + (
+                    Coordinates.to_tuple(self.position)[1] - Coordinates.to_tuple(other.position)[1]) ** 2)
+
+    def attack(self, joueur_a, type_a, id_a, joueur_b, type_b, id_b):
+        position_a = None
+        position_b = None
+        for pos, data in tuiles.items():
+            if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
+                if id_a in data['unites'][joueur_a][type_a]:
+                    unit_info_a = data['unites'][joueur_a][type_a][id_a]
+                    position_a = pos
+                    hp_a = unit_info_a['HP']
+                    status_a = unit_info_a['Status']
+                    capacite_a = unit_info_a.get('capacite', 0)
+                    break
+
+            # Recherche des caractéristiques dans `units_dict`
+        unit_data_a = units_dict[type_a]
+        lettre_a = type_a
+        attaque_a = unit_data_a['attaque']
+        range_a = unit_data_a.get('range', 1)
+
+        for pos, data in tuiles.items():
+            if 'unites' in data and joueur_b in data['unites'] and type_b in data['unites'][joueur_b]:
+                if id_b in data['unites'][joueur_b][type_b]:
+                    unit_info_b = data['unites'][joueur_b][type_b][id_b]
+                    position_b = pos
+                    hp_b = unit_info_b['HP']
+                    status_b = unit_info_b['Status']
+                    capacite_b = unit_info_b.get('capacite', 0)
+                    break
+
+            # Recherche des caractéristiques dans `units_dict`
+        unit_data_b = units_dict[type_b]
+        lettre_b = type_b
+        attaque_b = unit_data_b['attaque']
+        range_b = unit_data_b.get('range', 1)
+
+        #print(position_a, hp_a, status_a, capacite_a,lettre_a,attaque_a,range_a)
+        #print(position_b, hp_b, status_b, capacite_b,lettre_b,attaque_b,range_b)
+
+
+        while hp_b > 0:
+            # Calcul de la distance entre les positions des unités A et B
+            distance = abs(position_a[0] - position_b[0]) + abs(position_a[1] - position_b[1])
+
+            # Vérifie si l'unité B est à portée de l'unité A
+            if distance <= range_a:
+                if hp_b <= 0:
+
+                    print(f"L'unité {lettre_b} est détruite !")
+                    if joueur_b in compteurs_joueurs:
+                        if type_b in compteurs_joueurs[joueur_b]['unites'] and \
+                                compteurs_joueurs[joueur_b]['unites'][type_b] > 0:
+                            compteurs_joueurs[joueur_b]['unites'][type_b] -= 1
+                    break
+                print(f"Attaque : unité {lettre_a} attaque unité {lettre_b}")
+                # Appliquer les dégâts de A à B
+                hp_b -= attaque_a
+                print(f"Unité {lettre_b} perd {attaque_a} HP, il lui reste {max(hp_b, 0)} HP")
+                time.sleep(1)
+
+                # Si les HP de B tombent à 0 ou en dessous, on termine l'attaque
+
+            else:
+                print(f"L'unité {lettre_b} est hors de portée de l'unité {lettre_a}.")
+                break
+
+
+
+    def attack_building(self, joueur_a, type_a, id_a, joueur_b, type_b, id_b):
+        # Initialisation des positions
+        position_a = None
+
+        # Recherche des caractéristiques de l'unité A
+        for pos, data in tuiles.items():
+            if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
+                if id_a in data['unites'][joueur_a][type_a]:
+                    unit_info_a = data['unites'][joueur_a][type_a][id_a]
+                    position_a = pos
+                    hp_a = unit_info_a['HP']
+                    status_a = unit_info_a['Status']
+                    capacite_a = unit_info_a.get('capacite', 0)
+                    break
+
+        # Vérification que l'unité A a bien été trouvée
+        if position_a is None:
+            print(f"Erreur : unité {type_a} avec ID {id_a} du joueur {joueur_a} introuvable.")
+            return
+
+        # Recherche des caractéristiques dans `units_dict` pour unité A
+        unit_data_a = units_dict[type_a]
+        lettre_a = type_a
+        attaque_a = unit_data_a['attaque']
+        range_a = unit_data_a.get('range', 1)
+
+        # Recherche du bâtiment B
+        building_tiles = []
+        building_hp = None
+
+        for pos, data in tuiles.items():
+            if 'batiments' in data and joueur_b in data['batiments'] and type_b in data['batiments'][joueur_b]:
+                # Vérifie si le bâtiment a le bon id
+                if data['batiments'][joueur_b][type_b]['id'] == id_b:
+                    # Récupère les informations du bâtiment
+                    building_info_b = data['batiments'][joueur_b][type_b]
+                    parent_b = building_info_b['parent']
+                    building_hp = building_info_b['HP']
+
+                    # Collecte toutes les tuiles appartenant au bâtiment (ayant le même parent)
+                    if building_info_b['parent'] == parent_b:
+                        print(f"Position actuelle du bâtiment : {pos}")
+                        print(f"Informations du bâtiment : {building_info_b}")
+                        building_tiles.append((pos, building_info_b))
+
+        # Vérification que le bâtiment a bien été trouvé
+        if not building_tiles:
+            print(f"Erreur : bâtiment {type_b} avec ID {id_b} du joueur {joueur_b} introuvable.")
+            return
+
+        # Attaque du bâtiment
+        while building_hp > 0:
+            # Calcul de la distance entre les positions de l'unité A et du bâtiment B
+            distance = abs(position_a[0] - parent_b[0]) + abs(position_a[1] - parent_b[1])
+
+            # Vérifie si le bâtiment B est à portée de l'unité A
+            if distance <= range_a:
+                print(f"Attaque : unité {lettre_a} attaque bâtiment {type_b}")
+                # Réduction des HP de toutes les tuiles du bâtiment
+                for pos, building_part in building_tiles:
+                    building_part['HP'] -= attaque_a
+
+                # Mise à jour des HP globaux
+                building_hp -= attaque_a
+                print(f"Bâtiment {type_b} perd {attaque_a} HP, il lui reste {max(building_hp, 0)} HP")
+                #time.sleep(1)
+
+                # Si les HP tombent à 0, on détruit le bâtiment
+                if building_hp <= 0:
+                    print(f"Le bâtiment {type_b} est détruit !")
+                    # Suppression des tuiles contenant uniquement le bâtiment
+                    for pos, building_part in building_tiles:
+                        if len(tuiles[pos]) == 1:  # Si la tuile contient uniquement le bâtiment
+                            del tuiles[pos]['batiments']
+                        else:
+                            del tuiles[pos]['batiments'][joueur_b][type_b]
+
+                    # Mise à jour des compteurs
+                    if joueur_b in compteurs_joueurs:
+                        if type_b in compteurs_joueurs[joueur_b]['batiments'] and \
+                                compteurs_joueurs[joueur_b]['batiments'][type_b] > 0:
+                            compteurs_joueurs[joueur_b]['batiments'][type_b] -= 1
+                    break
+            else:
+                print(f"Le bâtiment {type_b} est hors de portée de l'unité {lettre_a}.")
+                break
+
+        """
+
+    def attack_building(self, building):
+        while self.is_alive() and building.hp > 0:
+            if self.distance_to(building) <= self.range:
+                # L'unité inflige des dégâts au bâtiment
+                building.hp -= self.attaque
+                print(
+                    f"{self.lettre} attacks {building.letter} for {self.attaque} damage. {building.letter} has {building.hp} HP left.")
+
+            # Attente pour simuler un délai entre les attaques
+            time.sleep(1)
+
+        if building.hp <= 0:
+            # Le bâtiment est détruit, on supprime l'image du bâtiment (ou on la remplace par une image vide)
+            building.image = None
+            print(f"{building.letter} has been destroyed!")
+
     def decrementer_hp_unite(self):
-        """Décroit les HP de la première unité rencontrée dans le dictionnaire tuiles."""
         # Vérifier que les tuiles existent et contiennent des unités
         for (x, y), data in tuiles.items():
             if isinstance(data, dict) and 'unites' in data:  # Vérifie si la tuile contient des unités
@@ -333,9 +491,9 @@ class Unit:
                                 return
 
 
-
+    """
     def creation_unite(self, unit_type, player):
-        """ Il faudra modifier plus tard afin de pouvoir choisir le batiment spécifique du joueur en fonction d'ou il veut créer ses unités"""
+
         # Définir le type de bâtiment nécessaire pour chaque unité
         required_buildings = {"v": "T", "a": "A", "h": "H", "s": "S"}
         building_type = required_buildings.get(unit_type)
@@ -343,7 +501,7 @@ class Unit:
         required_cost = units_dict[unit_type]['cout']
         if (compteurs_joueurs[player]["ressources"]['W'] >= required_cost['W']
                 and compteurs_joueurs[player]["ressources"]['G'] >= required_cost['G']
-                and compteurs_joueurs[player]["ressources"]['F'] >= required_cost['F']):
+                and compteurs_joueurs[player]["ressources"]['f'] >= required_cost['f']):
             if not building_type:
                 return
             if compteurs_joueurs[player]['ressources']['U'] < compteurs_joueurs[player]['ressources']['max_pop']:
@@ -354,7 +512,7 @@ class Unit:
                         if building_type in tile["batiments"][player]:
                             # Ajouter à la file d'attente de ce bâtiment
                             compteurs_joueurs[player]["ressources"]['W'] -= required_cost['W']
-                            compteurs_joueurs[player]["ressources"]['F'] -= required_cost['F']
+                            compteurs_joueurs[player]["ressources"]['f'] -= required_cost['f']
                             compteurs_joueurs[player]["ressources"]['G'] -= required_cost['G']
                             if player in compteurs_joueurs:
                                 if unit_type in compteurs_joueurs[player]['unites']:
@@ -523,6 +681,7 @@ class Unit:
                     if remaining_time > 0:
                         print(
                             f"Unité {first_unit['type']} en cours pour {first_unit['player']} à {position}. Temps restant : {int(remaining_time)} sec")
+
 
 
 

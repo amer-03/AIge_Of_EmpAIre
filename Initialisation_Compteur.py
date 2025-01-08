@@ -31,7 +31,7 @@ class Initialisation_Compteur:
             Barre_ressources("images/Town_Center.webp", "T", screen_height // 45),
             Barre_ressources("images/House.webp", "H", screen_height // 45),
             Barre_ressources("images/Camp.png", "C", screen_height // 45),
-            Barre_ressources("images/Farm - Copie.png", "F", screen_height // 45),
+            Barre_ressources("images/Farm - Copie.png", "f", screen_height // 45),
             Barre_ressources("images/Barracks.png", "B", screen_height // 45),
             Barre_ressources("images/Stable.png", "S", screen_height // 45),
             Barre_ressources("images/Archery Range.png", "A", screen_height // 45),
@@ -49,7 +49,7 @@ class Initialisation_Compteur:
                 # Ressources
                 'ressources': {
                     'W': 0,  # Bois
-                    'F': 0,  # Nourriture
+                    'f': 0,  # Nourriture
                     'G': 0,  # Or
                     'U': 0,  # Unités générales (ou autre ressource spéciale)
                     'max_pop': 195
@@ -84,7 +84,7 @@ class Initialisation_Compteur:
         for joueur, compteurs in compteurs_joueurs.items():
             if unit == "Lean":
                 compteurs['ressources']['W'] = 6000
-                compteurs['ressources']['F'] = 1150
+                compteurs['ressources']['f'] = 1150
                 compteurs['ressources']['G'] = 1150
                 compteurs['unites']['v'] = 8
                 compteurs['unites']['a'] = 1
@@ -96,10 +96,11 @@ class Initialisation_Compteur:
                 compteurs['batiments']['K'] = 2
                 compteurs['batiments']['H'] = 2
                 compteurs['batiments']['A'] = 1
+                compteurs['batiments']['F'] = 1
 
             elif unit == "Mean":
                 compteurs['ressources']['W'] = 2000
-                compteurs['ressources']['F'] = 2000
+                compteurs['ressources']['f'] = 2000
                 compteurs['ressources']['G'] = 2000
                 compteurs['unites']['v'] = 3
                 compteurs['unites']['a'] = 3
@@ -108,7 +109,7 @@ class Initialisation_Compteur:
                 compteurs['batiments']['T'] = 1
             elif unit == "Marines":
                 compteurs['ressources']['W'] = 20000
-                compteurs['ressources']['F'] = 20000
+                compteurs['ressources']['f'] = 20000
                 compteurs['ressources']['G'] = 20000
                 compteurs['unites']['v'] = 15
                 if isinstance(compteurs['unites'], dict):
@@ -140,7 +141,7 @@ class Initialisation_Compteur:
             if self.f1_active:
                 self.barres[0].barre(DISPLAYSURF, x_barre, y_barre)
                 for i, barre in enumerate(self.barres):
-                    type = ["W", "G", "F", "U"][i]
+                    type = ["W", "G", "f", "U"][i]
                     if type == "U":
                         max_value=self.compteur[joueur]['ressources']['max_pop']
                         barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,

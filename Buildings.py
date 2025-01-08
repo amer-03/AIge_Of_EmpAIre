@@ -134,7 +134,7 @@ class Buildings:
             required_cost = builds_dict[batiment]['cout']
             if (compteurs_joueurs[joueur]["ressources"]['W'] >= required_cost['W']
                     and compteurs_joueurs[joueur]["ressources"]['G'] >= required_cost['G']
-                    and compteurs_joueurs[joueur]["ressources"]['F'] >= required_cost['F']):
+                    and compteurs_joueurs[joueur]["ressources"]['f'] >= required_cost['f']):
                 if compteurs_joueurs[joueur]['ressources']['max_pop'] <= 200 - 5:
                     position = self.trouver_position_avec_offset_dynamique(x, y, taille, tuiles, size, half_size)
                     if position:
@@ -171,7 +171,7 @@ class Buildings:
 
                         # Déduire les ressources
                         compteurs_joueurs[joueur]["ressources"]['W'] -= required_cost['W']
-                        compteurs_joueurs[joueur]["ressources"]['F'] -= required_cost['F']
+                        compteurs_joueurs[joueur]["ressources"]['f'] -= required_cost['f']
                         compteurs_joueurs[joueur]["ressources"]['G'] -= required_cost['G']
                 else:
                     print("maxpop atteinte")
@@ -285,6 +285,7 @@ class Buildings:
                             'id': identifiant,
                             'principal': True,
                             'taille': taille,
+                            'parent': (x, y),
                             'HP': builds_dict[batiment]['hp']
 
                         }
@@ -302,6 +303,7 @@ class Buildings:
                             'id': identifiant,
                             'principal': True,
                             'taille': taille,
+                            'parent': (x, y),
                             'HP': builds_dict[batiment]['hp']
                         }
                     else:  # Tuiles secondaires
@@ -318,14 +320,19 @@ class Buildings:
                             'id': identifiant,
                             'principal': True,
                             'taille': taille,
-                            'HP': builds_dict[batiment]['hp']
+                            'parent': (x, y),
+                            'HP': builds_dict[batiment]['hp'],
+                            **({'quantite': builds_dict[batiment]['quantite']} if 'quantite' in builds_dict[
+                                batiment] else {})
                         }
                     else:  # Tuiles secondaires
                         tuiles[tuile_position]['batiments'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': False,
                             'parent': (x, y),
-                            'HP': builds_dict[batiment]['hp']
+                            'HP': builds_dict[batiment]['hp'],
+                            **({'quantite': builds_dict[batiment]['quantite']} if 'quantite' in builds_dict[
+                                batiment] else {})
                         }
                 elif taille == 1:
                     if dx == 0 and dy ==0:  # Nouvelle tuile principale 0-0
@@ -333,6 +340,7 @@ class Buildings:
                             'id': identifiant,
                             'principal': True,
                             'taille': taille,
+                            'parent': (x, y),
                             'HP': builds_dict[batiment]['hp']
                         }
                     else:  # Tuiles secondaires
@@ -365,7 +373,7 @@ class Buildings:
             offsets = self.generer_offsets()
 
             for batiment, nombre in data['batiments'].items():
-                taille = builds_dict[batiment]['taille']  # Taille du bâtiment (ex. 4 pour un bâtiment 4x4)
+                taille = builds_dict[batiment]['taille']
 
                 for i in range(nombre):
                     coord_libres = None

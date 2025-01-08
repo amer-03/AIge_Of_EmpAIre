@@ -75,7 +75,7 @@ ressources_dict = {
 units_dict = {
     'v': {
         'image': Tile("images/sprites/Unit/villager/img_0.webp", 32, 32),
-        'cout': {'G': 0, 'F': 50, 'W': 0},
+        'cout': {'G': 0, 'f': 50, 'W': 0},
         'hp': 25,
         'temps_entrainement': 25,
         'attaque': 2,
@@ -83,24 +83,24 @@ units_dict = {
         'capacité' : 20
     },
     's': {  # Épéiste
-        'image': Tile("images/img_1.webp", 32, 32),
-        'cout': {'G': 20, 'F': 50, 'W': 0},
+        'image': Tile("images/sprites/Unit/swordman/img_0.webp", 32, 32),
+        'cout': {'G': 20, 'f': 50, 'W': 0},
         'hp': 40,
         'temps_entrainement': 20,
         'attaque': 4,
         'vitesse': 0.9
     },
     'h': {  # Cavalier
-        'image': Tile("images/cavalier.png", 32, 32),
-        'cout': {'G': 20, 'F': 80, 'W': 0},
+        'image': Tile("images/sprites/Unit/horseman/img_0.webp", 32, 32),
+        'cout': {'G': 20, 'f': 80, 'W': 0},
         'hp': 45,
         'temps_entrainement': 30,
         'attaque': 4,
         'vitesse': 1.2
     },
     'a': {  # Archer
-        'image': Tile("images/archer.png", 30, 30),
-        'cout': {'G': 45, 'F': 0, 'W': 25},
+        'image': Tile("images/sprites/Unit/archer/img_0.webp", 30, 30),
+        'cout': {'G': 45, 'f': 0, 'W': 25},
         'hp': 30,
         'temps_entrainement': 35,
         'attaque': 4,
@@ -112,57 +112,57 @@ builds_dict = {
     'T': {
         'tile': Tile("images/Town_Center.webp", 200, 128),
         'taille': 4,
-        'cout': {'G': 0, 'W': 350, 'F': 0},
+        'cout': {'G': 0, 'W': 350, 'f': 0},
         'build_time': 5,  # Temps en secondes
         'hp': 1000
     },
     'H': {
         'tile': Tile("images/House.webp", 90, 70),
         'taille': 2,
-        'cout': {'G': 0, 'W': 25, 'F': 0},
+        'cout': {'G': 0, 'W': 25, 'f': 0},
         'build_time': 25,
         'hp': 200
     },
     'C': {
         'tile': Tile("images/Camp.png", 90, 70),
         'taille': 2,
-        'cout': {'G': 0, 'W': 100, 'F': 0},
+        'cout': {'G': 0, 'W': 100, 'f': 0},
         'build_time': 25,
         'hp': 200
     },
     'F': {
-        'tile': Tile("images/Farm - Copie.png", 90, 70),
+        'tile': Tile("images/Farm - Copie.png", 60, 60),
         'taille': 2,
-        'cout': {'G': 0, 'W': 60, 'F': 0},
+        'cout': {'G': 0, 'W': 60, 'f': 0},
         'build_time': 10,
         'hp': 100,
-        'nombre': 300
+        'quantite': 300
     },
     'B': {
         'tile': Tile("images/Barracks.png", 128, 100),
         'taille': 3,
-        'cout': {'G': 0, 'W': 175, 'F': 0},
+        'cout': {'G': 0, 'W': 175, 'f': 0},
         'build_time': 50,
         'hp': 500
     },
     'S': {
         'tile': Tile("images/Stable.png", 128, 100),
         'taille': 3,
-        'cout': {'G': 0, 'W': 175, 'F': 0},
+        'cout': {'G': 0, 'W': 175, 'f': 0},
         'build_time': 50,
         'hp': 500
     },
     'A': {
         'tile': Tile("images/Archery Range.png", 128, 100),
         'taille': 3,
-        'cout': {'G': 0, 'W': 175, 'F': 0},
+        'cout': {'G': 0, 'W': 175, 'f': 0},
         'build_time': 50,
         'hp': 500
     },
     'K': {
         'tile': Tile("images/Keep.png", 64, 64),
         'taille': 1,
-        'cout': {'G': 125, 'W': 35, 'F': 0},
+        'cout': {'G': 125, 'W': 35, 'f': 0},
         'build_time': 80,
         'hp': 800
     }
