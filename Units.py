@@ -20,13 +20,23 @@ class Units:
         self.vitesse=vitesse
 
         self.frame_index = 0 # indice du frame dans une ligne
-        self.direction_index = 8 # indice du frame dans une colonne
-        self.last_time = pygame.time.get_ticks() # dernier moment du sprite (dernière action)
+        self.frame_duration=0
+        self.direction_index = 14 # indice du frame dans une colonne
+        self.stat=""
+        
+    def is_alive(self):
+        """test s'il est en vie"""
+        return self.hp > 0
     
-    def animation(self,current_time):  # fonction qui modifie l'indice des frames et le dernier temps du frame
-        if current_time - self.last_time > 1000//30: #1000//30: 30 frames par 1000 millisecondes
-            self.last_time = current_time
+    def distance_to(self, other):
+        """distance entre 2 unités"""
+        return math.sqrt((self.position.x - Coordinates.to_tuple(other)[0]) ** 2 + (self.position.y - Coordinates.to_tuple(other)[1]) ** 2)
+    
+    def animation(self,dt):  # fonction qui modifie l'indice des frames et le dernier temps du frame
+        self.frame_duration+=dt
+        if  self.frame_duration > 1/30: #1//30: 30 frames par 1seconde 
             self.frame_index = (self.frame_index + 1) % 30
+            self.frame_duration=0
             #self.direction_index=(self.direction_index + 1) % 16
 
     def frame_coordinates(self,unit_image):
@@ -40,39 +50,41 @@ class Units:
 
         return frame_x, frame_y, frame_width, frame_height
 
-    def movement(self,nposition,cam_x,cam_y):
-        while self.position.x<nposition.x and self.position.y<nposition.y:
-            self.position.x-=0.04
-            self.position.y+=0.04
-            niso_x,niso_y=self.position.to_iso(cam_x,cam_y)
-            return niso_x, niso_y
+    def movement(self, destination, dt):
+        """déplacement du joueur"""
+        if self.is_alive():
+            direction = (Coordinates.to_tuple(destination)[0] - self.position.x,Coordinates.to_tuple(destination)[1] - self.position.y)
+            distance_to_destination = self.distance_to(destination)
+
+            if distance_to_destination > 0:
+                direction_normalized = (direction[0] / distance_to_destination, direction[1] / distance_to_destination)
             
-    def diplay_unit(self, cam_x, cam_y, current_time):             
+                step = self.vitesse * dt
+                step_x = direction_normalized[0] * step
+                step_y = direction_normalized[1] * step
+                
+                self.position.x += step_x
+                self.position.y += step_y
+    
+    def display_unit(self, cam_x, cam_y, dt):             
         #coordonnées isométrique    
-        iso_x, iso_y = self.position.to_iso(cam_x, cam_y)
-                    
+        iso_x, iso_y = self.position.to_iso(cam_x, cam_y) 
+
         #appel de la fonction de l'animation
-        self.animation(current_time)
+        self.animation(dt)
 
         #appel de la fonction frame_coordinates
         frame_x,frame_y, frame_width, frame_height = self.frame_coordinates(self.image)
 
         #enlever un frame de l'image principal et l'afficher a la fois
         frame_rect = pygame.Rect(frame_x,frame_y, frame_width, frame_height)
-        self_frame =  self.image.subsurface(frame_rect)
-
-        DISPLAYSURF.blit(self_frame,(iso_x,iso_y))
-        #self.movement(Coordinates(-3,3),cam_x,cam_y)
-
-    def is_alive(self):
-        return self.hp > 0
+        frame =  self.image.subsurface(frame_rect)
+        self.movement(Coordinates(60,30),dt)
+        DISPLAYSURF.blit(frame,(iso_x,iso_y))
 
     def take_damage(self, other, damage):
         self.hp -= damage
         print(f"{self.lettre} attacks {other.lettre} for {self.attaque} damage. {other.lettre} has {other.hp} HP left.")
-
-    def distance_to(self, other):
-        return math.sqrt((Coordinates.to_tuple(self.position)[0] - Coordinates.to_tuple(other.position)[0]) ** 2 + (Coordinates.to_tuple(self.position)[1] - Coordinates.to_tuple(other.position)[1]) ** 2)
     
     def attack(self, other, image):
         while self.is_alive() and other.is_alive():            
@@ -81,11 +93,3 @@ class Units:
                 self.take_damage(other, other.attaque)
             if other.distance_to(self) <= other.range:
                 other.take_damage(self, self.attaque)
-        
-        if not self.is_alive():
-            self.image=image
-            
-        elif not other.is_alive():
-            other.image=image
-        
-        #time.sleep(1)  # Pause for better visualization

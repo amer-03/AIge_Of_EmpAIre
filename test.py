@@ -22,14 +22,12 @@ class Test:
         self.camera=Camera()
         self.tile_map = TileMap()
 
-        self.villager = Villager(villager2, Coordinates(0,0))
-        self.archer = Archer(archer2, Coordinates(1,0)) 
+        self.villager = Villager(villager1, Coordinates(60,60))
         
         self.tiles={}
         
         self.tile_map.add_unit(self.villager,Villager,1,1,self.tiles)        
-        self.tile_map.add_unit(self.archer,Archer,1,2,self.tiles)
-               
+                       
         assert self.tiles!={}, "units not added"
         
         self.towncenter1= TownCenter(Tile("images/Town_Center.webp", 200, 128).image,Coordinates(0,20))
@@ -59,7 +57,9 @@ class Test:
 
     def run(self):
         running=True
+        FPSCLOCK = pygame.time.Clock()
         while running:
+            dt=FPSCLOCK.tick(600)/1000            
             key = pygame.key.get_pressed()
             for event in pygame.event.get():
                 if event.type== pygame.QUIT:
@@ -92,15 +92,8 @@ class Test:
             for position,players in self.tiles.items():
                 for player,units in players.items():
                     for unit in units:
-                        unit.attack(unit,villager3)
-                        unit.diplay_unit(self.camera.cam_x, self.camera.cam_y, pygame.time.get_ticks())
-
-           
-            # affichage de la carte dans un terminal
-            with open("map.txt","w") as file:
-                for i in range(len(map_data)):
-                   for j in range(len(map_data[i])):
-                        file.write(map_data[i][j])
+                        #unit.attack(unit,villager3)
+                        unit.display_unit(self.camera.cam_x, self.camera.cam_y, dt)
 
             fps = int(FPSCLOCK.get_fps())
             fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
@@ -109,5 +102,5 @@ class Test:
 
             pygame.display.update()
             pygame.display.flip()
-            FPSCLOCK.tick(600)
+            
             # print(self.tiles)       
