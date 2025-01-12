@@ -641,6 +641,14 @@ class Game:
                     type_a = 'T'
                     id_a = 'T0'
                     for pos, data in tuiles.items():
+                        if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
+                            print(data['unites'][joueur_a])
+                            if id_a in data['unites'][joueur_a][type_a]:
+                                position_a = pos
+                                break
+
+
+                    for pos, data in tuiles.items():
                         if 'batiments' in data and joueur_a in data['batiments'] and type_a in data['batiments'][joueur_a]:
                             #print("ok")
                             if data['batiments'][joueur_a][type_a]['id'] == id_a:
@@ -745,7 +753,7 @@ class Game:
                         current_time,
                         unit_image
                     )
-
+                self.unit.update_attacks()
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
 

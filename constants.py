@@ -114,7 +114,7 @@ builds_dict = {
         'taille': 4,
         'cout': {'G': 0, 'W': 350, 'f': 0},
         'build_time': 5,  # Temps en secondes
-        'hp': 1000
+        'hp': 10
     },
     'H': {
         'tile': Tile("images/House.webp", 90, 70),

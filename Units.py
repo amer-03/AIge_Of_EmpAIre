@@ -36,6 +36,7 @@ class Unit:
         self.moving_unit=None
 
         self.start_time_offset = 0
+        self.attacks_in_progress = []
 
 
     def deplacer_unite(self, joueur, type_unite, id_unite, nouvelle_position):
@@ -273,20 +274,9 @@ class Unit:
                         #    'occupé': False  # Récupérer les HP depuis units_images
                         #}
 
-    def is_alive(self):
-        return self.hp > 0
-
-    def take_damage(self, other, damage):
-        self.hp -= damage
-        print(f"{self.lettre} attacks {other.lettre} for {self.attaque} damage. {other.lettre} has {other.hp} HP left.")
-
-    def distance_to(self, other):
-        return math.sqrt((Coordinates.to_tuple(self.position)[0] - Coordinates.to_tuple(other.position)[0]) ** 2 + (
-                    Coordinates.to_tuple(self.position)[1] - Coordinates.to_tuple(other.position)[1]) ** 2)
-
     def attack(self, joueur_a, type_a, id_a, joueur_b, type_b, id_b):
+        # Recherche des informations de l'unité attaquante
         position_a = None
-        position_b = None
         for pos, data in tuiles.items():
             if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
                 if id_a in data['unites'][joueur_a][type_a]:
@@ -294,15 +284,10 @@ class Unit:
                     position_a = pos
                     hp_a = unit_info_a['HP']
                     status_a = unit_info_a['Status']
-                    capacite_a = unit_info_a.get('capacite', 0)
                     break
 
-            # Recherche des caractéristiques dans `units_dict`
-        unit_data_a = units_dict[type_a]
-        lettre_a = type_a
-        attaque_a = unit_data_a['attaque']
-        range_a = unit_data_a.get('range', 1)
-
+        # Recherche des informations de l'unité cible
+        position_b = None
         for pos, data in tuiles.items():
             if 'unites' in data and joueur_b in data['unites'] and type_b in data['unites'][joueur_b]:
                 if id_b in data['unites'][joueur_b][type_b]:
@@ -310,46 +295,28 @@ class Unit:
                     position_b = pos
                     hp_b = unit_info_b['HP']
                     status_b = unit_info_b['Status']
-                    capacite_b = unit_info_b.get('capacite', 0)
                     break
 
-            # Recherche des caractéristiques dans `units_dict`
-        unit_data_b = units_dict[type_b]
-        lettre_b = type_b
-        attaque_b = unit_data_b['attaque']
-        range_b = unit_data_b.get('range', 1)
+        if not position_a or not position_b:
+            print("Erreur : unités introuvables.")
+            return
 
-        #print(position_a, hp_a, status_a, capacite_a,lettre_a,attaque_a,range_a)
-        #print(position_b, hp_b, status_b, capacite_b,lettre_b,attaque_b,range_b)
-
-
-        while hp_b > 0:
-            # Calcul de la distance entre les positions des unités A et B
-            distance = abs(position_a[0] - position_b[0]) + abs(position_a[1] - position_b[1])
-
-            # Vérifie si l'unité B est à portée de l'unité A
-            if distance <= range_a:
-                if hp_b <= 0:
-
-                    print(f"L'unité {lettre_b} est détruite !")
-                    if joueur_b in compteurs_joueurs:
-                        if type_b in compteurs_joueurs[joueur_b]['unites'] and \
-                                compteurs_joueurs[joueur_b]['unites'][type_b] > 0:
-                            compteurs_joueurs[joueur_b]['unites'][type_b] -= 1
-                    break
-                print(f"Attaque : unité {lettre_a} attaque unité {lettre_b}")
-                # Appliquer les dégâts de A à B
-                hp_b -= attaque_a
-                print(f"Unité {lettre_b} perd {attaque_a} HP, il lui reste {max(hp_b, 0)} HP")
-                time.sleep(1)
-
-                # Si les HP de B tombent à 0 ou en dessous, on termine l'attaque
-
-            else:
-                print(f"L'unité {lettre_b} est hors de portée de l'unité {lettre_a}.")
-                break
-
-
+        # Enregistre l'attaque dans les attaques en cours
+        self.attacks_in_progress.append({
+            "attacker": unit_info_a,
+            "attacker_position": position_a,
+            "target_position": position_b,
+            "target_hp": hp_b,
+            "target": {
+                "joueur": joueur_b,
+                "type": type_b,
+                "id": id_b
+            },
+            "attack_power": units_dict[type_a]['attaque'],
+            "range": units_dict[type_a].get('range', 1),
+            "next_attack_time": pygame.time.get_ticks() + 1000,  # Première attaque après 1 seconde
+            "is_building_attack": False  # Pour différencier unité vs bâtiment
+        })
 
     def attack_building(self, joueur_a, type_a, id_a, joueur_b, type_b, id_b):
         # Initialisation des positions
@@ -383,78 +350,115 @@ class Unit:
 
         for pos, data in tuiles.items():
             if 'batiments' in data and joueur_b in data['batiments'] and type_b in data['batiments'][joueur_b]:
-                # Vérifie si le bâtiment a le bon id
                 if data['batiments'][joueur_b][type_b]['id'] == id_b:
-                    # Récupère les informations du bâtiment
                     building_info_b = data['batiments'][joueur_b][type_b]
                     parent_b = building_info_b['parent']
                     building_hp = building_info_b['HP']
 
                     # Collecte toutes les tuiles appartenant au bâtiment (ayant le même parent)
                     if building_info_b['parent'] == parent_b:
-                        print(f"Position actuelle du bâtiment : {pos}")
-                        print(f"Informations du bâtiment : {building_info_b}")
                         building_tiles.append((pos, building_info_b))
 
-        # Vérification que le bâtiment a bien été trouvé
         if not building_tiles:
             print(f"Erreur : bâtiment {type_b} avec ID {id_b} du joueur {joueur_b} introuvable.")
             return
 
-        # Attaque du bâtiment
-        while building_hp > 0:
-            # Calcul de la distance entre les positions de l'unité A et du bâtiment B
-            distance = abs(position_a[0] - parent_b[0]) + abs(position_a[1] - parent_b[1])
+        # Enregistre l'attaque dans les tâches en cours
+        self.attacks_in_progress.append({
+            "attacker": unit_info_a,
+            "attacker_position": position_a,
+            "target_hp": building_hp,
+            "target_position": parent_b,
+            "building_tiles": building_tiles,
+            "target": {
+                "joueur": joueur_b,
+                "type": type_b,
+                "id": id_b
+            },
+            "attack_power": attaque_a,
+            "range": range_a,
+            "is_building_attack": True,
+            "next_attack_time": pygame.time.get_ticks() + 1000
+        })
 
-            # Vérifie si le bâtiment B est à portée de l'unité A
-            if distance <= range_a:
-                print(f"Attaque : unité {lettre_a} attaque bâtiment {type_b}")
-                # Réduction des HP de toutes les tuiles du bâtiment
-                for pos, building_part in building_tiles:
-                    building_part['HP'] -= attaque_a
+    def update_attacks(self):
+        current_time = pygame.time.get_ticks()
+        completed_attacks = []
 
-                # Mise à jour des HP globaux
-                building_hp -= attaque_a
-                print(f"Bâtiment {type_b} perd {attaque_a} HP, il lui reste {max(building_hp, 0)} HP")
-                #time.sleep(1)
+        for attack in self.attacks_in_progress:
+            if current_time >= attack["next_attack_time"]:
+                attacker = attack["attacker"]
+                attack_power = attack["attack_power"]
+                target_hp = attack["target_hp"]
+                range_a = attack["range"]
+                attacker_position = attack["attacker_position"]
+                target_position = attack["target_position"]
 
-                # Si les HP tombent à 0, on détruit le bâtiment
-                if building_hp <= 0:
-                    print(f"Le bâtiment {type_b} est détruit !")
-                    # Suppression des tuiles contenant uniquement le bâtiment
-                    for pos, building_part in building_tiles:
-                        if len(tuiles[pos]) == 1:  # Si la tuile contient uniquement le bâtiment
-                            del tuiles[pos]['batiments']
-                        else:
-                            del tuiles[pos]['batiments'][joueur_b][type_b]
+                if attack["is_building_attack"]:
+                    # Gestion des attaques contre des bâtiments
+                    building_tiles = attack["building_tiles"]
+                    target_position = attack["target_position"]
 
-                    # Mise à jour des compteurs
-                    if joueur_b in compteurs_joueurs:
-                        if type_b in compteurs_joueurs[joueur_b]['batiments'] and \
-                                compteurs_joueurs[joueur_b]['batiments'][type_b] > 0:
-                            compteurs_joueurs[joueur_b]['batiments'][type_b] -= 1
-                    break
-            else:
-                print(f"Le bâtiment {type_b} est hors de portée de l'unité {lettre_a}.")
-                break
+                    distance = abs(attacker_position[0] - target_position[0]) + abs(
+                        attacker_position[1] - target_position[1])
 
-        """
+                    if distance <= range_a:
+                        attack["target_hp"] -= attack_power
+                        print(
+                            f"L'unité inflige {attack_power} dégâts au bâtiment. HP restant : {max(attack['target_hp'], 0)}")
+                        attack["next_attack_time"] = current_time + 1000
 
-    def attack_building(self, building):
-        while self.is_alive() and building.hp > 0:
-            if self.distance_to(building) <= self.range:
-                # L'unité inflige des dégâts au bâtiment
-                building.hp -= self.attaque
-                print(
-                    f"{self.lettre} attacks {building.letter} for {self.attaque} damage. {building.letter} has {building.hp} HP left.")
+                        if attack["target_hp"] <= 0:
+                            print(f"Le bâtiment est détruit !")
+                            completed_attacks.append(attack)
 
-            # Attente pour simuler un délai entre les attaques
-            time.sleep(1)
+                            for pos, building_part in building_tiles:
+                                if "ressources" not in tuiles[pos] and "unites" not in tuiles[pos]:
+                                    # Si la tuile ne contient ni "ressources" ni "unites", supprimer la tuile complètement
+                                    del tuiles[pos]
+                                else:
+                                    # Sinon, on supprime les bâtiments présents dans la tuile
+                                    if len(tuiles[pos]) == 1:
+                                        del tuiles[pos]["batiments"]
+                                    else:
+                                        del tuiles[pos]["batiments"][building_part['joueur']][building_part['type']]
+                            print(tuiles)
+                            joueur_b = attack["target"]["joueur"]
+                            type_b = attack["target"]["type"]
+                            id_b = attack["target"]["id"]
+                            if joueur_b in compteurs_joueurs:
+                                if type_b in compteurs_joueurs[joueur_b]['batiments'] and \
+                                        compteurs_joueurs[joueur_b]['batiments'][type_b] > 0:
+                                    compteurs_joueurs[joueur_b]['batiments'][type_b] -= 1
 
-        if building.hp <= 0:
-            # Le bâtiment est détruit, on supprime l'image du bâtiment (ou on la remplace par une image vide)
-            building.image = None
-            print(f"{building.letter} has been destroyed!")
+                else:
+                    # Gestion des attaques contre des unités
+                    distance = abs(attacker_position[0] - target_position[0]) + abs(
+                        attacker_position[1] - target_position[1])
+
+                    if distance <= range_a:
+                        attack["target_hp"] -= attack_power
+                        print(
+                            f"L'unité inflige {attack_power} dégâts à l'unité. HP restant : {max(attack['target_hp'], 0)}")
+                        attack["next_attack_time"] = current_time + 1000
+
+                        if attack["target_hp"] <= 0:
+                            print(f"L'unité est détruite !")
+                            completed_attacks.append(attack)
+
+                            # Suppression de l'unité de `tuiles`
+                            joueur_b = attack["target"]["joueur"]
+                            type_b = attack["target"]["type"]
+                            id_b = attack["target"]["id"]
+                            del tuiles[target_position]['unites'][joueur_b][type_b][id_b]
+                            if joueur_b in compteurs_joueurs:
+                                if type_b in compteurs_joueurs[joueur_b]['unites'] and \
+                                        compteurs_joueurs[joueur_b]['unites'][type_b] > 0:
+                                    compteurs_joueurs[joueur_b]['unites'][type_b] -= 1
+
+
+        for attack in completed_attacks:
+            self.attacks_in_progress.remove(attack)
 
     def decrementer_hp_unite(self):
         # Vérifier que les tuiles existent et contiennent des unités
@@ -490,8 +494,6 @@ class Unit:
                                         del tuiles[(x, y)]['unites']
                                 return
 
-
-    """
     def creation_unite(self, unit_type, player):
 
         # Définir le type de bâtiment nécessaire pour chaque unité
