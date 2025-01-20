@@ -661,6 +661,7 @@ class Game:
                     print(new_pos)
 
                     self.unit.deplacer_unite('joueur_1','a',0,new_pos )
+                    print(tuiles)
 
                 if event.type == KEYDOWN and event.key == K_f:
                     self.unit.attack_building('joueur_1','a',0, 'joueur_2','T','T0')

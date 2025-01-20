@@ -59,9 +59,12 @@ class Unit:
             del tuiles[position_actuelle]['unites'][joueur][type_unite]
         if not tuiles[position_actuelle]['unites'][joueur]:
             del tuiles[position_actuelle]['unites'][joueur]
-        if position_actuelle in tuiles:
-            if 'unites' in tuiles[position_actuelle]:
-                del tuiles[position_actuelle]['unites']
+        if not tuiles[position_actuelle]['unites']:
+            del tuiles[position_actuelle]['unites']
+
+        # Vérification si la clé 'unites' a été supprimée, alors supprimer complètement la tuile
+        if 'unites' not in tuiles[position_actuelle]:
+            del tuiles[position_actuelle]
 
 
         self.target_position = nouvelle_position
@@ -118,6 +121,7 @@ class Unit:
             if self.deplacement_termine and action_a_executer:
                 action = action_a_executer.pop(0)
                 action()
+
 
         else:
 
