@@ -98,7 +98,7 @@ class TileMap:
 
                 # Vérifier si la nouvelle position est dans la carte et vide
                 if 0 <= new_x < size and 0 <= new_y < size:
-                    tuiles[new_x, new_y] = "G"  # Placer une tuile d'or
+                    tuiles[(new_x, new_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
 
     def apply_color_filter(self, surface, color):
         """
