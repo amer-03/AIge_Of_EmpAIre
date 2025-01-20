@@ -56,6 +56,7 @@ class Game:
         self.n = 2  # Définition du nombre de joueurs
         self.plus = None
         self.moins = None
+        self.sauvegarde = None
 
         # TERMINAL
 
@@ -137,6 +138,7 @@ class Game:
         menu_text_rect = menu_text.get_rect(center=(screen_width // 2, 100))
         DISPLAYSURF.blit(menu_text, menu_text_rect)
 
+
         card_color1 = YELLOW if self.selected_unit == "Lean" else BLACK
         card_color2 = YELLOW if self.selected_unit == "Mean" else BLACK
         card_color3 = YELLOW if self.selected_unit == "Marines" else BLACK
@@ -149,6 +151,7 @@ class Game:
         card4_text = small_font.render("Map 1", True, card_color4)
         card5_text = small_font.render("Map 2", True, card_color5)
         start_text = small_font.render("Commencer la Partie", True, GREEN)
+        save_text = small_font.render("Sauvegardes", True, GREEN)
 
         self.card1_rect = card1_text.get_rect(topleft=(screen_width // 2 - 150, 200))
         self.card2_rect = card2_text.get_rect(topleft=(screen_width // 2 - 150, 250))
@@ -208,6 +211,9 @@ class Game:
         self.start_rect = start_text.get_rect(center=(screen_width // 2, 500))
         DISPLAYSURF.blit(start_text, self.start_rect.topleft)
 
+        self.save = save_text.get_rect(center=(screen_width // 2, 600))
+        DISPLAYSURF.blit(save_text, self.save.topleft)
+
         pygame.display.update()
 
     def ajouter_unite(self, joueur, type_unite, id_unite, position, hp, status="libre"):
@@ -237,8 +243,19 @@ class Game:
             # Vérifier la sélection des unités
             x, y = event.pos
 
-            # Clic sur la flèche +
-            if self.plus.collidepoint(x, y):
+            if self.save.collidepoint(x, y):
+                fichier = self.save_and_load.choisir_fichier_sauvegarde()
+                if fichier:
+                    nouvelles_tuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
+                    if nouvelles_tuiles and nouveaux_compteurs:
+                        tuiles.clear()
+                        tuiles.update(nouvelles_tuiles)
+                        compteurs_joueurs.clear()
+                        compteurs_joueurs.update(nouveaux_compteurs)
+                self.menu_active = False
+                pygame.display.update()
+
+            elif self.plus.collidepoint(x, y):
                 if self.n < 10:  # Limiter à 10 joueurs
                     self.n += 1
 
@@ -287,7 +304,7 @@ class Game:
 
                 self.unit.initialisation_compteur(position)
                 self.draw_mini_map(DISPLAYSURF)
-                print(tuiles)
+                #print(tuiles)
 
 
 
