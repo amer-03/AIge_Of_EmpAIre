@@ -146,9 +146,13 @@ class Initialisation_Compteur:
                         max_value=self.compteur[joueur]['ressources']['max_pop']
                         barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
                                total_images,max_value)
+                        color = PLAYER_COLORS.get(joueur, (255, 255, 255))
+                        barre.draw_title(DISPLAYSURF, joueur, x_barre, y_barre,color)
                     else :
                         barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
                                    total_images, None)
+                        color = PLAYER_COLORS.get(joueur, (255, 255, 255))
+                        barre.draw_title(DISPLAYSURF, joueur, x_barre, y_barre, color)
 
             # Affiche les unités (f2_active)
             if self.f2_active:

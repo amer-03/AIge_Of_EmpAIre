@@ -735,7 +735,7 @@ class Game:
                 self.buildings.update_creation_times()
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
-                self.draw_mini_map(DISPLAYSURF)
+
 
                 self.unit.update_position()
                 current_time = pygame.time.get_ticks()
@@ -754,6 +754,7 @@ class Game:
                         current_time,
                         unit_image
                     )
+                self.draw_mini_map(DISPLAYSURF)
                 self.unit.update_attacks()
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
@@ -763,6 +764,7 @@ class Game:
                 self.Initialisation_compteur.update_compteur()
                 fps = int(FPSCLOCK.get_fps())
                 fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
+
                 DISPLAYSURF.blit(fps_text, (10, 10))
                 pygame.display.update()
                 pygame.display.flip()
