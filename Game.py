@@ -598,6 +598,34 @@ class Game:
             terminal_thread.daemon = True
             terminal_thread.start()
 
+    def draw_minimap_viewbox(self, DISPLAYSURF):
+        # Position et taille minimap
+        minimap_x = screen_width - self.mini_map_size_x - 10
+        minimap_y = screen_height - self.mini_map_size_y - 10
+        view_width = self.mini_map_size_x // 4
+        view_height = self.mini_map_size_y // 4
+
+        #L'échelle comme dans handle_mini_map_click
+        scale_x = size * (tile_grass.width_half * 2) / self.mini_map_size_x
+        scale_y = size * tile_grass.height_half / self.mini_map_size_y
+
+        rect_x = (self.cam_x + screen_width // 2) / scale_x + self.mini_map_size_x // 2
+        rect_y = (self.cam_y + screen_height // 2) / scale_y + self.mini_map_size_y // 2
+
+        # On ajuste aux coordonnées de la minimap
+        rect_x = minimap_x + rect_x - (view_width // 2)
+        rect_y = minimap_y + rect_y - (view_height // 2)
+
+        # On garde dans les limites
+        rect_x = max(minimap_x, min(rect_x, minimap_x + self.mini_map_size_x - view_width))
+        rect_y = max(minimap_y, min(rect_y, minimap_y + self.mini_map_size_y - view_height))
+
+        # Affichage rectangle
+        view_surface = pygame.Surface((view_width, view_height), pygame.SRCALPHA)
+        pygame.draw.rect(view_surface, (255, 255, 255, 100), view_surface.get_rect())
+        DISPLAYSURF.blit(view_surface, (rect_x, rect_y))
+        pygame.draw.rect(DISPLAYSURF, (255, 255, 255), 
+                        (rect_x, rect_y, view_width, view_height), 2)
 
     def run(self):
         """Boucle principale du jeu."""
@@ -736,6 +764,7 @@ class Game:
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
                 self.draw_mini_map(DISPLAYSURF)
+                self.draw_minimap_viewbox(DISPLAYSURF)
 
                 self.unit.update_position()
                 current_time = pygame.time.get_ticks()
@@ -769,4 +798,3 @@ class Game:
 
             pygame.display.update()
             FPSCLOCK.tick(60)
-
