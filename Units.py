@@ -12,7 +12,7 @@ from numpy.random import poisson
 
 
 class Unit:
-    def __init__(self):
+    def __init__(self, image, position, lettre, cout, hp, temps_entrainement, attaque, vitesse):
         self.tile_grass = tile_grass
         self.map_data = map_data  # Dictionnaire global à modifier
         self.compteurs_joueurs = compteurs_joueurs
@@ -128,10 +128,6 @@ class Unit:
             new_x = start_x + (target_x - start_x) * progress
             new_y = start_y + (target_y - start_y) * progress
             self.position = (new_x, new_y)
-
-
-
-
 
     def animation(self, current_time):  # fonction qui modifie l'indice des frames et le dernier temps du frame
         if current_time - self.last_time > 1000 // 30:  # 1000//30: 30 frames par 1000 millisecondes
@@ -455,8 +451,6 @@ class Unit:
                                 if type_b in compteurs_joueurs[joueur_b]['unites'] and \
                                         compteurs_joueurs[joueur_b]['unites'][type_b] > 0:
                                     compteurs_joueurs[joueur_b]['unites'][type_b] -= 1
-
-
         for attack in completed_attacks:
             self.attacks_in_progress.remove(attack)
 
@@ -683,26 +677,3 @@ class Unit:
                     if remaining_time > 0:
                         print(
                             f"Unité {first_unit['type']} en cours pour {first_unit['player']} à {position}. Temps restant : {int(remaining_time)} sec")
-
-
-
-
-
-class Villager(Unit):
-    def __init__(self, image, lettre='v', cout={'Gold': 0, 'Food': 50, 'Wood': 0}, hp=25, temps_entrainement= 25,attaque=2, vitesse=0.8):
-        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
-
-
-class Swordman(Unit):
-    def __init__(self, image, lettre='s', cout={'Gold': 20, 'Food': 50, 'Wood': 0}, hp=40, temps_entrainement= 20,attaque=4, vitesse=0.9):
-        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
-
-
-class Horseman(Unit):
-    def __init__(self,image, lettre='h', cout={'Gold': 20, 'Food': 80, 'Wood': 0}, hp=45, temps_entrainement= 30,attaque=4, vitesse=1.2):
-        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
-
-
-class Archer(Unit):
-    def __init__(self, image, lettre='a', cout={'Gold': 45, 'Food': 0, 'Wood': 25}, hp=30, temps_entrainement= 35, attaque=4, vitesse=1):
-        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
