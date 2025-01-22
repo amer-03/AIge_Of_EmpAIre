@@ -559,10 +559,10 @@ class Game:
                 browser = webbrowser.get("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe %s")
                 browser.open(f"file:///{file_path}")
 
-            elif key == ord('t'):
+            elif key == curses.KEY_F9:
                 self.ouvrir_terminal()
 
-            time.sleep(0.1)  # Pause pour éviter d'utiliser trop de CPU
+            #time.sleep(0.1)  # Pause pour éviter d'utiliser trop de CPU
 
     def ouvrir_terminal(self):
         if self.terminal_active:
@@ -638,7 +638,7 @@ class Game:
                 if event.type == KEYDOWN and event.key == K_F3:
                     self.Initialisation_compteur.f3_active = not self.Initialisation_compteur.f3_active
 
-                if event.type == KEYDOWN and event.key == K_t:
+                if event.type == KEYDOWN and event.key == K_F9:
                     self.ouvrir_terminal()
 
                 if event.type == KEYDOWN and event.key == K_u:
