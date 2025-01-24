@@ -695,15 +695,43 @@ class Game:
                     self.unit.attack_building('joueur_1','a',0, 'joueur_2','T','T0')
 
                 if event.type == KEYDOWN and event.key == K_h:
-
-
                     joueur = 'joueur_1'
                     type_unite = 'v'
                     id_unite = 0
+                    position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='F')
+                    
+                    # Add error checking
+                    if position is not None:
+                        print(f"Moving to position: {position}")
+                        self.unit.deplacer_unite(joueur, type_unite, id_unite, position)
+                        action_a_executer.append(
+                            lambda posress=position: self.recolte.recolter_ressource_plus_proche_via_trouver(
+                                joueur, type_unite, id_unite, posress=posress
+                            )
+                        )
+                        
+                        def action_apres_deplacement():
+                            if (self.unit.position in tuiles and 
+                                'unites' in tuiles[self.unit.position] and
+                                joueur in tuiles[self.unit.position]['unites'] and
+                                type_unite in tuiles[self.unit.position]['unites'][joueur] and
+                                id_unite in tuiles[self.unit.position]['unites'][joueur][type_unite] and
+                                int(tuiles[self.unit.position]['unites'][joueur][type_unite][id_unite]['capacite']) == 20):
+                                
+                                pos_batiment = self.recolte.trouver_plus_proche_batiment(joueur, type_unite, id_unite)
+                                if pos_batiment:
+                                    self.unit.deplacer_unite(joueur, type_unite, id_unite, pos_batiment)
 
+                        action_a_executer.append(action_apres_deplacement)
+                    else:
+                        print("No valid resource position found")
+
+                if event.type == KEYDOWN and event.key == K_h:
+                    joueur = 'joueur_1'
+                    type_unite = 'v'
+                    id_unite = 0
                     position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='F')
                     print(position)
-
                     self.unit.deplacer_unite(joueur, type_unite, id_unite, position)
                     action_a_executer.append(
                         lambda posress=position: self.recolte.recolter_ressource_plus_proche_via_trouver(joueur, type_unite, id_unite, posress=posress))

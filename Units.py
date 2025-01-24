@@ -40,50 +40,67 @@ class Unit:
 
 
     def deplacer_unite(self, joueur, type_unite, id_unite, nouvelle_position):
+        """Move unit with position validation."""
+        if nouvelle_position is None:
+            print(f"Cannot move unit - target position is None")
+            return False
+            
         position_actuelle = None
+        # Find current position
         for position, data in tuiles.items():
-            if 'unites' in data and joueur in data['unites'] and type_unite in data['unites'][joueur]:
-                if id_unite in data['unites'][joueur][type_unite]:
-
-                    position_actuelle = position
-                    self.position = position
-                    print(position_actuelle)
-                    break
+            if ('unites' in data and 
+                joueur in data['unites'] and 
+                type_unite in data['unites'][joueur] and
+                id_unite in data['unites'][joueur][type_unite]):
+                
+                position_actuelle = position
+                self.position = position
+                break
 
         if not position_actuelle:
-            print(f"Unité {id_unite} non trouvée pour le joueur {joueur}.")
-            return
+            print(f"Unit {id_unite} not found for player {joueur}")
+            return False
 
-        unite_data = tuiles[position_actuelle]['unites'][joueur][type_unite].pop(id_unite)
-        if not tuiles[position_actuelle]['unites'][joueur][type_unite]:
-            del tuiles[position_actuelle]['unites'][joueur][type_unite]
-        if not tuiles[position_actuelle]['unites'][joueur]:
-            del tuiles[position_actuelle]['unites'][joueur]
-        if not tuiles[position_actuelle]['unites']:
-            del tuiles[position_actuelle]['unites']
+        # Move unit
+        if self.start_moving(nouvelle_position[0], nouvelle_position[1]):
+            # Store unit data for movement completion
+            unite_data = tuiles[position_actuelle]['unites'][joueur][type_unite].pop(id_unite)
+            
+            # Clean up empty dictionaries
+            if not tuiles[position_actuelle]['unites'][joueur][type_unite]:
+                del tuiles[position_actuelle]['unites'][joueur][type_unite]
+            if not tuiles[position_actuelle]['unites'][joueur]:
+                del tuiles[position_actuelle]['unites'][joueur]
+            if not tuiles[position_actuelle]['unites']:
+                del tuiles[position_actuelle]['unites']
 
-        # Vérification si la clé 'unites' a été supprimée, alors supprimer complètement la tuile
-        if 'unites' not in tuiles[position_actuelle]:
-            del tuiles[position_actuelle]
-
-
-        self.target_position = nouvelle_position
-        self.start_moving(nouvelle_position[0], nouvelle_position[1])
-
-        self.moving_unit = {
-            "nouvelle_position": nouvelle_position,
-            "joueur": joueur,
-            "type_unite": type_unite,
-            "id_unite": id_unite,
-            "unite_data": unite_data
-        }
+            self.moving_unit = {
+                "nouvelle_position": nouvelle_position,
+                "joueur": joueur,
+                "type_unite": type_unite,
+                "id_unite": id_unite,
+                "unite_data": unite_data
+            }
+            return True
+            
+        return False
 
     def start_moving(self, new_x, new_y, duration=2000):
-        self.target_position = (new_x, new_y)
-        self.move_start_time = pygame.time.get_ticks()
-        self.start_time_offset = self.move_start_time
-        self.move_duration = duration
-        self.moving = True
+        """Initialize unit movement with error checking."""
+        if new_x is None or new_y is None:
+            print("Invalid movement coordinates - target position is None")
+            return False
+            
+        try:
+            self.target_position = (new_x, new_y)
+            self.move_start_time = pygame.time.get_ticks()
+            self.start_time_offset = self.move_start_time
+            self.move_duration = duration
+            self.moving = True
+            return True
+        except Exception as e:
+            print(f"Error starting movement: {e}")
+            return False
 
     def update_position(self):
         if not self.moving:
