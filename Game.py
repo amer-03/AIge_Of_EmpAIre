@@ -4,10 +4,11 @@ import json
 from pygame.locals import *
 
 import Units
+from Strat_offensive import StratOffensive
 from constants import *
 from TileMap import TileMap
 from Barre_ressource import Barre_ressources
-from Units import Unit
+from Units import Units
 from Buildings import Buildings
 from Page_HTML import Page_HTML
 from Save_and_load import Save_and_load
@@ -66,7 +67,7 @@ class Game:
 
         # UNITS
         # self.swordsman = Units.Swordsman()
-        self.unit = Unit()
+        self.unit = Units()
         self.tiles = {}
         self.test = deque()
 
@@ -81,6 +82,11 @@ class Game:
 
         # Save and Load
         self.save_and_load = Save_and_load()
+        self.ia_joueurs = {}
+        for joueur in range(1, self.n + 1):  # Pour chaque joueur (par exemple, joueur_1, joueur_2)
+            joueur_nom = f"joueur_{joueur}"
+            if joueur_nom != "joueur_1":  # Supposons que joueur_1 est humain
+                self.ia_joueurs[joueur_nom] = StratOffensive(self, joueur_nom)
 
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
@@ -273,6 +279,7 @@ class Game:
 
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
                 # pygame.display.update()
+
                 with open("test.txt", 'w') as f:
                     for row in map_data:
                         # Convertir chaque ligne en une chaîne de caractères avec des espaces entre les éléments
@@ -281,14 +288,11 @@ class Game:
                 position = self.unit.placer_joueurs_cercle(self.n, 40, size // 2, size // 2)
                 self.Initialisation_compteur.initialize_resources(self.selected_unit, self.n)
 
-
                 self.buildings.initialisation_compteur(position)
-
 
                 self.unit.initialisation_compteur(position)
                 self.draw_mini_map(DISPLAYSURF)
                 print(tuiles)
-
 
 
     def draw_mini_map(self, display_surface):
@@ -440,8 +444,8 @@ class Game:
                                     elif batiment_type == "C":
                                         char = "C"
                                         color = self.get_player_color(joueur)
-                                    elif batiment_type == "f":
-                                        char = "f"
+                                    elif batiment_type == "F":
+                                        char = "F"
                                         color = self.get_player_color(joueur)
                                     elif batiment_type == "B":
                                         char = "B"
@@ -605,7 +609,6 @@ class Game:
         pygame.display.set_caption("Carte et mini-carte")
 
         while running:
-            dt = FPSCLOCK.tick(600) / 1000
 
             events = pygame.event.get()
             for event in events:
@@ -626,55 +629,23 @@ class Game:
 
                 if event.type == KEYDOWN and event.key == K_u:
                     # self.unit.creation_unite('v', 'joueur_1')
-                    taille = builds_dict["f"]['taille']
+                    taille = builds_dict["T"]['taille']
                     in_game = 1
-                    self.buildings.ajouter_batiment("joueur_2", "f", 60, 60, taille, tuiles, in_game)
+                    self.buildings.ajouter_batiment("joueur_2", "T", 60, 60, taille, tuiles, in_game)
                 if event.type == KEYDOWN and event.key == K_y:
                     self.unit.creation_unite('a', 'joueur_1')
                     self.unit.creation_unite('v', 'joueur_1')
                     self.unit.creation_unite('h', 'joueur_1')
                     self.unit.creation_unite('s', 'joueur_1')
 
-                if event.type == KEYDOWN and event.key == K_g:
-                    position_a = None
-                    joueur_a = 'joueur_2'
-                    type_a = 'T'
-                    id_a = 'T0'
-                    for pos, data in tuiles.items():
-                        if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
-                            print(data['unites'][joueur_a])
-                            if id_a in data['unites'][joueur_a][type_a]:
-                                position_a = pos
-                                break
-
-
-                    for pos, data in tuiles.items():
-                        if 'batiments' in data and joueur_a in data['batiments'] and type_a in data['batiments'][joueur_a]:
-                            #print("ok")
-                            if data['batiments'][joueur_a][type_a]['id'] == id_a:
-                                print("ok")
-                                position_a = pos  # Récupérer la position du bâtiment
-                                print(f"Bâtiment trouvé à la position : {position_a}")
-                                break
-                    x,y = position_a
-                    new_pos = (x-units_dict['v'].get('range', 1),y)
-                    print(new_pos)
-
-                    self.unit.deplacer_unite('joueur_1','a',0,new_pos )
-                    print(tuiles)
-
-                if event.type == KEYDOWN and event.key == K_f:
-                    self.unit.attack_building('joueur_1','a',0, 'joueur_2','T','T0')
-
                 if event.type == KEYDOWN and event.key == K_h:
-
-
                     joueur = 'joueur_1'
                     type_unite = 'v'
                     id_unite = 0
 
-                    position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='F')
-                    print(position)
+                    self.unit.initialize_unit(joueur, type_unite, id_unite)
+
+                    position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='W')
 
                     self.unit.deplacer_unite(joueur, type_unite, id_unite, position)
                     action_a_executer.append(
@@ -690,7 +661,7 @@ class Game:
 
                     def deposer_ressources_in_batiment():
                             quantite = 20
-                            ressource = 'f'
+                            ressource = 'W'
                             self.recolte.deposer_ressources(quantite, joueur, type_unite, id_unite, ressource)
 
                     action_a_executer.append(deposer_ressources_in_batiment)
@@ -722,11 +693,19 @@ class Game:
 
                 if self.menu_active:
                     self.handle_menu_events(event)
+
+                for joueur, ia in self.ia_joueurs.items():
+                    ia.execute(joueur)
+                    self.unit.update_position()
+                      # Exécuter la logique de l'IA pour ce joueur
+                
                 else:
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         mouse_pos = pygame.mouse.get_pos()
                         if not self.menu_active:
                             self.handle_mini_map_click(mouse_pos)
+                
+                
             if self.menu_active:
                 self.show_menu()
             else:
@@ -745,6 +724,7 @@ class Game:
                         position_x, position_y=position
                         self.unit.update_position()
                         self.unit.diplay_unit(position_x, position_y, self.cam_x, self.cam_y, current_time, unit_image)
+
                 if self.unit.position:
                     self.unit.diplay_unit(
                         self.unit.position[0],
@@ -754,19 +734,15 @@ class Game:
                         current_time,
                         unit_image
                     )
-                self.unit.update_attacks()
+
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
 
                 self.Initialisation_compteur.draw_ressources()
 
                 self.Initialisation_compteur.update_compteur()
-                fps = int(FPSCLOCK.get_fps())
-                fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
-                DISPLAYSURF.blit(fps_text, (10, 10))
                 pygame.display.update()
                 pygame.display.flip()
 
             pygame.display.update()
             FPSCLOCK.tick(60)
-

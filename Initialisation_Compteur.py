@@ -1,7 +1,7 @@
 from constants import *
 from TileMap import TileMap
 from Barre_ressource import Barre_ressources
-from Units import Unit
+from Units import Units
 from Buildings import Buildings
 import threading
 import time
@@ -42,120 +42,128 @@ class Initialisation_Compteur:
         self.f2_active = False
         self.f3_active = False
 
-    def create_count(self, n):
+    def create_count(self,n):
         for i in range(1, n + 1):
+            # Crée un dictionnaire de compteurs pour chaque joueur
             compteurs_joueurs[f'joueur_{i}'] = {
+                # Ressources
                 'ressources': {
-                    'W': 0,
-                    'F': 0,
-                    'G': 0,
-                    'U': 0,
-                    'max_pop': 5  # Initial max population (1 Town Center)
+                    'W': 0,  # Bois
+                    'F': 0,  # Nourriture
+                    'G': 0,  # Or
+                    'U': 0,  # Unités générales (ou autre ressource spéciale)
+                    'max_pop': 195
                 },
+                # Unités
                 'unites': {
-                    'v': 0,
-                    's': 0,
-                    'h': 0,
-                    'a': 0
+                    'v': 0,  # Villageois
+                    's': 0,  # Swordsman (épéiste)
+                    'h': 0,  # Horseman (cavalier)
+                    'a': 0  # Archer
                 },
+                # Bâtiments
                 'batiments': {
-                    'T': 1,  # Start with 1 Town Center
-                    'H': 0,
-                    'C': 0,
-                    'F': 0,
-                    'B': 0,
-                    'S': 0,
-                    'A': 0,
-                    'K': 0
+                    'T': 0,  # Tour de guet
+                    'H': 0,  # Maison
+                    'C': 0,  # Centre-ville
+                    'F': 0,  # Ferme
+                    'B': 0,  # Caserne
+                    'S': 0,  # Forge
+                    'A': 0,  # Académie
+                    'K': 0  # Château
                 }
             }
-
     def update_compteur(self):
         for joueur, compteurs in compteurs_joueurs.items():
             if isinstance(compteurs['unites'], dict):
                 compteurs['ressources']['U'] = sum(compteurs['unites'].values())
 
-    def recalculate_max_population(self):
-        for joueur, compteurs in compteurs_joueurs.items():
-            if isinstance(compteurs['batiments'], dict):
-                town_centers = compteurs['batiments'].get('T', 0)
-                houses = compteurs['batiments'].get('H', 0)
-                compteurs['ressources']['max_pop'] = (town_centers + houses) * 5
-
-    def initialize_resources(self, unit, n):
+    def initialize_resources(self, unit,n):
         self.create_count(n)
+        # Parcourt chaque joueur dans le dictionnaire pour initialiser les ressources
         for joueur, compteurs in compteurs_joueurs.items():
             if unit == "Lean":
-                compteurs['ressources']['W'] = 200  # 200 bois (W)
-                compteurs['ressources']['F'] = 50   # 50 nourriture (F)
-                compteurs['ressources']['G'] = 50   # 50 or (G)
-                compteurs['unites']['v'] = 3         # 3 Villageois
-                compteurs['batiments']['T'] = 1       # 1 Town Centre
-                compteurs['batiments']['H'] = 0       # Pas de maison
-                compteurs['batiments']['B'] = 0       # Pas de caserne
-                compteurs['batiments']['S'] = 0       # Pas de stable
-                compteurs['batiments']['A'] = 0       # Pas d'archery range
+                compteurs['ressources']['W'] = 6000
+                compteurs['ressources']['F'] = 1150
+                compteurs['ressources']['G'] = 1150
+                compteurs['unites']['v'] = 8
+                compteurs['unites']['a'] = 1
+                if isinstance(compteurs['unites'], dict):
+                    compteurs['ressources']['U'] = sum(compteurs['unites'].values())
+                compteurs['batiments']['T'] = 2
+                compteurs['batiments']['B'] = 2
+                compteurs['batiments']['S'] = 2
+                compteurs['batiments']['K'] = 2
+                compteurs['batiments']['H'] = 2
+                compteurs['batiments']['A'] = 1
 
             elif unit == "Mean":
-                compteurs['ressources']['W'] = 2000  # 2000 bois (W)
-                compteurs['ressources']['F'] = 2000  # 2000 nourriture (F)
-                compteurs['ressources']['G'] = 2000  # 2000 or (G)
-                compteurs['unites']['v'] = 3          # 3 Villageois
-                compteurs['batiments']['T'] = 1        # 1 Town Centre
-                compteurs['batiments']['B'] = 0        # Pas de caserne
-                compteurs['batiments']['S'] = 0        # Pas de stable
-                compteurs['batiments']['A'] = 0        # Pas d'archery range
-
-
+                compteurs['ressources']['W'] = 2000
+                compteurs['ressources']['F'] = 2000
+                compteurs['ressources']['G'] = 2000
+                compteurs['unites']['v'] = 3
+                compteurs['unites']['a'] = 3
+                if isinstance(compteurs['unites'], dict):
+                    compteurs['ressources']['U'] = sum(compteurs['unites'].values())
+                compteurs['batiments']['T'] = 1
             elif unit == "Marines":
-                compteurs['ressources']['W'] = 20000  # 20000 bois (W)
-                compteurs['ressources']['F'] = 20000  # 20000 nourriture (F)
-                compteurs['ressources']['G'] = 20000  # 20000 or (G)
-                compteurs['unites']['v'] = 15         # 15 Villageois
-                compteurs['batiments']['T'] = 3        # 3 Town Centres
-                compteurs['batiments']['B'] = 2        # 2 Barracks
-                compteurs['batiments']['S'] = 2        # 2 Stables
-                compteurs['batiments']['A'] = 2        # 2 Archery Ranges
-
-        self.recalculate_max_population()
+                compteurs['ressources']['W'] = 20000
+                compteurs['ressources']['F'] = 20000
+                compteurs['ressources']['G'] = 20000
+                compteurs['unites']['v'] = 15
+                if isinstance(compteurs['unites'], dict):
+                    compteurs['ressources']['U'] = sum(compteurs['unites'].values())
+                compteurs['batiments']['T'] = 3
+                compteurs['batiments']['B'] = 2
+                compteurs['batiments']['S'] = 2
+                compteurs['batiments']['A'] = 2
 
     def draw_ressources(self):
-        x_barre_base = 100
-        y_barre_base = 40
+        x_barre_base = 100  # Position de départ en X pour la première colonne
+        y_barre_base = 40  # Position de départ en Y pour la première ligne
 
-        espacement_horizontal = barre_width + screen_width // 9.6
-        espacement_vertical = barre_height + screen_height // 9.6
+        espacement_horizontal = barre_width + screen_width//9.6  # Espacement entre les colonnes
+        espacement_vertical = barre_height + screen_height // 9.6  # Espacement entre les lignes
 
         total_images = len(self.barres)
         total_images_barre_builds = len(self.barre_builds)
 
         for index, (joueur, compteurs) in enumerate(compteurs_joueurs.items()):
-            colonne = index % 2
-            ligne = index // 2
+            # Calcul de la position en X et Y pour chaque joueur
+            colonne = index % 2  # 0 pour la première colonne, 1 pour la seconde
+            ligne = index // 2  # Numéro de la ligne
 
             x_barre = x_barre_base + colonne * espacement_horizontal
             y_barre = y_barre_base + ligne * espacement_vertical
 
+            # Affiche les ressources (f1_active)
             if self.f1_active:
                 self.barres[0].barre(DISPLAYSURF, x_barre, y_barre)
                 for i, barre in enumerate(self.barres):
                     type = ["W", "G", "F", "U"][i]
-                    max_value = compteurs['ressources']['max_pop'] if type == "U" else None
-                    barre.draw(DISPLAYSURF, x_barre, y_barre, compteurs['ressources'][type], i, total_images, max_value)
+                    if type == "U":
+                        max_value=self.compteur[joueur]['ressources']['max_pop']
+                        barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
+                               total_images,max_value)
+                    else :
+                        barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
+                                   total_images, None)
 
+            # Affiche les unités (f2_active)
             if self.f2_active:
                 for barre_unit in self.barres:
                     barre_unit.barre_units(DISPLAYSURF, x_barre, y_barre + barre_height)
                 for i, barre in enumerate(self.barre_units):
                     type = ["v", "s", "h", "a"][i]
-                    barre.draw_barre_units(DISPLAYSURF, x_barre, y_barre + barre_height, compteurs['unites'][type], i, total_images)
+                    barre.draw_barre_units(DISPLAYSURF, x_barre, y_barre + barre_height,
+                                       self.compteur[joueur]['unites'][type], i, total_images)
 
+
+            # Affiche les constructions (f3_active)
             if self.f3_active:
                 for barre_builds in self.barres:
                     barre_builds.barre_builds(DISPLAYSURF, x_barre, y_barre + barre_height + barre_units_height)
                 for i, barre in enumerate(self.barre_builds):
                     type = ["T", "H", "C", "F", "B", "S", "A", "K"][i]
-                    barre.draw_barre_units(DISPLAYSURF, x_barre, y_barre + barre_height + barre_units_height, compteurs['batiments'][type], i, total_images_barre_builds)
-
-    def update_buildings(self):
-        self.recalculate_max_population()
+                    barre.draw_barre_units(DISPLAYSURF, x_barre, y_barre + barre_height + barre_units_height,
+                                           self.compteur[joueur]['batiments'][type], i, total_images_barre_builds)
