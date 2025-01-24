@@ -696,7 +696,6 @@ class Game:
 
                 for joueur, ia in self.ia_joueurs.items():
                     ia.execute(joueur)
-                    self.unit.update_position()
                       # Exécuter la logique de l'IA pour ce joueur
                 
                 else:

@@ -77,6 +77,7 @@ class StratOffensive:
             # Trouver la position de la ressource la plus proche
             pos_bois = self.resource_collector.trouver_plus_proche_ressource(position, joueur, type_unit, id_unite, "W")
             print("haha")
+            print (id_unite)
             if pos_bois:
                 # Déplacer l'unité vers la ressource
                 self.resource_collector.unit.deplacer_unite(position, joueur, type_unit, id_unite, pos_bois)
