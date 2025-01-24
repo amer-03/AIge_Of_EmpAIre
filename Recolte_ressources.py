@@ -102,82 +102,20 @@ class Recolte_ressources:
                                 tuiles_batiment.append(position)
         return tuiles_batiment
 
-    def recolter_ressource_plus_proche_via_trouver(self, joueur, type_unite, id_unite, posress, recolte_max=20):
-        if posress is None:
-            return "Aucune ressource disponible à proximité."
-
-        # Trouver la position de l'unité
-        position_unite = None
-        for position, data in tuiles.items():
-            if 'unites' in data and joueur in data['unites']:
-                unites_joueur = data['unites'][joueur]
-                if type_unite in unites_joueur and id_unite in unites_joueur[type_unite]:
-                    position_unite = position
-                    break
-
-        if position_unite is None:
-            return "Unité introuvable."
-
-        # Accéder aux détails de la ressource ou du bâtiment
-        details_ressource = tuiles[posress]
-
-        quantite_disponible = 0
-        source = None
-        batiment_source = None
-
-        # Déterminer la quantité disponible selon la source (ressource ou bâtiment)
-        if 'ressources' in details_ressource and 'quantite' in details_ressource:
-            quantite_disponible = details_ressource['quantite']
-            source = 'ressource'
-        elif 'batiments' in details_ressource:
-            for joueur_b, batiments in details_ressource['batiments'].items():
-                for type_b, infos_batiment in batiments.items():
-                    if type_b == 'F' and 'quantite' in infos_batiment and infos_batiment['quantite'] > 0:
-                        quantite_disponible = infos_batiment['quantite']
-                        source = 'batiment'
-                        batiment_source = infos_batiment
-                        id_batiment = infos_batiment['id']
-                        principal_pos = infos_batiment.get('parent', posress)
-                        break
-
-        # Si aucune ressource valide n'est trouvée
-        if quantite_disponible <= 0:
-            return "Ressource ou bâtiment épuisé."
-
-        # Calculer la quantité à récolter
-        quantite_a_recolter = min(recolte_max, quantite_disponible)
-
-        # Réduire la quantité disponible selon la source
-        if source == 'ressource':
-            details_ressource['quantite'] -= quantite_a_recolter
-            if details_ressource['quantite'] <= 0:
-                del tuiles[posress]['ressources']
-                del tuiles[posress]['quantite']  # Supprimer si épuisé
-        elif source == 'batiment':
-            batiment_source['quantite'] -= quantite_a_recolter
-            if batiment_source['quantite'] <= 0:
-                # Trouver toutes les tuiles liées au bâtiment
-                tuiles_batiment = self.trouver_tuiles_batiment(principal_pos, id_batiment)
-                print(tuiles_batiment)
-                for tuile in tuiles_batiment:
-                    if len(tuiles[tuile]) == 1 and 'batiments' in tuiles[tuile]:
-                        # Supprimer la tuile entière si elle ne contient que le bâtiment
-                        del tuiles[tuile]
-                    else:
-                        # Sinon, supprimer uniquement les informations liées au bâtiment
-                        del tuiles[tuile]['batiments']  # Supprimer toutes les tuiles associées au bâtiment
-
-        # Ajouter la ressource récoltée à la capacité de l'unité
-        unite = tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
-        print(tuiles)
-        unite['capacite'] = str(int(unite['capacite']) + quantite_a_recolter)
-
-        # Exécuter une action si elle est définie
-        if action_a_executer:
-            action = action_a_executer.pop(0)
-            action()
-
-        return f"{quantite_a_recolter} unité(s) de ressource collectée(s)."
+    def recolter_ressource_plus_proche_via_trouver(self, joueur, type_unite, id_unite, posress):
+        """Improved resource gathering with auto-deposit"""
+        if not self.validate_unit_position(joueur, type_unite, id_unite, posress):
+            return False
+            
+        # Gather until full
+        while self.can_gather_more(joueur, type_unite, id_unite):
+            self.gather_resource(joueur, type_unite, id_unite, posress)
+            
+        # Auto return to deposit
+        if self.is_inventory_full(joueur, type_unite, id_unite):
+            deposit_pos = self.trouver_plus_proche_batiment(joueur, type_unite, id_unite)
+            if deposit_pos:
+                return self.deposit_resources(joueur, type_unite, id_unite, deposit_pos)
 
     def deposer_ressources(self, quantite, joueur, type_unite, id_unite, ressource):
         position_unite = None

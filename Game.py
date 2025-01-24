@@ -82,6 +82,15 @@ class Game:
         # Save and Load
         self.save_and_load = Save_and_load()
 
+        # Initialize players first
+        self.n = 2  # Number of players
+        self.joueur = 0
+        self.compteur = compteurs_joueurs
+        
+        # Add AI initialization
+        self.ai_player_id = 2  # AI will control player 2
+        self.ai = None  # Will be initialized after menu selection
+
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
         # Taille de la moitié de la carte
@@ -289,7 +298,9 @@ class Game:
                 self.draw_mini_map(DISPLAYSURF)
                 print(tuiles)
 
-
+                # Initialize AI after players are set up
+                from AI_Eco import AI_Eco
+                self.ai = AI_Eco(player_id=self.ai_player_id, game=self)
 
     def draw_mini_map(self, display_surface):
         losange_surface = pygame.Surface((self.mini_map_size_x, self.mini_map_size_y), pygame.SRCALPHA)
@@ -627,6 +638,33 @@ class Game:
         pygame.draw.rect(DISPLAYSURF, (255, 255, 255), 
                         (rect_x, rect_y, view_width, view_height), 2)
 
+    def render_units(self):
+        """Render all units with correct isometric positioning"""
+        current_time = pygame.time.get_ticks()
+        
+        for position, data in tuiles.items():
+            if 'unites' in data:
+                for joueur, units in data['unites'].items():
+                    for unit_type, unit_data in units.items():
+                        for unit_id, unit in unit_data.items():
+                            # Get correct unit image for type
+                            unit_image = units_dict[unit_type]['image'].image
+                            x, y = position
+                            
+                            # Convert tile coordinates to isometric screen coordinates
+                            screen_x = (x - y) * tile_grass.width_half
+                            screen_y = (x + y) * tile_grass.height_half
+                            
+                            # Display unit at calculated position
+                            self.unit.diplay_unit(
+                                screen_x,
+                                screen_y,
+                                self.cam_x,
+                                self.cam_y,
+                                current_time,
+                                unit_image
+                            )
+
     def run(self):
         """Boucle principale du jeu."""
         running = True
@@ -791,6 +829,7 @@ class Game:
                 self.buildings.update_creation_times()
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
+                self.render_units()  # Add this line
                 self.draw_mini_map(DISPLAYSURF)
                 self.draw_minimap_viewbox(DISPLAYSURF)
 
@@ -823,6 +862,10 @@ class Game:
                 DISPLAYSURF.blit(fps_text, (10, 10))
                 pygame.display.update()
                 pygame.display.flip()
+
+                # Update AI if game has started and AI is initialized
+                if self.ai:
+                    self.ai.update()
 
             pygame.display.update()
             FPSCLOCK.tick(60)

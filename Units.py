@@ -40,43 +40,26 @@ class Unit:
 
 
     def deplacer_unite(self, joueur, type_unite, id_unite, nouvelle_position):
-        position_actuelle = None
-        for position, data in tuiles.items():
-            if 'unites' in data and joueur in data['unites'] and type_unite in data['unites'][joueur]:
-                if id_unite in data['unites'][joueur][type_unite]:
-
-                    position_actuelle = position
-                    self.position = position
-                    print(position_actuelle)
-                    break
-
+        """Improved unit movement with better error handling and AI support"""
+        # Position validation
+        if nouvelle_position is None:
+            print(f"Invalid position for {type_unite} movement")
+            return False
+            
+        # Find current position
+        position_actuelle = self.get_unit_position(joueur, type_unite, id_unite)
         if not position_actuelle:
-            print(f"Unité {id_unite} non trouvée pour le joueur {joueur}.")
-            return
-
-        unite_data = tuiles[position_actuelle]['unites'][joueur][type_unite].pop(id_unite)
-        if not tuiles[position_actuelle]['unites'][joueur][type_unite]:
-            del tuiles[position_actuelle]['unites'][joueur][type_unite]
-        if not tuiles[position_actuelle]['unites'][joueur]:
-            del tuiles[position_actuelle]['unites'][joueur]
-        if not tuiles[position_actuelle]['unites']:
-            del tuiles[position_actuelle]['unites']
-
-        # Vérification si la clé 'unites' a été supprimée, alors supprimer complètement la tuile
-        if 'unites' not in tuiles[position_actuelle]:
-            del tuiles[position_actuelle]
-
-
-        self.target_position = nouvelle_position
-        self.start_moving(nouvelle_position[0], nouvelle_position[1])
-
-        self.moving_unit = {
-            "nouvelle_position": nouvelle_position,
-            "joueur": joueur,
-            "type_unite": type_unite,
-            "id_unite": id_unite,
-            "unite_data": unite_data
-        }
+            print(f"Unit {id_unite} not found")
+            return False
+            
+        # Move unit with pathfinding
+        return self.execute_movement(
+            position_actuelle, 
+            nouvelle_position,
+            joueur, 
+            type_unite, 
+            id_unite
+        )
 
     def start_moving(self, new_x, new_y, duration=2000):
         self.target_position = (new_x, new_y)
@@ -154,22 +137,24 @@ class Unit:
         return frame_x, frame_y, frame_width, frame_height
 
 
-    def diplay_unit(self,position_x, position_y, cam_x, cam_y, current_time, unit_image):
-        # coordonnées isométrique
-        self.update_position()
-        iso_x, iso_y = self.coordinates.to_iso(position_x, position_y, cam_x, cam_y,unit_image)
-
-        # appel de la fonction de l'animation
-        self.animation(current_time)
-
-        # appel de la fonction frame_coordinates
-        frame_x, frame_y, frame_width, frame_height = self.frame_coordinates(unit_image)
-
-        # enlever un frame de l'image principal et l'afficher a la fois
-        frame_rect = pygame.Rect(frame_x, frame_y, frame_width, frame_height)
-        unit_frame = unit_image.subsurface(frame_rect)
-
-        DISPLAYSURF.blit(unit_frame, (iso_x, iso_y))
+    def diplay_unit(self, screen_x, screen_y, cam_x, cam_y, current_time, unit_image):
+        """Display unit at correct isometric position"""
+        # Apply camera offset
+        final_x = screen_x - cam_x
+        final_y = screen_y - cam_y
+        
+        # Only draw if on screen
+        if (0 <= final_x <= screen_width and 
+            0 <= final_y <= screen_height):
+            
+            # Center unit sprite on tile
+            sprite_width = unit_image.get_width()
+            sprite_height = unit_image.get_height()
+            pos_x = final_x - sprite_width//2
+            pos_y = final_y - sprite_height
+            
+            # Draw unit
+            DISPLAYSURF.blit(unit_image, (pos_x, pos_y))
 
 
 
@@ -203,80 +188,113 @@ class Unit:
 
     #pour del : del tuiles[(60, 110)]['unites']['v'][0]
 
-    def initialisation_compteur(self, position):
-        for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
-            x, y = position[idx]  # Position initiale de chaque joueur
+    def initialisation_compteur(self, positions):
+        try:
+            print(f"Initializing units with positions: {positions}")
+            
+            for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
+                tc_pos = positions[idx]
+                x, y = tc_pos
+                
+                for unit_type, count in data['unites'].items():
+                    placed_units = 0
+                    radius = 1
+                    
+                    while placed_units < count and radius < 5:
+                        for dx in range(-radius, radius+1):
+                            for dy in range(-radius, radius+1):
+                                if placed_units >= count:
+                                    break
+                                    
+                                new_pos = (x + dx, y + dy)
+                                
+                                if not self.is_valid_unit_position(new_pos):
+                                    continue
+                                
+                                # Initialize unit with proper sprite
+                                tuiles.setdefault(new_pos, {})
+                                tuiles[new_pos].setdefault('unites', {})
+                                tuiles[new_pos]['unites'].setdefault(joueur, {})
+                                tuiles[new_pos]['unites'][joueur].setdefault(unit_type, {})
+                                
+                                unit_id = len(tuiles[new_pos]['unites'][joueur][unit_type])
+                                tuiles[new_pos]['unites'][joueur][unit_type][unit_id] = {
+                                    'HP': units_dict[unit_type]['hp'],
+                                    'Status': 'libre',
+                                    'capacite': 0,
+                                    'image': units_dict[unit_type]['image'],
+                                    'position': new_pos
+                                }
+                                placed_units += 1
+                                
+                        radius += 1
+                        
+        except Exception as e:
+            print(f"Error in initialisation_compteur: {e}")
+            import traceback
+            traceback.print_exc()
 
-            for unite, nombre in data['unites'].items():
-                compteurs_unites[unite] = 0
+    def generate_surrounding_positions(self, center_pos, units_data):
+        """Generate valid positions around a center point"""
+        positions = []
+        x, y = center_pos
+        total_units = sum(units_data.values())
+        
+        # Generate spiral pattern around center
+        for radius in range(1, 4):  # Up to 3 tiles away
+            for dx in range(-radius, radius + 1):
+                for dy in range(-radius, radius + 1):
+                    if dx == 0 and dy == 0:  # Skip center tile
+                        continue
+                        
+                    new_pos = (x + dx, y + dy)
+                    
+                    # Check if position is valid (not occupied, within bounds)
+                    if self.is_valid_unit_position(new_pos):
+                        positions.append(new_pos)
+                    
+                    if len(positions) >= total_units:
+                        return positions
+                        
+        return positions
 
-                for i in range(nombre):
-                    identifiant_unite = compteurs_unites[unite]
-                    compteurs_unites[unite] += 1
+    def is_valid_unit_position(self, pos):
+        """Check if position is valid for unit placement"""
+        x, y = pos
+        
+        # Check bounds
+        if not (0 <= x < size and 0 <= y < size):
+            return False
+            
+        # Check if tile is occupied
+        if pos in tuiles and ('unites' in tuiles[pos] or 'batiments' in tuiles[pos]):
+            return False
+            
+        return True
 
-                    # Si la tuile (x, y) n'existe pas ou n'est pas un dictionnaire, l'initialiser
-                    if (x, y) not in tuiles or not isinstance(tuiles[(x, y)], dict):
-                        tuiles[(x, y)] = {}
-                        tuiles[(x, y)]['unites'] = {}
-                        tuiles[(x, y)]['unites'][joueur] = {}
-
-
-
-                    # Vérifier s'il y a un conflit avec les bâtiments ou ressources
-                    batiments = tuiles[(x, y)].get('batiments', {})
-                    ressources = tuiles[(x, y)].get('ressources', {})
-
-                    if not isinstance(ressources, dict):
-                        ressources = {}
-                    if not isinstance(batiments, dict):
-                        batiments = {}
-
-                    # Vérifier s'il y a des bâtiments ou des ressources sur la tuile
-                    tuile_conflit = ('W' in ressources.get(joueur, {}) or
-                                     'G' in ressources.get(joueur, {}) or
-                                     'T' in batiments.get(joueur, {}) or
-                                     'S' in batiments.get(joueur, {}) or
-                                     'K' in batiments.get(joueur, {}) or
-                                     'H' in batiments.get(joueur, {}) or
-                                     'B' in batiments.get(joueur, {}) or
-                                     'C' in batiments.get(joueur, {}) or
-                                     'F' in batiments.get(joueur, {}) or
-                                     'A' in batiments.get(joueur, {}) )
-
-                    # Ajouter l'unité seulement s'il n'y a pas de conflit
-                    if not tuile_conflit:
-                        if unite not in tuiles[(x, y)]['unites'][joueur]:
-                            tuiles[(x, y)]['unites'][joueur][unite] = {}
-
-                        tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
-                            'HP': units_dict[unite]['hp'],  # Récupérer les HP depuis units_images
-                            'Status': 'libre',
-                            'capacite': '0'
-                        }
-                    else:
-                        # Si conflit, trouver une autre position et réessayer
-                        while (x, y) in tuiles and tuile_conflit:
-                            x += 1
-                            y += 1
-
-                        # Réinitialiser la tuile (x, y) avec les clés nécessaires
-                        if (x, y) not in tuiles:
-                            tuiles[(x, y)] = {'unites': {}}
-
-                        if joueur not in tuiles[(x, y)]['unites']:
-                            tuiles[(x, y)]['unites'][joueur] = {}
-
-                        if unite not in tuiles[(x, y)]['unites'][joueur]:
-                            tuiles[(x, y)]['unites'][joueur][unite] = {}
-
-                        tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
-                            'HP': units_dict[unite]['hp'],  # Récupérer les HP depuis units_images
-                            'Status': 'libre',
-                            'capacite': '0'
-                        }
-                        #tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
-                        #    'occupé': False  # Récupérer les HP depuis units_images
-                        #}
+    def creation_unite(self, type_unite, joueur, position=None):
+        """Create unit at specific position"""
+        if position is None:
+            # Fallback to original behavior if no position specified
+            return super().creation_unite(type_unite, joueur)
+            
+        # Initialize tile if needed
+        if position not in tuiles:
+            tuiles[position] = {'unites': {}}
+        if 'unites' not in tuiles[position]:
+            tuiles[position]['unites'] = {}
+        if joueur not in tuiles[position]['unites']:
+            tuiles[position]['unites'][joueur] = {}
+        if type_unite not in tuiles[position]['unites'][joueur]:
+            tuiles[position]['unites'][joueur][type_unite] = {}
+            
+        # Add unit with next available ID
+        unit_id = len(tuiles[position]['unites'][joueur][type_unite])
+        tuiles[position]['unites'][joueur][type_unite][unit_id] = {
+            'HP': units_dict[type_unite]['hp'],
+            'Status': 'libre',
+            'capacite': 0
+        }
 
     def attack(self, joueur_a, type_a, id_a, joueur_b, type_b, id_b):
         # Recherche des informations de l'unité attaquante

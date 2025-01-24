@@ -458,3 +458,15 @@ class Buildings:
         for tuile in tuiles_a_supprimer:
             del tuiles[tuile]
 
+    def find_build_location(self, building_type, joueur):
+        """Find optimal building placement"""
+        # Check existing buildings
+        existing = self.get_player_buildings(joueur, building_type)
+        
+        # Find clear area away from resources
+        for x in range(-20, 20):
+            for y in range(-20, 20):
+                pos = (x, y) 
+                if self.is_valid_build_location(pos, building_type):
+                    return pos
+        return None
