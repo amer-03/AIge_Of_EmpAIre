@@ -86,7 +86,7 @@ class Initialisation_Compteur:
                 compteurs['ressources']['W'] = 6000
                 compteurs['ressources']['f'] = 1150
                 compteurs['ressources']['G'] = 1150
-                compteurs['unites']['v'] = 1
+                compteurs['unites']['v'] = 2
                 compteurs['unites']['a'] = 0
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
