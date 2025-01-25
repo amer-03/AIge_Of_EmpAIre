@@ -170,7 +170,7 @@ builds_dict = {
 
 
 
-tuiles = {}
+#tuiles = {}
 compteurs_unites = {}
 
 GRAY = (100, 100, 100)

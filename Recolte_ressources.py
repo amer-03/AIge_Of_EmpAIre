@@ -9,13 +9,14 @@ import random
 import time
 
 class Recolte_ressources:
-    def __init__(self):
+    def __init__(self, gameObj):
+        self.gameObj = gameObj
         self.tile_grass = tile_grass
-        self.unit=Units()
+        self.unit=Units(self.gameObj)
 
     def trouver_plus_proche_ressource(self, position_unite, joueur, type_unite, id_unite, ressource):
         """position_unite = None
-        for position, data in tuiles.items():
+        for position, data in self.gameObj.tuiles.items():
             if 'unites' in data and joueur in data['unites'] and type_unite in data['unites'][joueur]:
                 if id_unite in data['unites'][joueur][type_unite]:
 
@@ -24,13 +25,12 @@ class Recolte_ressources:
                     print(position_actuelle)
                     break"""
         
-        print("genre tu trouves")
         if position_unite is None:
             return None  # Unité non trouvée
-        print("oui batard")
+        
         # Collecter toutes les positions des ressources 'G' qui sont disponibles (quantité > 0)
         positions_ressources = []
-        for position, data in tuiles.items():
+        for position, data in self.gameObj.tuiles.items():
             if 'ressources' in data and data['ressources'] == ressource and data.get('quantite', 0) > 0:
                 positions_ressources.append(position)
                 # Vérifier les bâtiments comme sources de ressources
@@ -57,7 +57,7 @@ class Recolte_ressources:
     def trouver_plus_proche_batiment(self, joueur, type_unite, id_unite):
         # Trouver la position de l'unité
         position_unite = None
-        for position, data in tuiles.items():
+        for position, data in self.gameObj.tuiles.items():
             if 'unites' in data and joueur in data['unites']:
                 unites_joueur = data['unites'][joueur]
                 if type_unite in unites_joueur and id_unite in unites_joueur[type_unite]:
@@ -69,7 +69,7 @@ class Recolte_ressources:
 
         # Rechercher les positions des bâtiments appartenant au joueur
         positions_batiments = []
-        for position, data in tuiles.items():
+        for position, data in self.gameObj.tuiles.items():
             if 'batiments' in data and joueur in data['batiments']:
                 for type_b, infos in data['batiments'][joueur].items():
                     if type_b in ['T', 'C']:  # Rechercher uniquement les types 'T' et 'C'
@@ -94,7 +94,7 @@ class Recolte_ressources:
 
     def trouver_tuiles_batiment(self, principal_pos, id_batiment):
         tuiles_batiment = []
-        for position, data in tuiles.items():
+        for position, data in self.gameObj.tuiles.items():
             if 'batiments' in data:
                 for joueur_b, batiments in data['batiments'].items():
                     for type_b, infos_batiment in batiments.items():
@@ -111,7 +111,7 @@ class Recolte_ressources:
 
         # Trouver la position de l'unité
         position_unite = None
-        for position, data in tuiles.items():
+        for position, data in self.gameObj.tuiles.items():
             if 'unites' in data and joueur in data['unites']:
                 unites_joueur = data['unites'][joueur]
                 if type_unite in unites_joueur and id_unite in unites_joueur[type_unite]:
@@ -122,7 +122,7 @@ class Recolte_ressources:
             return "Unité introuvable."
 
         # Accéder aux détails de la ressource ou du bâtiment
-        details_ressource = tuiles[posress]
+        details_ressource = self.gameObj.tuiles[posress]
 
         quantite_disponible = 0
         source = None
@@ -154,8 +154,8 @@ class Recolte_ressources:
         if source == 'ressource':
             details_ressource['quantite'] -= quantite_a_recolter
             if details_ressource['quantite'] <= 0:
-                del tuiles[posress]['ressources']
-                del tuiles[posress]['quantite']  # Supprimer si épuisé
+                del self.gameObj.tuiles[posress]['ressources']
+                del self.gameObj.tuiles[posress]['quantite']  # Supprimer si épuisé
         elif source == 'batiment':
             batiment_source['quantite'] -= quantite_a_recolter
             if batiment_source['quantite'] <= 0:
@@ -163,16 +163,15 @@ class Recolte_ressources:
                 tuiles_batiment = self.trouver_tuiles_batiment(principal_pos, id_batiment)
                 print(tuiles_batiment)
                 for tuile in tuiles_batiment:
-                    if len(tuiles[tuile]) == 1 and 'batiments' in tuiles[tuile]:
+                    if len(self.gameObj.tuiles[tuile]) == 1 and 'batiments' in self.gameObj.tuiles[tuile]:
                         # Supprimer la tuile entière si elle ne contient que le bâtiment
-                        del tuiles[tuile]
+                        del self.gameObj.tuiles[tuile]
                     else:
                         # Sinon, supprimer uniquement les informations liées au bâtiment
-                        del tuiles[tuile]['batiments']  # Supprimer toutes les tuiles associées au bâtiment
+                        del self.gameObj.tuiles[tuile]['batiments']  # Supprimer toutes les tuiles associées au bâtiment
 
         # Ajouter la ressource récoltée à la capacité de l'unité
-        unite = tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
-        print(tuiles)
+        unite = self.gameObj.tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
         unite['capacite'] = str(int(unite['capacite']) + quantite_a_recolter)
 
         # Exécuter une action si elle est définie
@@ -184,12 +183,12 @@ class Recolte_ressources:
 
     def deposer_ressources(self, quantite, joueur, type_unite, id_unite, ressource):
         position_unite = None
-        for position, data in tuiles.items():
+        for position, data in self.gameObj.tuiles.items():
             if 'unites' in data and joueur in data['unites']:
                 unites_joueur = data['unites'][joueur]
                 if type_unite in unites_joueur and id_unite in unites_joueur[type_unite]:
                     position_unite = position
                     break
         compteurs_joueurs[joueur]['ressources'][ressource] += quantite
-        unite = tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
+        unite = self.gameObj.tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
         unite['capacite'] = 0

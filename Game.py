@@ -1,3 +1,4 @@
+# coding: utf-8
 import pygame
 import sys
 import json
@@ -29,10 +30,12 @@ class Game:
 
     def __init__(self):
 
+        self.tuiles = {}
+
         # MAP
         self.scroll_speed = 30
         self.tile_map = None
-        self.tile_map = TileMap()
+        self.tile_map = TileMap(self)
         self.cam_x, self.cam_y = self.center_camera_on_tile()
 
         # MINIMAP
@@ -68,15 +71,15 @@ class Game:
 
         # UNITS
         # self.swordsman = Units.Swordsman()
-        self.unit = Units()
+        self.unit = Units(self)
         self.tiles = {}
         self.test = deque()
 
         # RECOLTE_RESSOURCES
-        self.recolte = Recolte_ressources()
+        self.recolte = Recolte_ressources(self)
 
         # BUILDS
-        self.buildings = Buildings()
+        self.buildings = Buildings(self)
 
         # Page HTML
         self.page_html = Page_HTML()
@@ -84,6 +87,7 @@ class Game:
         # Save and Load
         self.save_and_load = Save_and_load()
         self.ia_joueurs = {}
+        print (f"One third, expressed as a float is: {1 / 3}")
         for joueur in range(1, self.n + 1):  # Pour chaque joueur (par exemple, joueur_1, joueur_2)
             joueur_nom = f"joueur_{joueur}"
             if joueur_nom != "joueur_1":
@@ -225,24 +229,24 @@ class Game:
 
     def ajouter_unite(self, joueur, type_unite, id_unite, position, hp, status="libre"):
         # Vérifie si la position existe dans map_data, sinon initialise une entrée.
-        if position not in tuiles:
-            tuiles[position] = {'unites': {}}
+        if position not in self.tuiles:
+            self.tuiles[position] = {'unites': {}}
 
         # Vérifie si le joueur existe dans la position, sinon initialise une entrée.
-        if joueur not in tuiles[position]['unites']:
-            tuiles[position]['unites'][joueur] = {}
+        if joueur not in self.tuiles[position]['unites']:
+            self.tuiles[position]['unites'][joueur] = {}
 
         # Vérifie si le type d'unité existe pour ce joueur, sinon initialise une entrée.
-        if type_unite not in tuiles[position]['unites'][joueur]:
-            tuiles[position]['unites'][joueur][type_unite] = {}
+        if type_unite not in self.tuiles[position]['unites'][joueur]:
+            self.tuiles[position]['unites'][joueur][type_unite] = {}
 
         # Ajoute ou met à jour l'unité.
-        tuiles[position]['unites'][joueur][type_unite][id_unite] = {
+        self.tuiles[position]['unites'][joueur][type_unite][id_unite] = {
             'HP': hp,
             'Status': status
         }
 
-        print(f"Unité ajoutée: {tuiles[position]['unites'][joueur][type_unite][id_unite]}")
+        print(f"Unité ajoutée: {self.tuiles[position]['unites'][joueur][type_unite][id_unite]}")
 
     def handle_menu_events(self, event):
         """Gère les événements liés au menu principal."""
@@ -253,10 +257,10 @@ class Game:
             if self.save.collidepoint(x, y):
                 fichier = self.save_and_load.choisir_fichier_sauvegarde()
                 if fichier:
-                    nouvelles_tuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
-                    if nouvelles_tuiles and nouveaux_compteurs:
-                        tuiles.clear()
-                        tuiles.update(nouvelles_tuiles)
+                    nouvellesTuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
+                    if nouvellesTuiles and nouveaux_compteurs:
+                        self.tuiles.clear()
+                        self.tuiles.update(nouvellesTuiles)
                         compteurs_joueurs.clear()
                         compteurs_joueurs.update(nouveaux_compteurs)
                 self.menu_active = False
@@ -311,8 +315,6 @@ class Game:
 
                 self.unit.initialisation_compteur(position)
                 self.draw_mini_map(DISPLAYSURF)
-                print(tuiles)
-
 
 
     def draw_mini_map(self, display_surface):
@@ -326,8 +328,8 @@ class Game:
 
         for row in range(size):
             for col in range(size):
-                tile = tuiles.get((row, col), {})  # Récupérer les données de la tuile ou un dictionnaire vide
-                color = (34, 139, 34)  # Vert par défaut pour les tuiles vides
+                tile = self.tuiles.get((row, col), {})  # Récupérer les données de la tuile ou un dictionnaire vide
+                color = (34, 139, 34)  # Vert par défaut pour les self.tuiles vides
 
                 # Vérification des ressources
                 if "ressources" in tile:
@@ -444,7 +446,7 @@ class Game:
                                       curses.color_pair(12))  # Rouge pour le joueur
                     else:
 
-                        tile = tuiles.get((row, col), {})
+                        tile = self.tuiles.get((row, col), {})
                         char = " "  # Espace vide par défaut
                         color = 0  # Pas de couleur par défaut
 
@@ -562,7 +564,7 @@ class Game:
                 self.unit.decrementer_hp_unite()
 
             elif key == 9:  # Code ASCII pour Tab
-                file_path = self.page_html.generate_html(tuiles)
+                file_path = self.page_html.generate_html(self.tuiles)
                 browser = webbrowser.get("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe %s")
                 browser.open(f"file:///{file_path}")
 
@@ -633,6 +635,13 @@ class Game:
 
             events = pygame.event.get()
             for event in events:
+
+                if event.type == KEYDOWN and event.key == K_a:
+                    for position in self.tuiles:
+                        if 'unites' in self.tuiles[position]:
+                            print (position, self.tuiles[position]['unites'])
+
+                
                 if (event.type == KEYDOWN and event.key == K_ESCAPE) or event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -652,7 +661,7 @@ class Game:
                     # self.unit.creation_unite('v', 'joueur_1')
                     taille = builds_dict["f"]['taille']
                     in_game = 1
-                    self.buildings.ajouter_batiment("joueur_2", "f", 60, 60, taille, tuiles, in_game)
+                    self.buildings.ajouter_batiment("joueur_2", "f", 60, 60, taille, in_game)
                 if event.type == KEYDOWN and event.key == K_y:
                     self.unit.creation_unite('a', 'joueur_1')
                     self.unit.creation_unite('v', 'joueur_1')
@@ -664,7 +673,7 @@ class Game:
                     joueur_a = 'joueur_2'
                     type_a = 'T'
                     id_a = 'T0'
-                    for pos, data in tuiles.items():
+                    for pos, data in self.tuiles.items():
                         if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
                             print(data['unites'][joueur_a])
                             if id_a in data['unites'][joueur_a][type_a]:
@@ -672,7 +681,7 @@ class Game:
                                 break
 
 
-                    for pos, data in tuiles.items():
+                    for pos, data in self.tuiles.items():
                         if 'batiments' in data and joueur_a in data['batiments'] and type_a in data['batiments'][joueur_a]:
                             #print("ok")
                             if data['batiments'][joueur_a][type_a]['id'] == id_a:
@@ -685,7 +694,6 @@ class Game:
                     print(new_pos)
 
                     self.unit.deplacer_unite('joueur_1','a',0,new_pos )
-                    print(tuiles)
 
                 if event.type == KEYDOWN and event.key == K_f:
                     self.unit.attack_building('joueur_1','a',0, 'joueur_2','T','T0')
@@ -696,17 +704,16 @@ class Game:
                     joueur = 'joueur_1'
                     type_unite = 'v'
                     id_unite = 0
-                    position_0 = next((position for position, data in tuiles.items() if 'unites' in data and 'joueur_1' in data['unites'] and 'v' in data['unites']['joueur_1'] and 0 in data['unites']['joueur_1']['v']), None)
+                    position_0 = next((position for position, data in self.tuiles.items() if 'unites' in data and 'joueur_1' in data['unites'] and 'v' in data['unites']['joueur_1'] and 0 in data['unites']['joueur_1']['v']), None)
                     position = self.recolte.trouver_plus_proche_ressource(position_0, joueur, type_unite, id_unite, ressource='F')
                     print(position)
                     self.unit.deplacer_unite(joueur, type_unite, id_unite, position)
-                    for joueur, ia in self.ia_joueurs.items():
-                        ia.execute('joueur_2')
+
                     
                     action_a_executer.append(
                         lambda posress=position: self.recolte.recolter_ressource_plus_proche_via_trouver(joueur, type_unite, id_unite, posress=posress))
                     def action_apres_deplacement():
-                        if int(tuiles[self.unit.position]['unites'][joueur][type_unite][id_unite]['capacite']) == 20:
+                        if int(self.tuiles[self.unit.position]['unites'][joueur][type_unite][id_unite]['capacite']) == 20:
                             pos_batiment = self.recolte.trouver_plus_proche_batiment(joueur, type_unite, id_unite)
                             if pos_batiment:
 
@@ -721,7 +728,6 @@ class Game:
 
                     action_a_executer.append(deposer_ressources_in_batiment)
 
-
                 if event.type == KEYDOWN and event.key == K_KP_MINUS:  # Touche "-"
                     self.unit.decrementer_hp_unite()
 
@@ -729,20 +735,20 @@ class Game:
                     self.buildings.decrementer_hp_batiments()
 
                 if event.type == KEYDOWN and event.key == K_F11:
-                    self.save_and_load.sauvegarder_jeu(tuiles, compteurs_joueurs)
+                    self.save_and_load.sauvegarder_jeu(self.tuiles, compteurs_joueurs)
 
                 if event.type == KEYDOWN and event.key == K_F12:
                     fichier = self.save_and_load.choisir_fichier_sauvegarde()
                     if fichier:
-                        nouvelles_tuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
-                        if nouvelles_tuiles and nouveaux_compteurs:
-                            tuiles.clear()
-                            tuiles.update(nouvelles_tuiles)
+                        nouvellesTuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
+                        if nouvellesTuiles and nouveaux_compteurs:
+                            self.tuiles.clear()
+                            self.tuiles.update(nouvellesTuiles)
                             compteurs_joueurs.clear()
                             compteurs_joueurs.update(nouveaux_compteurs)
 
                 if event.type == KEYDOWN and event.key == K_TAB:
-                    file_path = self.page_html.generate_html(tuiles)
+                    file_path = self.page_html.generate_html(self.tuiles)
                     browser = webbrowser.get("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe %s")
                     browser.open(f"file:///{file_path}")
 
@@ -766,11 +772,12 @@ class Game:
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
 
-
+                for joueur, ia in self.ia_joueurs.items():
+                    ia.execute(joueur)
                 self.unit.update_position()
                 current_time = pygame.time.get_ticks()
 
-                for position, data in tuiles.items():
+                for position, data in self.tuiles.items():
                     if 'unites' in data:
                         position_x, position_y=position
                         self.unit.update_position()
@@ -801,4 +808,5 @@ class Game:
 
             pygame.display.update()
             FPSCLOCK.tick(60)
-
+    
+    

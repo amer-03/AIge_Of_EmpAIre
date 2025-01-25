@@ -12,14 +12,15 @@ from numpy.random import poisson
 
 
 class Units:
-    def __init__(self):
+    def __init__(self, gameObj):
+
+        self.gameObj = gameObj
         self.tile_grass = tile_grass
         self.map_data = map_data  # Dictionnaire global à modifier
         self.compteurs_joueurs = compteurs_joueurs
         self.unit_list = None
         self.current_unit_index = 0
 
-        self.tile_map = TileMap()
         self.coordinates = Coordinates()
         self.id = None  # Identifiant unique pour l'unité
 
@@ -40,35 +41,40 @@ class Units:
 
 
     def deplacer_unite(self, joueur, type_unite, id_unite, nouvelle_position):
+
             position_actuelle = None
-            for position, data in tuiles.items():
+            for position, data in self.gameObj.tuiles.items():
                 if 'unites' in data and joueur in data['unites'] and type_unite in data['unites'][joueur]:
                     if id_unite in data['unites'][joueur][type_unite]:
-
                         position_actuelle = position
                         self.position = position
-                        print(position_actuelle)
                         break
             
             if not position_actuelle:
                 print(f"Unité {id_unite} non trouvée pour le joueur {joueur}.")
                 return
-            print ("joueur", joueur)
-            unite_data = tuiles[position_actuelle]['unites'][joueur][type_unite].pop(id_unite, None)
-            if not tuiles[position_actuelle]['unites'][joueur][type_unite]:
-                del tuiles[position_actuelle]['unites'][joueur][type_unite]
-            if not tuiles[position_actuelle]['unites'][joueur]:
-                del tuiles[position_actuelle]['unites'][joueur]
-            if not tuiles[position_actuelle]['unites']:
-                del tuiles[position_actuelle]['unites']
+
+            unite_data = self.gameObj.tuiles[position_actuelle]['unites'][joueur][type_unite].pop(id_unite, None)
+
+            print ('unite_data', unite_data)
+
+            if not self.gameObj.tuiles[position_actuelle]['unites'][joueur][type_unite]:
+                del self.gameObj.tuiles[position_actuelle]['unites'][joueur][type_unite]
+                print ('del type_unite')
+            if not self.gameObj.tuiles[position_actuelle]['unites'][joueur]:
+                del self.gameObj.tuiles[position_actuelle]['unites'][joueur]
+                print ('del joueur')
+            if not self.gameObj.tuiles[position_actuelle]['unites']:
+                del self.gameObj.tuiles[position_actuelle]['unites']
+                print ('del unites')
 
             # Vérification si la clé 'unites' a été supprimée, alors supprimer complètement la tuile
-            if 'unites' not in tuiles[position_actuelle]:
-                del tuiles[position_actuelle]
-
+            if 'unites' not in self.gameObj.tuiles[position_actuelle]:
+                del self.gameObj.tuiles[position_actuelle]
+                print ('position_actuelle')
 
             self.target_position = nouvelle_position
-            self.start_moving(nouvelle_position[0], nouvelle_position[1])
+            self.start_moving()
 
             self.moving_unit = {
                 "nouvelle_position": nouvelle_position,
@@ -78,8 +84,7 @@ class Units:
                 "unite_data": unite_data
             }    
 
-    def start_moving(self, new_x, new_y, duration=2000):
-        self.target_position = (new_x, new_y)
+    def start_moving(self, duration=2000):
         self.move_start_time = pygame.time.get_ticks()
         self.start_time_offset = self.move_start_time
         self.move_duration = duration
@@ -96,7 +101,7 @@ class Units:
         if elapsed_time >= self.move_duration:
             self.position = self.target_position
             self.moving = False
-
+            print ('joueur', self.moving_unit["joueur"], 'self.moving_unit', self.moving_unit)
             if self.moving_unit:
                 nouvelle_position = self.moving_unit["nouvelle_position"]
                 joueur = self.moving_unit["joueur"]
@@ -104,16 +109,20 @@ class Units:
                 id_unite = self.moving_unit["id_unite"]
                 unite_data = self.moving_unit["unite_data"]
 
-                if nouvelle_position not in tuiles:
-                    tuiles[nouvelle_position] = {'unites': {}}
-                if 'unites' not in tuiles[nouvelle_position]:
-                    tuiles[nouvelle_position]['unites'] = {}
-                if joueur not in tuiles[nouvelle_position]['unites']:
-                    tuiles[nouvelle_position]['unites'][joueur] = {}
-                if type_unite not in tuiles[nouvelle_position]['unites'][joueur]:
-                    tuiles[nouvelle_position]['unites'][joueur][type_unite] = {}
+                if nouvelle_position not in self.gameObj.tuiles:
+                    print ('1:if nouvelle_position not in self.gameObj.tuiles:') 
+                    self.gameObj.tuiles[nouvelle_position] = {'unites': {}}
+                if 'unites' not in self.gameObj.tuiles[nouvelle_position]:
+                    print ('2:if unites not in self.gameObj.tuiles[nouvelle_position]:')
+                    self.gameObj.tuiles[nouvelle_position]['unites'] = {}
+                if joueur not in self.gameObj.tuiles[nouvelle_position]['unites']:
+                    print ('3:if joueur not in self.gameObj.tuiles[nouvelle_position][unites]:')
+                    self.gameObj.tuiles[nouvelle_position]['unites'][joueur] = {}
+                if type_unite not in self.gameObj.tuiles[nouvelle_position]['unites'][joueur]:
+                    print ('4:if type_unite not in self.gameObj.tuiles[nouvelle_position][unites][joueur]:')
+                    self.gameObj.tuiles[nouvelle_position]['unites'][joueur][type_unite] = {}
 
-                tuiles[nouvelle_position]['unites'][joueur][type_unite][id_unite] = unite_data
+                self.gameObj.tuiles[nouvelle_position]['unites'][joueur][type_unite][id_unite] = unite_data
                 self.moving_unit = None
                 self.deplacement_termine = True
 
@@ -201,7 +210,7 @@ class Units:
 
 
 
-    #pour del : del tuiles[(60, 110)]['unites']['v'][0]
+    #pour del : del self.gameObj.tuiles[(60, 110)]['unites']['v'][0]
 
     def initialisation_compteur(self, position):
         for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
@@ -215,16 +224,16 @@ class Units:
                     compteurs_unites[unite] += 1
 
                     # Si la tuile (x, y) n'existe pas ou n'est pas un dictionnaire, l'initialiser
-                    if (x, y) not in tuiles or not isinstance(tuiles[(x, y)], dict):
-                        tuiles[(x, y)] = {}
-                        tuiles[(x, y)]['unites'] = {}
-                        tuiles[(x, y)]['unites'][joueur] = {}
+                    if (x, y) not in self.gameObj.tuiles or not isinstance(self.gameObj.tuiles[(x, y)], dict):
+                        self.gameObj.tuiles[(x, y)] = {}
+                        self.gameObj.tuiles[(x, y)]['unites'] = {}
+                        self.gameObj.tuiles[(x, y)]['unites'][joueur] = {}
 
 
 
                     # Vérifier s'il y a un conflit avec les bâtiments ou ressources
-                    batiments = tuiles[(x, y)].get('batiments', {})
-                    ressources = tuiles[(x, y)].get('ressources', {})
+                    batiments = self.gameObj.tuiles[(x, y)].get('batiments', {})
+                    ressources = self.gameObj.tuiles[(x, y)].get('ressources', {})
 
                     if not isinstance(ressources, dict):
                         ressources = {}
@@ -245,43 +254,44 @@ class Units:
 
                     # Ajouter l'unité seulement s'il n'y a pas de conflit
                     if not tuile_conflit:
-                        if unite not in tuiles[(x, y)]['unites'][joueur]:
-                            tuiles[(x, y)]['unites'][joueur][unite] = {}
+                        print ('joueur', joueur, 'position', (x, y), 'tuiles[(x, y)]', self.gameObj.tuiles[(x, y)])
+                        if unite not in self.gameObj.tuiles[(x, y)]['unites'][joueur]:
+                            self.gameObj.tuiles[(x, y)]['unites'][joueur][unite] = {}
 
-                        tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
+                        self.gameObj.tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
                             'HP': units_dict[unite]['hp'],  # Récupérer les HP depuis units_images
                             'Status': 'libre',
                             'capacite': '0'
                         }
                     else:
                         # Si conflit, trouver une autre position et réessayer
-                        while (x, y) in tuiles and tuile_conflit:
+                        while (x, y) in self.gameObj.tuiles and tuile_conflit:
                             x += 1
                             y += 1
 
                         # Réinitialiser la tuile (x, y) avec les clés nécessaires
-                        if (x, y) not in tuiles:
-                            tuiles[(x, y)] = {'unites': {}}
+                        if (x, y) not in self.gameObj.tuiles:
+                            self.gameObj.tuiles[(x, y)] = {'unites': {}}
 
-                        if joueur not in tuiles[(x, y)]['unites']:
-                            tuiles[(x, y)]['unites'][joueur] = {}
+                        if joueur not in self.gameObj.tuiles[(x, y)]['unites']:
+                            self.gameObj.tuiles[(x, y)]['unites'][joueur] = {}
 
-                        if unite not in tuiles[(x, y)]['unites'][joueur]:
-                            tuiles[(x, y)]['unites'][joueur][unite] = {}
+                        if unite not in self.gameObj.tuiles[(x, y)]['unites'][joueur]:
+                            self.gameObj.tuiles[(x, y)]['unites'][joueur][unite] = {}
 
-                        tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
+                        self.gameObj.tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
                             'HP': units_dict[unite]['hp'],  # Récupérer les HP depuis units_images
                             'Status': 'libre',
                             'capacite': '0'
                         }
-                        #tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
+                        #self.gameObj.tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
                         #    'occupé': False  # Récupérer les HP depuis units_images
                         #}
 
     def attack(self, joueur_a, type_a, id_a, joueur_b, type_b, id_b):
         # Recherche des informations de l'unité attaquante
         position_a = None
-        for pos, data in tuiles.items():
+        for pos, data in self.gameObj.tuiles.items():
             if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
                 if id_a in data['unites'][joueur_a][type_a]:
                     unit_info_a = data['unites'][joueur_a][type_a][id_a]
@@ -292,7 +302,7 @@ class Units:
 
         # Recherche des informations de l'unité cible
         position_b = None
-        for pos, data in tuiles.items():
+        for pos, data in self.gameObj.tuiles.items():
             if 'unites' in data and joueur_b in data['unites'] and type_b in data['unites'][joueur_b]:
                 if id_b in data['unites'][joueur_b][type_b]:
                     unit_info_b = data['unites'][joueur_b][type_b][id_b]
@@ -327,7 +337,7 @@ class Units:
         position_a = None
 
         # Recherche des caractéristiques de l'unité A
-        for pos, data in tuiles.items():
+        for pos, data in self.gameObj.tuiles.items():
             if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
                 if id_a in data['unites'][joueur_a][type_a]:
                     unit_info_a = data['unites'][joueur_a][type_a][id_a]
@@ -352,7 +362,7 @@ class Units:
         building_tiles = []
         building_hp = None
 
-        for pos, data in tuiles.items():
+        for pos, data in self.gameObj.tuiles.items():
             if 'batiments' in data and joueur_b in data['batiments'] and type_b in data['batiments'][joueur_b]:
                 if data['batiments'][joueur_b][type_b]['id'] == id_b:
                     building_info_b = data['batiments'][joueur_b][type_b]
@@ -417,16 +427,16 @@ class Units:
                             completed_attacks.append(attack)
 
                             for pos, building_part in building_tiles:
-                                if "ressources" not in tuiles[pos] and "unites" not in tuiles[pos]:
+                                if "ressources" not in self.gameObj.tuiles[pos] and "unites" not in self.gameObj.tuiles[pos]:
                                     # Si la tuile ne contient ni "ressources" ni "unites", supprimer la tuile complètement
-                                    del tuiles[pos]
+                                    del self.gameObj.tuiles[pos]
                                 else:
                                     # Sinon, on supprime les bâtiments présents dans la tuile
-                                    if len(tuiles[pos]) == 1:
-                                        del tuiles[pos]["batiments"]
+                                    if len(self.gameObj.tuiles[pos]) == 1:
+                                        del self.gameObj.tuiles[pos]["batiments"]
                                     else:
-                                        del tuiles[pos]["batiments"][building_part['joueur']][building_part['type']]
-                            print(tuiles)
+                                        del self.gameObj.tuiles[pos]["batiments"][building_part['joueur']][building_part['type']]
+                            print(self.gameObj.tuiles)
                             joueur_b = attack["target"]["joueur"]
                             type_b = attack["target"]["type"]
                             id_b = attack["target"]["id"]
@@ -450,11 +460,11 @@ class Units:
                             print(f"L'unité est détruite !")
                             completed_attacks.append(attack)
 
-                            # Suppression de l'unité de `tuiles`
+                            # Suppression de l'unité de `self.gameObj.tuiles`
                             joueur_b = attack["target"]["joueur"]
                             type_b = attack["target"]["type"]
                             id_b = attack["target"]["id"]
-                            del tuiles[target_position]['unites'][joueur_b][type_b][id_b]
+                            del self.gameObj.tuiles[target_position]['unites'][joueur_b][type_b][id_b]
                             if joueur_b in compteurs_joueurs:
                                 if type_b in compteurs_joueurs[joueur_b]['unites'] and \
                                         compteurs_joueurs[joueur_b]['unites'][type_b] > 0:
@@ -466,7 +476,7 @@ class Units:
 
     def decrementer_hp_unite(self):
         # Vérifier que les tuiles existent et contiennent des unités
-        for (x, y), data in tuiles.items():
+        for (x, y), data in self.gameObj.tuiles.items():
             if isinstance(data, dict) and 'unites' in data:  # Vérifie si la tuile contient des unités
                 unites = data['unites']
 
@@ -482,7 +492,7 @@ class Units:
                                 # Si l'unité est morte, la supprimer
                                 if stats['HP'] <= 0:
                                     stats['HP'] = 0
-                                    del tuiles[(x, y)]['unites'][joueur][unite][identifiant]
+                                    del self.gameObj.tuiles[(x, y)]['unites'][joueur][unite][identifiant]
                                     if joueur in compteurs_joueurs:
                                         if unite in compteurs_joueurs[joueur]['unites'] and \
                                                 compteurs_joueurs[joueur]['unites'][unite] > 0:
@@ -490,12 +500,12 @@ class Units:
 
 
                                     # Supprimer les structures vides
-                                    if not tuiles[(x, y)]['unites'][joueur][unite]:
-                                        del tuiles[(x, y)]['unites'][joueur][unite]
-                                    if not tuiles[(x, y)]['unites'][joueur]:
-                                        del tuiles[(x, y)]['unites'][joueur]
-                                    if not tuiles[(x, y)]['unites']:
-                                        del tuiles[(x, y)]['unites']
+                                    if not self.gameObj.tuiles[(x, y)]['unites'][joueur][unite]:
+                                        del self.gameObj.tuiles[(x, y)]['unites'][joueur][unite]
+                                    if not self.gameObj.tuiles[(x, y)]['unites'][joueur]:
+                                        del self.gameObj.tuiles[(x, y)]['unites'][joueur]
+                                    if not self.gameObj.tuiles[(x, y)]['unites']:
+                                        del self.gameObj.tuiles[(x, y)]['unites']
                                 return
 
     def creation_unite(self, unit_type, player):
@@ -513,7 +523,7 @@ class Units:
             if compteurs_joueurs[player]['ressources']['U'] < compteurs_joueurs[player]['ressources']['max_pop']:
 
                 # Rechercher les bâtiments valides pour le joueur
-                for (x, y), tile in tuiles.items():
+                for (x, y), tile in self.gameObj.tuiles.items():
                     if "batiments" in tile and player in tile["batiments"]:
                         if building_type in tile["batiments"][player]:
                             # Ajouter à la file d'attente de ce bâtiment
@@ -533,27 +543,27 @@ class Units:
             print("pas assez de ressources")
 
     def is_tile_empty(self, position):
-        tile = tuiles.get(position, {})
+        tile = self.gameObj.tuiles.get(position, {})
         return "batiments" not in tile and "ressources" not in tile
 
     def add_unit_to_tile(self, unit_type, player, position):
 
-        if position not in tuiles:
-            tuiles[position] = {}
+        if position not in self.gameObj.tuiles:
+            self.gameObj.tuiles[position] = {}
 
-        if "unites" not in tuiles[position]:
-            tuiles[position]["unites"] = {}
+        if "unites" not in self.gameObj.tuiles[position]:
+            self.gameObj.tuiles[position]["unites"] = {}
 
-        if player not in tuiles[position]["unites"]:
-            tuiles[position]["unites"][player] = {}
+        if player not in self.gameObj.tuiles[position]["unites"]:
+            self.gameObj.tuiles[position]["unites"][player] = {}
 
-        if unit_type not in tuiles[position]["unites"][player]:
-            tuiles[position]["unites"][player][unit_type] = {}
+        if unit_type not in self.gameObj.tuiles[position]["unites"][player]:
+            self.gameObj.tuiles[position]["unites"][player][unit_type] = {}
 
-        existing_units = tuiles[position]["unites"][player][unit_type]
+        existing_units = self.gameObj.tuiles[position]["unites"][player][unit_type]
         new_unit_id = max(existing_units.keys(), default=-1) + 1
 
-        tuiles[position]["unites"][player][unit_type][new_unit_id] = {"HP": units_dict[unit_type]['hp']}
+        self.gameObj.tuiles[position]["unites"][player][unit_type][new_unit_id] = {"HP": units_dict[unit_type]['hp']}
 
 
 
@@ -562,7 +572,7 @@ class Units:
         temps_creation = units_dict[unit_type]["temps_entrainement"]
         creation_time = temps_creation
 
-        tile = tuiles.get(building_position, {})
+        tile = self.gameObj.tuiles.get(building_position, {})
         if "unit_creation_queue" not in tile:
             tile["unit_creation_queue"] = []
 
@@ -577,7 +587,7 @@ class Units:
 
     def get_building_type_from_position(self, position):
         """Récupère le type de bâtiment et l'origine à partir d'une position donnée."""
-        tile = tuiles.get(position, {})  # Récupérer la tuile à partir de la position
+        tile = self.gameObj.tuiles.get(position, {})  # Récupérer la tuile à partir de la position
 
         # Vérifier si la tuile contient des bâtiments
         if "batiments" in tile:
@@ -586,7 +596,7 @@ class Units:
                     # Vérifier que le bâtiment a une clé "parent" et récupérer l'origine
                     if "parent" in building_data:
                         origin = building_data["parent"]  # Récupérer la position du bâtiment principal
-                        origin_tile = tuiles.get(origin, {})  # Récupérer la tuile de l'origine (bâtiment principal)
+                        origin_tile = self.gameObj.tuiles.get(origin, {})  # Récupérer la tuile de l'origine (bâtiment principal)
 
                         # Si l'origine est valide, on peut obtenir le type de bâtiment
                         if origin_tile and "batiments" in origin_tile:
@@ -600,7 +610,7 @@ class Units:
 
     def update_creation_times(self):
         current_time = time.time()  # Obtenez le temps actuel
-        for position, tile in list(tuiles.items()):  # Utilisez list() pour éviter des erreurs lors de modifications
+        for position, tile in list(self.gameObj.tuiles.items()):  # Utilisez list() pour éviter des erreurs lors de modifications
             if "unit_creation_queue" in tile:
                 queue = tile["unit_creation_queue"]
 
@@ -679,7 +689,7 @@ class Units:
 
     def show_remaining_time(self):
         current_time = time.time()
-        for position, tile in tuiles.items():
+        for position, tile in self.gameObj.tuiles.items():
             if "unit_creation_queue" in tile and tile["unit_creation_queue"]:
                 first_unit = tile["unit_creation_queue"][0]
                 if first_unit.get("time_started") is not None:
