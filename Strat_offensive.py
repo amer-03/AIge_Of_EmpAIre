@@ -15,10 +15,33 @@ class StratOffensive:
         """
         self.game_state = game_state
         self.resource_collector = Recolte_ressources()
+        self.unit = Units()
 
     def getStatus(self, position, joueur, type_unit, id):
         return (tuiles[position]['unites'][joueur][type_unit][id]['Status'] == 'libre')
 
+    
+    def bouge(self, joueur, type_unit, id_unite, pos_bois):
+        self.unit.deplacer_unite(joueur, type_unit, id_unite, pos_bois)
+        self.unit.update_position()
+        
+        """action_a_executer.append(
+            lambda posress=pos_bois: self.resource_collector.recolter_ressource_plus_proche_via_trouver(joueur, type_unit, id_unite, posress=posress))
+        def action_apres_deplacement():
+            if int(tuiles[self.unit.position]['unites'][joueur][type_unit][id_unite]['capacite']) == 20:
+                pos_batiment = self.resource_collector.trouver_plus_proche_batiment(joueur, type_unit, id_unite)
+                if pos_batiment:
+                    self.unit.deplacer_unite(joueur, type_unit, id_unite, pos_batiment)
+
+        action_a_executer.append(action_apres_deplacement)"""
+
+        def deposer_ressources_in_batiment():
+                quantite = 20
+                ressource = 'f'
+                self.resource_collector.deposer_ressources(quantite, joueur, type_unit, id_unite, ressource)
+
+        action_a_executer.append(deposer_ressources_in_batiment)
+    
     def execute(self, joueur):
         """from Game import Game
 
@@ -71,17 +94,14 @@ class StratOffensive:
                             status = self.getStatus(position, joueur, type_unit, id_unite)
                             if status == True:  # Si l'unité est inactive
                                 villageois_inactifs.append((position, joueur, type_unit, id_unite))
-
+        print(villageois_inactifs)
         # Traiter les villageois inactifs
-        for id_unite in villageois_inactifs:
+        for i in villageois_inactifs:
             # Trouver la position de la ressource la plus proche
-            pos_bois = self.resource_collector.trouver_plus_proche_ressource(position, joueur, type_unit, id_unite, "W")
-            print("haha")
-            print (id_unite)
+            id_unite = i[3]
+            type_unit = i[2]
+            joueur = i[1]
+            position_unite = i[0]
+            pos_bois = self.resource_collector.trouver_plus_proche_ressource(position_unite, joueur, type_unit, id, "W")
             if pos_bois:
-                # Déplacer l'unité vers la ressource
-                self.resource_collector.unit.deplacer_unite(position, joueur, type_unit, id_unite, pos_bois)
-                # Collecter la ressource une fois arrivée
-                self.resource_collector.recolter_ressource_plus_proche_via_trouver(joueur, type_unit, id_unite, posress=pos_bois)
-            else:
-                print(f"Aucune ressource bois disponible pour l'unité {id_unite}.")
+                self.bouge(joueur, type_unit, id_unite, pos_bois)        

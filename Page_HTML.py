@@ -138,7 +138,7 @@ class Page_HTML:
             html += "<h2>Ressources</h2>"
             ressources = compteurs_joueurs[joueur]['ressources']
             html += "<table><tr><th>Bois</th><th>Nourriture</th><th>Or</th><th>Population</th></tr>"
-            html += f"<tr><td>{ressources['w']}</td><td>{ressources['f']}</td><td>{ressources['g']}</td><td>{ressources['U']}</td></tr>"
+            html += f"<tr><td>{ressources['W']}</td><td>{ressources['f']}</td><td>{ressources['G']}</td><td>{ressources['U']}</td></tr>"
             html += "</table>"
 
             # Section des unités

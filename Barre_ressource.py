@@ -17,6 +17,17 @@ class Barre_ressources:
         self.color_barre_builds = LIGHT_GRAY
         self.image_barre_builds = pygame.transform.scale(self.image, (screen_height//27, screen_height//27))  # Redimensionner l'image
 
+    def draw_title(self, surface, text, x, y, color):
+        # Rendre le texte
+        title = self.font.render(text, True, color)
+
+        # Calculer les coordonnées pour centrer le texte
+        title_x = x + (self.barre_width - title.get_width()) // 2
+        title_y = y - title.get_height() - 5  # Légèrement au-dessus de la barre
+
+        # Dessiner le texte sur la surface
+        surface.blit(title, (title_x, title_y))
+
     def barre(self, surface, x, y):
         # Dessine un rectangle noir à la position (x, y)
         pygame.draw.rect(surface, self.color, (x, y, barre_width, barre_height))
