@@ -1,13 +1,15 @@
+# coding: utf-8
 import pygame
 import sys
 import json
 from pygame.locals import *
 
 import Units
+from AI_Eco import AI_Eco
 from constants import *
 from TileMap import TileMap
 from Barre_ressource import Barre_ressources
-from Units import Unit
+from Units import Units
 from Buildings import Buildings
 from Page_HTML import Page_HTML
 from Save_and_load import Save_and_load
@@ -21,17 +23,19 @@ import webbrowser
 import os
 from colorama import Fore, Style
 from collections import deque
-
+from Strat_offensive import StratOffensive
 
 class Game:
     """Classe principale gérant le jeu."""
 
     def __init__(self):
 
+        self.tuiles = {}
+
         # MAP
         self.scroll_speed = 30
         self.tile_map = None
-        self.tile_map = TileMap()
+        self.tile_map = TileMap(self)
         self.cam_x, self.cam_y = self.center_camera_on_tile()
 
         # MINIMAP
@@ -56,6 +60,7 @@ class Game:
         self.n = 2  # Définition du nombre de joueurs
         self.plus = None
         self.moins = None
+        self.sauvegarde = None
 
         # TERMINAL
 
@@ -66,30 +71,29 @@ class Game:
 
         # UNITS
         # self.swordsman = Units.Swordsman()
-        self.unit = Unit()
+        self.unit = Units(self)
         self.tiles = {}
         self.test = deque()
 
         # RECOLTE_RESSOURCES
-        self.recolte = Recolte_ressources()
+        self.recolte = Recolte_ressources(self)
 
         # BUILDS
-        self.buildings = Buildings()
+        self.buildings = Buildings(self)
 
         # Page HTML
         self.page_html = Page_HTML()
 
         # Save and Load
         self.save_and_load = Save_and_load()
+        self.ia_joueurs = {}
+        print (f"One third, expressed as a float is: {1 / 3}")
+        for joueur in range(1, self.n + 1):  # Pour chaque joueur (par exemple, joueur_1, joueur_2)
+            joueur_nom = f"joueur_{joueur}"
+            if joueur_nom != "joueur_1":
+                self.ia_joueurs[joueur_nom] = StratOffensive(self, joueur_nom)
+        self.ai = AI_Eco(self, "joueur_2")  # Replace Strat_offensive with AI_Eco
 
-        # Initialize players first
-        self.n = 2  # Number of players
-        self.joueur = 0
-        self.compteur = compteurs_joueurs
-        
-        # Add AI initialization
-        self.ai_player_id = 2  # AI will control player 2
-        self.ai = None  # Will be initialized after menu selection
 
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
@@ -146,6 +150,7 @@ class Game:
         menu_text_rect = menu_text.get_rect(center=(screen_width // 2, 100))
         DISPLAYSURF.blit(menu_text, menu_text_rect)
 
+
         card_color1 = YELLOW if self.selected_unit == "Lean" else BLACK
         card_color2 = YELLOW if self.selected_unit == "Mean" else BLACK
         card_color3 = YELLOW if self.selected_unit == "Marines" else BLACK
@@ -158,6 +163,7 @@ class Game:
         card4_text = small_font.render("Map 1", True, card_color4)
         card5_text = small_font.render("Map 2", True, card_color5)
         start_text = small_font.render("Commencer la Partie", True, GREEN)
+        save_text = small_font.render("Sauvegardes", True, GREEN)
 
         self.card1_rect = card1_text.get_rect(topleft=(screen_width // 2 - 150, 200))
         self.card2_rect = card2_text.get_rect(topleft=(screen_width // 2 - 150, 250))
@@ -217,28 +223,31 @@ class Game:
         self.start_rect = start_text.get_rect(center=(screen_width // 2, 500))
         DISPLAYSURF.blit(start_text, self.start_rect.topleft)
 
+        self.save = save_text.get_rect(center=(screen_width // 2, 600))
+        DISPLAYSURF.blit(save_text, self.save.topleft)
+
         pygame.display.update()
 
     def ajouter_unite(self, joueur, type_unite, id_unite, position, hp, status="libre"):
         # Vérifie si la position existe dans map_data, sinon initialise une entrée.
-        if position not in tuiles:
-            tuiles[position] = {'unites': {}}
+        if position not in self.tuiles:
+            self.tuiles[position] = {'unites': {}}
 
         # Vérifie si le joueur existe dans la position, sinon initialise une entrée.
-        if joueur not in tuiles[position]['unites']:
-            tuiles[position]['unites'][joueur] = {}
+        if joueur not in self.tuiles[position]['unites']:
+            self.tuiles[position]['unites'][joueur] = {}
 
         # Vérifie si le type d'unité existe pour ce joueur, sinon initialise une entrée.
-        if type_unite not in tuiles[position]['unites'][joueur]:
-            tuiles[position]['unites'][joueur][type_unite] = {}
+        if type_unite not in self.tuiles[position]['unites'][joueur]:
+            self.tuiles[position]['unites'][joueur][type_unite] = {}
 
         # Ajoute ou met à jour l'unité.
-        tuiles[position]['unites'][joueur][type_unite][id_unite] = {
+        self.tuiles[position]['unites'][joueur][type_unite][id_unite] = {
             'HP': hp,
             'Status': status
         }
 
-        print(f"Unité ajoutée: {tuiles[position]['unites'][joueur][type_unite][id_unite]}")
+        print(f"Unité ajoutée: {self.tuiles[position]['unites'][joueur][type_unite][id_unite]}")
 
     def handle_menu_events(self, event):
         """Gère les événements liés au menu principal."""
@@ -246,8 +255,19 @@ class Game:
             # Vérifier la sélection des unités
             x, y = event.pos
 
-            # Clic sur la flèche +
-            if self.plus.collidepoint(x, y):
+            if self.save.collidepoint(x, y):
+                fichier = self.save_and_load.choisir_fichier_sauvegarde()
+                if fichier:
+                    nouvellesTuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
+                    if nouvellesTuiles and nouveaux_compteurs:
+                        self.tuiles.clear()
+                        self.tuiles.update(nouvellesTuiles)
+                        compteurs_joueurs.clear()
+                        compteurs_joueurs.update(nouveaux_compteurs)
+                self.menu_active = False
+                pygame.display.update()
+
+            elif self.plus.collidepoint(x, y):
                 if self.n < 10:  # Limiter à 10 joueurs
                     self.n += 1
 
@@ -296,11 +316,7 @@ class Game:
 
                 self.unit.initialisation_compteur(position)
                 self.draw_mini_map(DISPLAYSURF)
-                print(tuiles)
 
-                # Initialize AI after players are set up
-                from AI_Eco import AI_Eco
-                self.ai = AI_Eco(player_id=self.ai_player_id, game=self)
 
     def draw_mini_map(self, display_surface):
         losange_surface = pygame.Surface((self.mini_map_size_x, self.mini_map_size_y), pygame.SRCALPHA)
@@ -313,8 +329,8 @@ class Game:
 
         for row in range(size):
             for col in range(size):
-                tile = tuiles.get((row, col), {})  # Récupérer les données de la tuile ou un dictionnaire vide
-                color = (34, 139, 34)  # Vert par défaut pour les tuiles vides
+                tile = self.tuiles.get((row, col), {})  # Récupérer les données de la tuile ou un dictionnaire vide
+                color = (34, 139, 34)  # Vert par défaut pour les self.tuiles vides
 
                 # Vérification des ressources
                 if "ressources" in tile:
@@ -431,7 +447,7 @@ class Game:
                                       curses.color_pair(12))  # Rouge pour le joueur
                     else:
 
-                        tile = tuiles.get((row, col), {})
+                        tile = self.tuiles.get((row, col), {})
                         char = " "  # Espace vide par défaut
                         color = 0  # Pas de couleur par défaut
 
@@ -549,14 +565,14 @@ class Game:
                 self.unit.decrementer_hp_unite()
 
             elif key == 9:  # Code ASCII pour Tab
-                file_path = self.page_html.generate_html(tuiles)
+                file_path = self.page_html.generate_html(self.tuiles)
                 browser = webbrowser.get("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe %s")
                 browser.open(f"file:///{file_path}")
 
-            elif key == ord('t'):
+            elif key == curses.KEY_F9:
                 self.ouvrir_terminal()
 
-            time.sleep(0.1)  # Pause pour éviter d'utiliser trop de CPU
+            #time.sleep(0.1)  # Pause pour éviter d'utiliser trop de CPU
 
     def ouvrir_terminal(self):
         if self.terminal_active:
@@ -609,61 +625,6 @@ class Game:
             terminal_thread.daemon = True
             terminal_thread.start()
 
-    def draw_minimap_viewbox(self, DISPLAYSURF):
-        # Position et taille minimap
-        minimap_x = screen_width - self.mini_map_size_x - 10
-        minimap_y = screen_height - self.mini_map_size_y - 10
-        view_width = self.mini_map_size_x // 4
-        view_height = self.mini_map_size_y // 4
-
-        #L'échelle comme dans handle_mini_map_click
-        scale_x = size * (tile_grass.width_half * 2) / self.mini_map_size_x
-        scale_y = size * tile_grass.height_half / self.mini_map_size_y
-
-        rect_x = (self.cam_x + screen_width // 2) / scale_x + self.mini_map_size_x // 2
-        rect_y = (self.cam_y + screen_height // 2) / scale_y + self.mini_map_size_y // 2
-
-        # On ajuste aux coordonnées de la minimap
-        rect_x = minimap_x + rect_x - (view_width // 2)
-        rect_y = minimap_y + rect_y - (view_height // 2)
-
-        # On garde dans les limites
-        rect_x = max(minimap_x, min(rect_x, minimap_x + self.mini_map_size_x - view_width))
-        rect_y = max(minimap_y, min(rect_y, minimap_y + self.mini_map_size_y - view_height))
-
-        # Affichage rectangle
-        view_surface = pygame.Surface((view_width, view_height), pygame.SRCALPHA)
-        pygame.draw.rect(view_surface, (255, 255, 255, 100), view_surface.get_rect())
-        DISPLAYSURF.blit(view_surface, (rect_x, rect_y))
-        pygame.draw.rect(DISPLAYSURF, (255, 255, 255), 
-                        (rect_x, rect_y, view_width, view_height), 2)
-
-    def render_units(self):
-        """Render all units with correct isometric positioning"""
-        current_time = pygame.time.get_ticks()
-        
-        for position, data in tuiles.items():
-            if 'unites' in data:
-                for joueur, units in data['unites'].items():
-                    for unit_type, unit_data in units.items():
-                        for unit_id, unit in unit_data.items():
-                            # Get correct unit image for type
-                            unit_image = units_dict[unit_type]['image'].image
-                            x, y = position
-                            
-                            # Convert tile coordinates to isometric screen coordinates
-                            screen_x = (x - y) * tile_grass.width_half
-                            screen_y = (x + y) * tile_grass.height_half
-                            
-                            # Display unit at calculated position
-                            self.unit.diplay_unit(
-                                screen_x,
-                                screen_y,
-                                self.cam_x,
-                                self.cam_y,
-                                current_time,
-                                unit_image
-                            )
 
     def run(self):
         """Boucle principale du jeu."""
@@ -675,6 +636,13 @@ class Game:
 
             events = pygame.event.get()
             for event in events:
+
+                if event.type == KEYDOWN and event.key == K_a:
+                    for position in self.tuiles:
+                        if 'unites' in self.tuiles[position]:
+                            print (position, self.tuiles[position]['unites'])
+
+                
                 if (event.type == KEYDOWN and event.key == K_ESCAPE) or event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -687,14 +655,14 @@ class Game:
                 if event.type == KEYDOWN and event.key == K_F3:
                     self.Initialisation_compteur.f3_active = not self.Initialisation_compteur.f3_active
 
-                if event.type == KEYDOWN and event.key == K_t:
+                if event.type == KEYDOWN and event.key == K_F9:
                     self.ouvrir_terminal()
 
                 if event.type == KEYDOWN and event.key == K_u:
                     # self.unit.creation_unite('v', 'joueur_1')
                     taille = builds_dict["f"]['taille']
                     in_game = 1
-                    self.buildings.ajouter_batiment("joueur_2", "f", 60, 60, taille, tuiles, in_game)
+                    self.buildings.ajouter_batiment("joueur_2", "f", 60, 60, taille, in_game)
                 if event.type == KEYDOWN and event.key == K_y:
                     self.unit.creation_unite('a', 'joueur_1')
                     self.unit.creation_unite('v', 'joueur_1')
@@ -706,7 +674,7 @@ class Game:
                     joueur_a = 'joueur_2'
                     type_a = 'T'
                     id_a = 'T0'
-                    for pos, data in tuiles.items():
+                    for pos, data in self.tuiles.items():
                         if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
                             print(data['unites'][joueur_a])
                             if id_a in data['unites'][joueur_a][type_a]:
@@ -714,7 +682,7 @@ class Game:
                                 break
 
 
-                    for pos, data in tuiles.items():
+                    for pos, data in self.tuiles.items():
                         if 'batiments' in data and joueur_a in data['batiments'] and type_a in data['batiments'][joueur_a]:
                             #print("ok")
                             if data['batiments'][joueur_a][type_a]['id'] == id_a:
@@ -727,54 +695,26 @@ class Game:
                     print(new_pos)
 
                     self.unit.deplacer_unite('joueur_1','a',0,new_pos )
-                    print(tuiles)
 
                 if event.type == KEYDOWN and event.key == K_f:
                     self.unit.attack_building('joueur_1','a',0, 'joueur_2','T','T0')
 
                 if event.type == KEYDOWN and event.key == K_h:
+
+
                     joueur = 'joueur_1'
                     type_unite = 'v'
                     id_unite = 0
-                    position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='F')
-                    
-                    # Add error checking
-                    if position is not None:
-                        print(f"Moving to position: {position}")
-                        self.unit.deplacer_unite(joueur, type_unite, id_unite, position)
-                        action_a_executer.append(
-                            lambda posress=position: self.recolte.recolter_ressource_plus_proche_via_trouver(
-                                joueur, type_unite, id_unite, posress=posress
-                            )
-                        )
-                        
-                        def action_apres_deplacement():
-                            if (self.unit.position in tuiles and 
-                                'unites' in tuiles[self.unit.position] and
-                                joueur in tuiles[self.unit.position]['unites'] and
-                                type_unite in tuiles[self.unit.position]['unites'][joueur] and
-                                id_unite in tuiles[self.unit.position]['unites'][joueur][type_unite] and
-                                int(tuiles[self.unit.position]['unites'][joueur][type_unite][id_unite]['capacite']) == 20):
-                                
-                                pos_batiment = self.recolte.trouver_plus_proche_batiment(joueur, type_unite, id_unite)
-                                if pos_batiment:
-                                    self.unit.deplacer_unite(joueur, type_unite, id_unite, pos_batiment)
-
-                        action_a_executer.append(action_apres_deplacement)
-                    else:
-                        print("No valid resource position found")
-
-                if event.type == KEYDOWN and event.key == K_h:
-                    joueur = 'joueur_1'
-                    type_unite = 'v'
-                    id_unite = 0
-                    position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='F')
+                    position_0 = next((position for position, data in self.tuiles.items() if 'unites' in data and 'joueur_1' in data['unites'] and 'v' in data['unites']['joueur_1'] and 0 in data['unites']['joueur_1']['v']), None)
+                    position = self.recolte.trouver_plus_proche_ressource(position_0, joueur, type_unite, id_unite, ressource='F')
                     print(position)
                     self.unit.deplacer_unite(joueur, type_unite, id_unite, position)
+
+                    
                     action_a_executer.append(
                         lambda posress=position: self.recolte.recolter_ressource_plus_proche_via_trouver(joueur, type_unite, id_unite, posress=posress))
                     def action_apres_deplacement():
-                        if int(tuiles[self.unit.position]['unites'][joueur][type_unite][id_unite]['capacite']) == 20:
+                        if int(self.tuiles[self.unit.position]['unites'][joueur][type_unite][id_unite]['capacite']) == 20:
                             pos_batiment = self.recolte.trouver_plus_proche_batiment(joueur, type_unite, id_unite)
                             if pos_batiment:
 
@@ -789,7 +729,6 @@ class Game:
 
                     action_a_executer.append(deposer_ressources_in_batiment)
 
-
                 if event.type == KEYDOWN and event.key == K_KP_MINUS:  # Touche "-"
                     self.unit.decrementer_hp_unite()
 
@@ -797,25 +736,29 @@ class Game:
                     self.buildings.decrementer_hp_batiments()
 
                 if event.type == KEYDOWN and event.key == K_F11:
-                    self.save_and_load.sauvegarder_jeu(tuiles, compteurs_joueurs)
+                    self.save_and_load.sauvegarder_jeu(self.tuiles, compteurs_joueurs)
 
                 if event.type == KEYDOWN and event.key == K_F12:
                     fichier = self.save_and_load.choisir_fichier_sauvegarde()
                     if fichier:
-                        nouvelles_tuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
-                        if nouvelles_tuiles and nouveaux_compteurs:
-                            tuiles.clear()
-                            tuiles.update(nouvelles_tuiles)
+                        nouvellesTuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
+                        if nouvellesTuiles and nouveaux_compteurs:
+                            self.tuiles.clear()
+                            self.tuiles.update(nouvellesTuiles)
                             compteurs_joueurs.clear()
                             compteurs_joueurs.update(nouveaux_compteurs)
 
                 if event.type == KEYDOWN and event.key == K_TAB:
-                    file_path = self.page_html.generate_html(tuiles)
+                    file_path = self.page_html.generate_html(self.tuiles)
                     browser = webbrowser.get("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe %s")
                     browser.open(f"file:///{file_path}")
 
                 if self.menu_active:
                     self.handle_menu_events(event)
+
+                #for joueur, ia in self.ia_joueurs.items():
+                #    ia.execute(joueur)
+
                 else:
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         mouse_pos = pygame.mouse.get_pos()
@@ -829,14 +772,13 @@ class Game:
                 self.buildings.update_creation_times()
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
-                self.render_units()  # Add this line
-                self.draw_mini_map(DISPLAYSURF)
-                self.draw_minimap_viewbox(DISPLAYSURF)
 
+                for joueur, ia in self.ia_joueurs.items():
+                    ia.execute(joueur)
                 self.unit.update_position()
                 current_time = pygame.time.get_ticks()
 
-                for position, data in tuiles.items():
+                for position, data in self.tuiles.items():
                     if 'unites' in data:
                         position_x, position_y=position
                         self.unit.update_position()
@@ -850,6 +792,7 @@ class Game:
                         current_time,
                         unit_image
                     )
+                self.draw_mini_map(DISPLAYSURF)
                 self.unit.update_attacks()
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
@@ -859,13 +802,11 @@ class Game:
                 self.Initialisation_compteur.update_compteur()
                 fps = int(FPSCLOCK.get_fps())
                 fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
+
                 DISPLAYSURF.blit(fps_text, (10, 10))
                 pygame.display.update()
                 pygame.display.flip()
-
-                # Update AI if game has started and AI is initialized
-                if self.ai:
-                    self.ai.update()
+                self.ai.execute("joueur_2")  # Update AI
 
             pygame.display.update()
             FPSCLOCK.tick(60)

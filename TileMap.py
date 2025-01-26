@@ -12,9 +12,11 @@ import numpy as np
 class TileMap:
     """Classe gérant la carte des tuiles."""
 
-    def __init__(self):
+    def __init__(self, gameObj):
         # self.add_wood_patches()
+        self.gameObj = gameObj
         self.position_initiale = (size // 2, size // 2)
+        
 
     def mode(self, mode):
         if mode == "patches":
@@ -34,8 +36,8 @@ class TileMap:
             start_x = random.randint(0, size - 1)
             start_y = random.randint(0, size - 1)
             wood_tiles = [(start_x, start_y)]
-            if (start_x, start_y) not in tuiles:
-                tuiles[(start_x, start_y)] = {'ressources': "W", 'quantite': ressources_dict['W']['quantite']}
+            if (start_x, start_y) not in self.gameObj.tuiles:
+                self.gameObj.tuiles[(start_x, start_y)] = {'ressources': "W", 'quantite': ressources_dict['W']['quantite']}
 
             while len(wood_tiles) < patch_size:
                 tile_x, tile_y = random.choice(wood_tiles)
@@ -44,8 +46,8 @@ class TileMap:
                 new_y = tile_y + direction[1]
 
                 if 0 <= new_x < size and 0 <= new_y < size:
-                    if (new_x, new_y) not in tuiles:
-                        tuiles[(new_x, new_y)] = {'ressources': "W", 'quantite': ressources_dict['W']['quantite']}
+                    if (new_x, new_y) not in self.gameObj.tuiles:
+                        self.gameObj.tuiles[(new_x, new_y)] = {'ressources': "W", 'quantite': ressources_dict['W']['quantite']}
                         wood_tiles.append((new_x, new_y))
 
     def add_gold_patches(self):
@@ -60,8 +62,8 @@ class TileMap:
             start_y = random.randint(0, size - 1)
 
             gold_tiles = [(start_x, start_y)]
-            if (start_x, start_y) not in tuiles:
-                tuiles[(start_x, start_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
+            if (start_x, start_y) not in self.gameObj.tuiles:
+                self.gameObj.tuiles[(start_x, start_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
 
             while len(gold_tiles) < patch_size:
                 tile_x, tile_y = random.choice(gold_tiles)
@@ -70,8 +72,8 @@ class TileMap:
                 new_y = tile_y + direction[1]
 
                 if 0 <= new_x < size and 0 <= new_y < size:
-                    if (new_x, new_y) not in tuiles:
-                        tuiles[(new_x, new_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
+                    if (new_x, new_y) not in self.gameObj.tuiles:
+                        self.gameObj.tuiles[(new_x, new_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
                         gold_tiles.append((new_x, new_y))
 
     def add_unit(self, unit_letter):
@@ -98,7 +100,7 @@ class TileMap:
 
                 # Vérifier si la nouvelle position est dans la carte et vide
                 if 0 <= new_x < size and 0 <= new_y < size:
-                    tuiles[new_x, new_y] = "G"  # Placer une tuile d'or
+                    self.gameObj.tuiles[(new_x, new_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
 
     def apply_color_filter(self, surface, color):
         """
@@ -125,7 +127,7 @@ class TileMap:
     def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface, grid_x, grid_y):
         # Obtenir l'image correspondant au type d'unité
 
-        tuile = tuiles.get((grid_x, grid_y))
+        tuile = self.gameObj.tuiles.get((grid_x, grid_y))
         if not tuile or not tuile.get('unites'):
             return
 
@@ -157,7 +159,7 @@ class TileMap:
             display_surface.blit(unit_image_colored, (iso_x, iso_y))
 
     def afficher_buildings(self, grid_x, grid_y, cam_x, cam_y, display_surface):
-        tuile = tuiles.get((grid_x, grid_y))
+        tuile = self.gameObj.tuiles.get((grid_x, grid_y))
         if not tuile or not tuile.get('batiments'):
             return
 
@@ -198,8 +200,8 @@ class TileMap:
     def render(self, display_surface, cam_x, cam_y):
         for row in range(size):
             for col in range(size):
-                if (row, col) in tuiles:
-                    tile_data = tuiles[(row, col)]
+                if (row, col) in self.gameObj.tuiles:
+                    tile_data = self.gameObj.tuiles[(row, col)]
                     if 'batiments' in tile_data:
                         # Prenez le premier type de bâtiment trouvé
                         for joueur, batiments in tile_data['batiments'].items():
@@ -247,7 +249,7 @@ class TileMap:
 
     def move_player(self, direction):
         x, y = self.position_initiale
-        tuiles[y,x] = " "  # Efface l'ancienne position
+        self.gameObj.tuiles[y,x] = " "  # Efface l'ancienne position
 
         if direction == 'up' and y > 0:
             y -= 1

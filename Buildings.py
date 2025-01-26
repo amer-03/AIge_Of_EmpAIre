@@ -10,7 +10,8 @@ import asyncio
 from constants import *
 
 class Buildings:
-    def __init__(self):
+    def __init__(self, gameObj):
+        self.gameObj = gameObj
         self.tile_grass = tile_grass
         self.map_data = map_data
         self.compteurs_joueurs = compteurs_joueurs
@@ -44,8 +45,8 @@ class Buildings:
             positions.append((cart_y-2, cart_x-2))  # Ajouter les coordonnées à la liste
         return positions
 
-    # pour del : del tuiles[(60, 110)]['unites']['v'][0]
-    def trouver_position_avec_offset_dynamique(self, x, y, taille, tuiles, size, half_size):
+    # pour del : del self.gameObj.tuiles[(60, 110)]['unites']['v'][0]
+    def trouver_position_avec_offset_dynamique(self, x, y, taille, size, half_size):
         portee = 1  # Portée initiale
         coord_libres = None
 
@@ -56,7 +57,7 @@ class Buildings:
 
             # Essayer chaque offset dans la portée actuelle
             for offset_x, offset_y in offsets:
-                coord_libres = self.trouver_coordonnees_motif(x, y, taille, tuiles, size, size, offset_x, offset_y)
+                coord_libres = self.trouver_coordonnees_motif(x, y, taille, size, size, offset_x, offset_y)
                 if coord_libres:  # Trouvé une position valide
                     break
 
@@ -69,7 +70,7 @@ class Buildings:
 
         return coord_libres
 
-    def trouver_coordonnees_motif(self, x, y, taille, tuiles, max_x, max_y, offset_x, offset_y):
+    def trouver_coordonnees_motif(self, x, y, taille, max_x, max_y, offset_x, offset_y):
         start_x = x + offset_x * taille
         start_y = y + offset_y * taille
 
@@ -80,7 +81,7 @@ class Buildings:
             for dx in range(taille):
                 for dy in range(taille):
                     tuile_position = (start_x + dx, start_y + dy)
-                    if tuile_position in tuiles :  # Vérifie si la position est déjà occupée
+                    if tuile_position in self.gameObj.tuiles :  # Vérifie si la position est déjà occupée
                         #print(f"Tuile occupée détectée : {tuile_position}")
                         espace_libre = False
                         break
@@ -93,7 +94,7 @@ class Buildings:
                 for dx in range(taille):
                     for dy in range(taille):
                         tuile_position = (start_x + dx, start_y + dy)
-                        tuiles[tuile_position] = "occupé"  # Marquer la tuile comme occupée
+                        self.gameObj.tuiles[tuile_position] = "occupé"  # Marquer la tuile comme occupée
                 #print(start_x, start_y)
                 return start_x, start_y
 
@@ -101,14 +102,14 @@ class Buildings:
 
 
 
-    def prochain_id_batiment(self, joueur, batiment, tuiles):
+    def prochain_id_batiment(self, joueur, batiment):
         """
         Trouve le prochain identifiant disponible sous la forme f"{batiment}{i}" pour un joueur donné.
         """
         ids_existants = set()
 
         # Parcourt toutes les tuiles pour trouver les IDs existants pour le joueur et le bâtiment
-        for position, data in tuiles.items():
+        for position, data in self.gameObj.tuiles.items():
             if 'batiments' in data and joueur in data['batiments']:
                 for b, info in data['batiments'][joueur].items():
                     if b == batiment and 'id' in info:
@@ -127,30 +128,30 @@ class Buildings:
         # Retourner l'identifiant au format f"{batiment}{i}"
         return f"{batiment}{prochain_numero}"
 
-    def ajouter_batiment(self, joueur, batiment, x, y, taille, tuiles, status):
+    def ajouter_batiment(self, joueur, batiment, x, y, taille, status):
         if status == 0:
-            self.creation_batiments(joueur, batiment, x, y, taille, tuiles)
+            self.creation_batiments(joueur, batiment, x, y, taille)
         elif status == 1:
             required_cost = builds_dict[batiment]['cout']
             if (compteurs_joueurs[joueur]["ressources"]['W'] >= required_cost['W']
                     and compteurs_joueurs[joueur]["ressources"]['G'] >= required_cost['G']
                     and compteurs_joueurs[joueur]["ressources"]['f'] >= required_cost['f']):
                 if compteurs_joueurs[joueur]['ressources']['max_pop'] <= 200 - 5:
-                    position = self.trouver_position_avec_offset_dynamique(x, y, taille, tuiles, size, half_size)
+                    position = self.trouver_position_avec_offset_dynamique(x, y, taille, size, half_size)
                     if position:
                         bat_x, bat_y = position
-                        if (bat_x, bat_y) not in tuiles:
-                            tuiles[(bat_x, bat_y)] = {}
-                        elif not isinstance(tuiles[(bat_x, bat_y)], dict):
-                            tuiles[(bat_x, bat_y)] = {}
+                        if (bat_x, bat_y) not in self.gameObj.tuiles:
+                            self.gameObj.tuiles[(bat_x, bat_y)] = {}
+                        elif not isinstance(self.gameObj.tuiles[(bat_x, bat_y)], dict):
+                            self.gameObj.tuiles[(bat_x, bat_y)] = {}
 
-                        if "building_creation_queue" not in tuiles[(bat_x, bat_y)]:
-                            tuiles[(bat_x, bat_y)]["building_creation_queue"] = []
+                        if "building_creation_queue" not in self.gameObj.tuiles[(bat_x, bat_y)]:
+                            self.gameObj.tuiles[(bat_x, bat_y)]["building_creation_queue"] = []
 
                         # Vérifier s'il y a des villageois libres
                         assigned_villagers = self.assign_villagers_to_construction(joueur)
                         if assigned_villagers:  # Villageois trouvés, commencer immédiatement
-                            tuiles[(bat_x, bat_y)]["building_creation_queue"].append({
+                            self.gameObj.tuiles[(bat_x, bat_y)]["building_creation_queue"].append({
                                 "joueur": joueur,
                                 "batiment": batiment,
                                 "taille": taille,
@@ -182,7 +183,7 @@ class Buildings:
         villagers_free = []
 
         # Trouver les villageois libres pour le joueur
-        for position, data in tuiles.items():
+        for position, data in self.gameObj.tuiles.items():
             if "unites" in data and joueur_id in data["unites"]:
                 villagers = data["unites"][joueur_id].get("v", {})
                 for villager_id, villager_data in villagers.items():
@@ -197,7 +198,7 @@ class Buildings:
 
         # Marquer les villageois sélectionnés comme "occupé"
         for position, villager_id, villager_data in assigned_villagers:
-            tuiles[position]["unites"][joueur_id]["v"][villager_id]["Status"] = "occupé"
+            self.gameObj.tuiles[position]["unites"][joueur_id]["v"][villager_id]["Status"] = "occupé"
 
         return assigned_villagers
 
@@ -211,14 +212,14 @@ class Buildings:
                 unit["ouvriers_assignes"] = len(assigned_villagers)
                 unit["villageois_ids"] = assigned_villagers  # On sauvegarde les villageois assignés
                 unit["time_started"] = current_time  # Démarrer le temps de construction
-                if "building_creation_queue" not in tuiles[unit["position"]]:
-                    tuiles[unit["position"]]["building_creation_queue"] = []
+                if "building_creation_queue" not in self.gameObj.tuiles[unit["position"]]:
+                    self.gameObj.tuiles[unit["position"]]["building_creation_queue"] = []
 
-                tuiles[unit["position"]]["building_creation_queue"].append(unit)
+                self.gameObj.tuiles[unit["position"]]["building_creation_queue"].append(unit)
                 self.file_attente_batiments.remove(unit)
 
         # 2. Mettre à jour les constructions en cours
-        for position, tile in tuiles.items():
+        for position, tile in self.gameObj.tuiles.items():
             if "building_creation_queue" in tile:
                 queue = tile["building_creation_queue"]
                 completed_units = []
@@ -239,7 +240,7 @@ class Buildings:
                 for unit in completed_units:
                     queue.remove(unit)
                     self.creation_batiments(
-                        unit["joueur"], unit["batiment"], position[0], position[1], unit["taille"], tuiles
+                        unit["joueur"], unit["batiment"], position[0], position[1], unit["taille"], self.gameObj.tuiles
                     )
                     if unit['joueur'] in compteurs_joueurs:
                         if unit['batiment'] in compteurs_joueurs[unit['joueur']]['batiments']:
@@ -255,33 +256,33 @@ class Buildings:
                     if "villageois_ids" in unit:
                         for villager_info in unit["villageois_ids"]:
                             tile_pos, villager_id, villager_data = villager_info
-                            tuiles[tile_pos]["unites"][unit["joueur"]]["v"][villager_id]["Status"] = "libre"
+                            self.gameObj.tuiles[tile_pos]["unites"][unit["joueur"]]["v"][villager_id]["Status"] = "libre"
 
                 # Supprimer la file si elle est vide
                 if not queue:
                     del tile["building_creation_queue"]
 
-    def creation_batiments(self,joueur, batiment, x, y, taille, tuiles):
-        identifiant = self.prochain_id_batiment(joueur, batiment, tuiles)
+    def creation_batiments(self,joueur, batiment, x, y, taille):
+        identifiant = self.prochain_id_batiment(joueur, batiment)
         for dx in range(taille):
             for dy in range(taille):
                 tuile_position = (x + dx, y + dy)
 
                 # Initialiser la tuile si nécessaire
-                if tuile_position not in tuiles:
-                    tuiles[tuile_position] = {'batiments': {}}
-                if not isinstance(tuiles[tuile_position], dict):
-                    tuiles[tuile_position] = {'batiments': {}}
+                if tuile_position not in self.gameObj.tuiles:
+                    self.gameObj.tuiles[tuile_position] = {'batiments': {}}
+                if not isinstance(self.gameObj.tuiles[tuile_position], dict):
+                    self.gameObj.tuiles[tuile_position] = {'batiments': {}}
 
-                if "unites" not in tuiles[tuile_position]:
-                    tuiles[tuile_position]["batiments"] = {}
+                if "unites" not in self.gameObj.tuiles[tuile_position]:
+                    self.gameObj.tuiles[tuile_position]["batiments"] = {}
 
-                if joueur not in tuiles[tuile_position]['batiments']:
-                    tuiles[tuile_position]['batiments'][joueur] = {}
+                if joueur not in self.gameObj.tuiles[tuile_position]['batiments']:
+                    self.gameObj.tuiles[tuile_position]['batiments'][joueur] = {}
                 if taille ==4:
                     # Ajouter les informations principales ou secondaires
                     if dx == 3 and dy ==1:  # Nouvelle tuile principale 3-1
-                        tuiles[tuile_position]['batiments'][joueur][batiment] = {
+                        self.gameObj.tuiles[tuile_position]['batiments'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': True,
                             'taille': taille,
@@ -290,7 +291,7 @@ class Buildings:
 
                         }
                     else:  # Tuiles secondaires
-                        tuiles[tuile_position]['batiments'][joueur][batiment] = {
+                        self.gameObj.tuiles[tuile_position]['batiments'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': False,
                             'parent': (x, y),
@@ -299,7 +300,7 @@ class Buildings:
                 elif taille ==3:
 
                     if dx == 2 and dy ==1:  # Nouvelle tuile principale 2-1
-                        tuiles[tuile_position]['batiments'][joueur][batiment] = {
+                        self.gameObj.tuiles[tuile_position]['batiments'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': True,
                             'taille': taille,
@@ -307,7 +308,7 @@ class Buildings:
                             'HP': builds_dict[batiment]['hp']
                         }
                     else:  # Tuiles secondaires
-                        tuiles[tuile_position]['batiments'][joueur][batiment] = {
+                        self.gameObj.tuiles[tuile_position]['batiments'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': False,
                             'parent': (x, y),
@@ -316,7 +317,7 @@ class Buildings:
                 elif taille ==2:
 
                     if dx == 1 and dy ==0:  # Nouvelle tuile principale 1-0
-                        tuiles[tuile_position]['batiments'][joueur][batiment] = {
+                        self.gameObj.tuiles[tuile_position]['batiments'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': True,
                             'taille': taille,
@@ -326,7 +327,7 @@ class Buildings:
                                 batiment] else {})
                         }
                     else:  # Tuiles secondaires
-                        tuiles[tuile_position]['batiments'][joueur][batiment] = {
+                        self.gameObj.tuiles[tuile_position]['batiments'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': False,
                             'parent': (x, y),
@@ -336,7 +337,7 @@ class Buildings:
                         }
                 elif taille == 1:
                     if dx == 0 and dy ==0:  # Nouvelle tuile principale 0-0
-                        tuiles[tuile_position]['batiments'][joueur][batiment] = {
+                        self.gameObj.tuiles[tuile_position]['batiments'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': True,
                             'taille': taille,
@@ -344,7 +345,7 @@ class Buildings:
                             'HP': builds_dict[batiment]['hp']
                         }
                     else:  # Tuiles secondaires
-                        tuiles[tuile_position]['batiments'][joueur][batiment] = {
+                        self.gameObj.tuiles[tuile_position]['batiments'][joueur][batiment] = {
                             'id': identifiant,
                             'principal': False,
                             'parent': (x, y),
@@ -380,7 +381,7 @@ class Buildings:
                     while coord_libres is None:
                         for offset_x, offset_y in offsets:
                             coord_libres = self.trouver_coordonnees_motif(
-                                x, y, taille, tuiles, size, size, offset_x, offset_y
+                                x, y, taille, size, size, offset_x, offset_y
                             )
 
                             if coord_libres:  # Trouvé une position valide
@@ -394,14 +395,13 @@ class Buildings:
                     if coord_libres:
                         bat_x, bat_y = coord_libres
                         in_game = 0
-                        self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, tuiles, in_game)
-        return tuiles
+                        self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, in_game)
 
     def decrementer_hp_batiments(self):
         """Décroît les HP des bâtiments dans le dictionnaire tuiles, en tenant compte des bâtiments multi-tuiles."""
         traites = set()  # Pour éviter de traiter plusieurs fois le même bâtiment
 
-        for (x, y), data in list(tuiles.items()):
+        for (x, y), data in list(self.gameObj.tuiles.items()):
             if isinstance(data, dict) and 'batiments' in data:
                 batiments = data['batiments']
 
@@ -425,48 +425,35 @@ class Buildings:
                                 # Si les HP tombent à 0, supprimer le bâtiment
                                 if stats['HP'] <= 0:
                                     stats['HP'] = 0
-                                    self.supprimer_batiment(tuiles, joueur, identifiant, parent)
+                                    self.supprimer_batiment(joueur, identifiant, parent)
                                     if joueur in compteurs_joueurs:
                                         if unite in compteurs_joueurs[joueur]['batiments'] and \
                                                 compteurs_joueurs[joueur]['batiments'][unite] > 0:
                                             compteurs_joueurs[joueur]['batiments'][unite] -= 1
                                 return
 
-    def supprimer_batiment(self,tuiles, joueur, identifiant, parent):
+    def supprimer_batiment(self, joueur, identifiant, parent):
         """Supprime un bâtiment multi-tuiles."""
         tuiles_a_supprimer = []
 
 
 
-        for (x, y), data in list(tuiles.items()):
+        for (x, y), data in list(self.gameObj.tuiles.items()):
             if 'batiments' in data and joueur in data['batiments']:
                 batiments = data['batiments'][joueur]
 
                 for unite, stats in list(batiments.items()):
                     if isinstance(stats, dict) and stats.get('id') == identifiant:
-                        del tuiles[(x, y)]['batiments'][joueur][unite]
+                        del self.gameObj.tuiles[(x, y)]['batiments'][joueur][unite]
 
 
 
                         # Si le niveau est vide, marquer pour suppression
-                        if not tuiles[(x, y)]['batiments'][joueur]:
-                            del tuiles[(x, y)]['batiments'][joueur]
-                        if not tuiles[(x, y)]['batiments']:
+                        if not self.gameObj.tuiles[(x, y)]['batiments'][joueur]:
+                            del self.gameObj.tuiles[(x, y)]['batiments'][joueur]
+                        if not self.gameObj.tuiles[(x, y)]['batiments']:
                             tuiles_a_supprimer.append((x, y))
 
         # Supprimer les tuiles marquées
         for tuile in tuiles_a_supprimer:
-            del tuiles[tuile]
-
-    def find_build_location(self, building_type, joueur):
-        """Find optimal building placement"""
-        # Check existing buildings
-        existing = self.get_player_buildings(joueur, building_type)
-        
-        # Find clear area away from resources
-        for x in range(-20, 20):
-            for y in range(-20, 20):
-                pos = (x, y) 
-                if self.is_valid_build_location(pos, building_type):
-                    return pos
-        return None
+            del self.gameObj.tuiles[tuile]
