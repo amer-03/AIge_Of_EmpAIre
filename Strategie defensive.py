@@ -7,7 +7,6 @@ class Strat_defensive:
     def __init__(self, player_id, game):
         self.player_id = f"joueur_{player_id}"
         self.game = game
-        self.state = "defensive"
         self.phase = 1
 
     def execute_defensive_strategy(self):
