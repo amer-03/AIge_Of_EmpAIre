@@ -163,8 +163,6 @@ class Unit:
 
         DISPLAYSURF.blit(unit_frame, (iso_x, iso_y))
 
-
-
     def conversion(self, x, y):
 
         # Décalage centré pour le joueur
@@ -588,6 +586,8 @@ class Unit:
                             print(f"Aucune origine valide trouvée pour la tuile à {origin}.")
         return None, None
 
+
+
     def update_creation_times(self):
         current_time = time.time()  # Obtenez le temps actuel
         for position, tile in list(tuiles.items()):  # Utilisez list() pour éviter des erreurs lors de modifications
@@ -677,3 +677,39 @@ class Unit:
                     if remaining_time > 0:
                         print(
                             f"Unité {first_unit['type']} en cours pour {first_unit['player']} à {position}. Temps restant : {int(remaining_time)} sec")
+
+    def villageois_inactifs(self, joueur):
+        """
+        Parcourt les tuiles et enregistre les IDs des villageois libres (inactifs)
+        d'un joueur donné dans une liste villageois_inactifs.
+        """
+        villageois_inactifs = []  # Initialisation de la liste des villageois inactifs
+
+        for position, data in tuiles.items():
+            if "unites" in data and joueur in data["unites"]:
+                # Récupérer les villageois du joueur
+                villagers = data["unites"][joueur].get("v", {})
+                for villager_id, villager_data in villagers.items():
+                    if villager_data["Status"] == "libre":  # Vérifie si le villageois est inactif
+                        villageois_inactifs.append(villager_id)  # Ajoute l'ID à la liste
+
+        return villageois_inactifs
+
+    def verifier_presence_villageois(self, joueur, type_unite, id_unite, position):
+        # Vérifie que la position donnée existe dans les tuiles
+        if position not in self.tuiles:
+            return False
+
+        # Récupère les données de la tuile à cette position
+        data = self.tuiles[position]
+
+        # Vérifie s'il y a des unités sur cette tuile pour le joueur donné
+        if "unites" in data and joueur in data["unites"]:
+            # Vérifie que le type d'unité existe pour ce joueur
+            if type_unite in data["unites"][joueur]:
+                # Vérifie que l'ID de l'unité correspond
+                if id_unite in data["unites"][joueur][type_unite]:
+                    return True
+
+        # Si une des vérifications échoue, retourne False
+        return False

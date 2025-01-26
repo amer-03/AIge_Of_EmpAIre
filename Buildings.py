@@ -262,7 +262,7 @@ class Buildings:
                 if not queue:
                     del tile["building_creation_queue"]
 
-    def creation_batiments(self,joueur, batiment, x, y, taille, tuiles):
+    def creation_batiments(self, joueur, batiment, x, y, taille, tuiles):
         identifiant = self.prochain_id_batiment(joueur, batiment, tuiles)
         for dx in range(taille):
             for dy in range(taille):

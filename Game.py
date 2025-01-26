@@ -3,8 +3,6 @@ import sys
 import json
 from pygame.locals import *
 
-import Strategie_defensive
-from Strategie_defensive import Strat_defensive
 import Units
 from constants import *
 from TileMap import TileMap
@@ -23,7 +21,6 @@ import webbrowser
 import os
 from colorama import Fore, Style
 from collections import deque
-
 
 
 class Game:
@@ -59,6 +56,7 @@ class Game:
         self.n = 2  # Définition du nombre de joueurs
         self.plus = None
         self.moins = None
+        self.sauvegarde = None
 
         # TERMINAL
 
@@ -84,9 +82,6 @@ class Game:
 
         # Save and Load
         self.save_and_load = Save_and_load()
-
-        #Strategies
-        self.strat_defensive = Strat_defensive(1)
 
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
@@ -143,6 +138,7 @@ class Game:
         menu_text_rect = menu_text.get_rect(center=(screen_width // 2, 100))
         DISPLAYSURF.blit(menu_text, menu_text_rect)
 
+
         card_color1 = YELLOW if self.selected_unit == "Lean" else BLACK
         card_color2 = YELLOW if self.selected_unit == "Mean" else BLACK
         card_color3 = YELLOW if self.selected_unit == "Marines" else BLACK
@@ -155,6 +151,7 @@ class Game:
         card4_text = small_font.render("Map 1", True, card_color4)
         card5_text = small_font.render("Map 2", True, card_color5)
         start_text = small_font.render("Commencer la Partie", True, GREEN)
+        save_text = small_font.render("Sauvegardes", True, GREEN)
 
         self.card1_rect = card1_text.get_rect(topleft=(screen_width // 2 - 150, 200))
         self.card2_rect = card2_text.get_rect(topleft=(screen_width // 2 - 150, 250))
@@ -214,6 +211,9 @@ class Game:
         self.start_rect = start_text.get_rect(center=(screen_width // 2, 500))
         DISPLAYSURF.blit(start_text, self.start_rect.topleft)
 
+        self.save = save_text.get_rect(center=(screen_width // 2, 600))
+        DISPLAYSURF.blit(save_text, self.save.topleft)
+
         pygame.display.update()
 
     def ajouter_unite(self, joueur, type_unite, id_unite, position, hp, status="libre"):
@@ -243,8 +243,19 @@ class Game:
             # Vérifier la sélection des unités
             x, y = event.pos
 
-            # Clic sur la flèche +
-            if self.plus.collidepoint(x, y):
+            if self.save.collidepoint(x, y):
+                fichier = self.save_and_load.choisir_fichier_sauvegarde()
+                if fichier:
+                    nouvelles_tuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
+                    if nouvelles_tuiles and nouveaux_compteurs:
+                        tuiles.clear()
+                        tuiles.update(nouvelles_tuiles)
+                        compteurs_joueurs.clear()
+                        compteurs_joueurs.update(nouveaux_compteurs)
+                self.menu_active = False
+                pygame.display.update()
+
+            elif self.plus.collidepoint(x, y):
                 if self.n < 10:  # Limiter à 10 joueurs
                     self.n += 1
 
@@ -293,7 +304,7 @@ class Game:
 
                 self.unit.initialisation_compteur(position)
                 self.draw_mini_map(DISPLAYSURF)
-                print(tuiles)
+                #print(tuiles)
 
 
 
@@ -548,10 +559,10 @@ class Game:
                 browser = webbrowser.get("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe %s")
                 browser.open(f"file:///{file_path}")
 
-            elif key == ord('t'):
+            elif key == curses.KEY_F9:
                 self.ouvrir_terminal()
 
-            time.sleep(0.1)  # Pause pour éviter d'utiliser trop de CPU
+            #time.sleep(0.1)  # Pause pour éviter d'utiliser trop de CPU
 
     def ouvrir_terminal(self):
         if self.terminal_active:
@@ -615,8 +626,6 @@ class Game:
 
             events = pygame.event.get()
             for event in events:
-                if event.type == KEYDOWN and event.key == K_p:
-                    self.strat_defensive.execute_defensive_strategy()
                 if (event.type == KEYDOWN and event.key == K_ESCAPE) or event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -629,7 +638,7 @@ class Game:
                 if event.type == KEYDOWN and event.key == K_F3:
                     self.Initialisation_compteur.f3_active = not self.Initialisation_compteur.f3_active
 
-                if event.type == KEYDOWN and event.key == K_t:
+                if event.type == KEYDOWN and event.key == K_F9:
                     self.ouvrir_terminal()
 
                 if event.type == KEYDOWN and event.key == K_u:
@@ -669,6 +678,7 @@ class Game:
                     print(new_pos)
 
                     self.unit.deplacer_unite('joueur_1','a',0,new_pos )
+                    print(tuiles)
 
                 if event.type == KEYDOWN and event.key == K_f:
                     self.unit.attack_building('joueur_1','a',0, 'joueur_2','T','T0')
@@ -742,7 +752,7 @@ class Game:
                 self.buildings.update_creation_times()
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
-                self.draw_mini_map(DISPLAYSURF)
+
 
                 self.unit.update_position()
                 current_time = pygame.time.get_ticks()
@@ -761,6 +771,7 @@ class Game:
                         current_time,
                         unit_image
                     )
+                self.draw_mini_map(DISPLAYSURF)
                 self.unit.update_attacks()
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
@@ -770,10 +781,10 @@ class Game:
                 self.Initialisation_compteur.update_compteur()
                 fps = int(FPSCLOCK.get_fps())
                 fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
+
                 DISPLAYSURF.blit(fps_text, (10, 10))
                 pygame.display.update()
                 pygame.display.flip()
 
             pygame.display.update()
             FPSCLOCK.tick(60)
-
