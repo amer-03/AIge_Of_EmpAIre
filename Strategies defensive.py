@@ -1,92 +1,99 @@
-from Units import Unit
+from Units import *
 from Buildings import Buildings
-from Recolte_ressources import Recolte_ressources
+from Recolte_ressources import *
 
 
-class Strat_défensive:
+class Strat_defensive:
     def __init__(self, player_id, game):
         self.player_id = f"joueur_{player_id}"
         self.game = game
-        self.state = "BOOM"
-        self.min_villagers = 10
-        self.min_soldiers = 5
+        self.state = "defensive"
+        self.phase = 1
 
-    def update(self):
-        if self.is_under_attack():
-            self.state = "DEFEND"
+    def execute_defensive_strategy(self):
+        if self.phase == 1:
+            self.phase_1()
+        elif self.phase == 2:
+            self.phase_2()
+        elif self.phase == 3:
+            self.phase_3()
+        elif self.phase == 4:
+            self.phase_4()
 
-        if self.state == "BOOM":
-            self.execute_boom_strategy()
+    def phase_1(self):
+        # Étape 1
+        ids_villageois_libres = []
+        # Parcourir toutes les tuiles
+        for position, data in tuiles.items():
+            if "unites" in data and self.player_id in data["unites"]:
+                # Vérifier si le joueur possède des villageois (type "v")
+                villageois = data["unites"][self.player_id].get("v", {})
+                # Ajouter à la liste uniquement les villageois libres
+                for villager_id, villager_data in villageois.items():
+                    if villager_data.get("Status") == "libre":
+                        ids_villageois_libres.append(villager_id)
+
+        for id_unite in ids_villageois_libres
+            Recolte_ressources.recolter_ressource_plus_proche_via_trouver(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[0], Recolte_ressources.trouver_plus_proche_ressource(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[0], 'W' ), recolte_max=20)
+            Recolte_ressources.recolter_ressource_plus_proche_via_trouver(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[1], Recolte_ressources.trouver_plus_proche_ressource(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[1], 'W' ), recolte_max=20)
+            Recolte_ressources.recolter_ressource_plus_proche_via_trouver(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[2], Recolte_ressources.trouver_plus_proche_ressource(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[2], 'G' ), recolte_max=20)
+
+        """        Unit.creation_unite('v', self.player_id)  # Former un villageois
+        Buildings.assign_villagers_to_construction(self.player_id)
+        Buildings.ajouter_batiment(self.player_id, 'H', x, y, taille, tuiles, status)
+        Buildings.creation_batiments(self.player_id, 'H', x, y, taille, tuiles)
+        Buildings.assign_villagers_to_construction(self.player_id)
+        Buildings.ajouter_batiment(self.player_id, 'C', x, y, taille, tuiles, status)
+        Buildings.creation_batiments(self.player_id, 'C', x, y, taille, tuiles)
+        self.phase += 1
+
+ def phase_2(self):
+        # Étape 2
+        current_villagers = len(self.get_villagers())
+        if current_villagers < 8:  # Former 4 villageois supplémentaires
+            self.create_unit('v')
         else:
-            self.execute_defense_strategy()
+            self.assign_villagers_to_resources({'f': 2, 'G': 2})  # 2 nourriture, 2 or
 
-    def is_under_attack(self):
-        for pos, data in self.game.tiles.items():
-            if 'unites' in data:
-                for player, units in data['unites'].items():
-                    if player != self.player_id and any(unit in ['s', 'a'] for unit in units.keys()):
-                        return True
-        return False
+            # Construire une caserne et entraîner des soldats
+            if not self.has_building('barracks') and self.can_build_at(self.get_building_site('barracks')):
+                self.build_barracks()
 
-    def execute_boom_strategy(self):
-        # Create villagers continuously
-        self.create_unit('v')
+            if self.has_building('barracks'):
+                self.train_units('s', 2)  # Former 2 swordsmen
+                self.build_keep('town_center')  # Construire un keep près du town center
+                self.phase += 1  # Passer à l'étape suivante
 
-        # Create Town Centers continuously
-        self.build_towncenter()
+    def phase_3(self):
+        # Étape 3
+        self.train_units('a', 3)  # Ajouter 2-3 archers
+        self.train_units('s', 2)  # Maintenir une force de swordsmen
 
-    def execute_defense_strategy(self):
-        # Create military units
-        current_soldiers = (self.game.compteur[self.player_id]['unites'].get('s', 0) +
-                            self.game.compteur[self.player_id]['unites'].get('a', 0))
-        if current_soldiers < self.min_soldiers:
-            self.create_unit('s')
+        # Construire un deuxième keep si nécessaire
+        if self.can_build_keep('resources'):
+            self.build_keep('resources')
 
-    def create_unit(self, unit_type):
-        costs = self.game.unit.units_dict[unit_type]['cout']
-        resources = self.game.compteur[self.player_id]['ressources']
+        # Répartition optimale des ressources
+        self.assign_villagers_to_resources({'f': 4, 'W': 4, 'G': 3})
 
-        if (resources['W'] >= costs['Wood'] and
-                resources['G'] >= costs['Gold'] and
-                resources['f'] >= costs['Food']):
-            self.game.unit.creation_unite(unit_type, self.player_id)
+        self.phase += 1  # Passer à l'étape suivante
 
-    def assign_villagers(self):
-        for pos, data in self.game.tiles.items():
-            if 'unites' in data and self.player_id in data['unites']:
-                villagers = data['unites'][self.player_id].get('v', {})
-                for v_id, v_data in villagers.items():
-                    if v_data['Status'] == 'libre':
-                        self.assign_villager_to_resource(v_id)
+    def phase_4(self):
+        # Étape 4
+        if not self.has_building('town_center', count=2):
+            if self.can_build_towncenter():
+                self.build_towncenter()
+                self.build_keep('new_town_center')  # Protéger le nouveau town center
 
-    def assign_villager_to_resource(self, villager_id):
-        resources = ['W', 'G', 'f']
-        for resource in resources:
-            pos = self.game.recolte.trouver_plus_proche_ressource(
-                self.player_id, 'v', villager_id, resource
-            )
-            if pos:
-                self.game.unit.deplacer_unite(self.player_id, 'v', villager_id, pos)
-                break
+        # Renforcer les défenses
+        self.train_units('a', 5)  # 5 archers
+        self.train_units('s', 5)  # 5 swordsmen
+        self.train_units('h', 3)  # 3 horsemen
 
-    def build_towncenter(self):
-        costs = self.game.buildings.builds_dict['T']['cout']
-        resources = self.game.compteur[self.player_id]['ressources']
+        # Construire des bâtiments défensifs
+        self.build_keep('strategic_points')
 
-        if (resources['W'] >= costs['Wood'] and
-                resources['G'] >= costs['Gold'] and
-                resources['f'] >= costs['Food']):
-            # Find suitable position for building
-            for x in range(self.game.size):
-                for y in range(self.game.size):
-                    if self.can_build_at((x, y)):
-                        taille = self.game.buildings.builds_dict['T']['taille']
-                        self.game.buildings.ajouter_batiment(
-                            self.player_id, 'T', x, y, taille,
-                            self.game.tiles, 1
-                        )
-                        return
+        # Distribution idéale des ressources
+        self.assign_villagers_to_resources({'f': 40, 'W': 30, 'G': 30})
 
-    def can_build_at(self, pos):
-        return pos in self.game.tiles and not self.game.tiles[pos].get('building')
 

@@ -175,6 +175,7 @@ class Buildings:
                         compteurs_joueurs[joueur]["ressources"]['G'] -= required_cost['G']
                 else:
                     print("maxpop atteinte")
+
     def assign_villagers_to_construction(self, joueur_id):
         """
         Assigne un nombre donné de villageois libres à la construction.

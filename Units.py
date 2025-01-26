@@ -12,7 +12,7 @@ from numpy.random import poisson
 
 
 class Unit:
-    def __init__(self, image, position, lettre, cout, hp, temps_entrainement, attaque, vitesse):
+    def __init__(self):
         self.tile_grass = tile_grass
         self.map_data = map_data  # Dictionnaire global à modifier
         self.compteurs_joueurs = compteurs_joueurs
