@@ -14,6 +14,7 @@ class Recolte_ressources:
         self.tile_grass = tile_grass
         self.unit=Units(self.gameObj)
 
+
     def trouver_plus_proche_ressource(self, position_unite, joueur, type_unite, id_unite, ressource):
         """position_unite = None
         for position, data in self.gameObj.tuiles.items():
@@ -120,6 +121,9 @@ class Recolte_ressources:
 
         if position_unite is None:
             return "Unité introuvable."
+        
+        if posress not in self.gameObj.tuiles:
+            return
 
         # Accéder aux détails de la ressource ou du bâtiment
         details_ressource = self.gameObj.tuiles[posress]
@@ -173,6 +177,7 @@ class Recolte_ressources:
         # Ajouter la ressource récoltée à la capacité de l'unité
         unite = self.gameObj.tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
         unite['capacite'] = str(int(unite['capacite']) + quantite_a_recolter)
+        
 
         # Exécuter une action si elle est définie
         if action_a_executer:
@@ -181,14 +186,14 @@ class Recolte_ressources:
 
         return f"{quantite_a_recolter} unité(s) de ressource collectée(s)."
 
-    def deposer_ressources(self, quantite, joueur, type_unite, id_unite, ressource):
-        position_unite = None
+    def deposer_ressources(self, position_unite, quantite, joueur, type_unite, id_unite, ressource):
+        """position_unite = None
         for position, data in self.gameObj.tuiles.items():
             if 'unites' in data and joueur in data['unites']:
                 unites_joueur = data['unites'][joueur]
                 if type_unite in unites_joueur and id_unite in unites_joueur[type_unite]:
                     position_unite = position
-                    break
+                    break"""
         compteurs_joueurs[joueur]['ressources'][ressource] += quantite
         unite = self.gameObj.tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
         unite['capacite'] = 0

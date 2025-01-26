@@ -96,36 +96,43 @@ class StratOffensive:
                                     tier2.append((position, joueur, type_unit, id_unite))
                                 elif id_unite % 3 == 2:
                                     tier3.append((position, joueur, type_unit, id_unite))
-        print("tier1", tier1, "tier2", tier2, "tier3", tier3)
+        if len(tier1) > 0:
+            print("tier1", tier1)
+        """if tier2:
+            print("tier2", tier2)"""
+        """if tier3:
+            print("tier3", tier3)"""
         # Traiter les villageois inactifs+6
-        for i in tier1:
-            # Trouver la position de la ressource la plus proche
-            id_unite = i[3]
-            type_unit = i[2]
-            joueur = i[1]
-            position_unite = i[0]
+        for (ressource, villagers) in [('W', tier1), ('G', tier2)]:      
+            for i in villagers:
+                print ("je suis le villageois", i, "du tableau", villagers)
+                # Trouver la position de la ressource la plus proche
+                id_unite = i[3]
+                type_unit = i[2]
+                joueur = i[1]
+                position_unite = i[0]
 
-            pos_bois = self.ressource_collector.trouver_plus_proche_ressource(position_unite, joueur, type_unit, id, "W")
-            if pos_bois:
-                self.unit.deplacer_unite(joueur, type_unit, id_unite, pos_bois) 
-                action_a_executer.append(
-                lambda posress=pos_bois: self.ressource_collector.recolter_ressource_plus_proche_via_trouver(joueur, type_unit, id_unite, posress=posress))
-                def action_apres_deplacement():
-                    if int(self.gameObj.tuiles[self.unit.position]['unites'][joueur][type_unit][id_unite]['capacite']) == 20:
+                pos_bois = self.ressource_collector.trouver_plus_proche_ressource(position_unite, joueur, type_unit, id, ressource)
+                if pos_bois:
+                    self.unit.deplacer_unite(joueur, type_unit, id_unite, pos_bois) 
+                    action_a_executer.append(
+                    lambda posress=pos_bois: self.ressource_collector.recolter_ressource_plus_proche_via_trouver(joueur, type_unit, id_unite, posress=posress))
+                    def action_apres_deplacement():
                         pos_batiment = self.ressource_collector.trouver_plus_proche_batiment(joueur, type_unit, id_unite)
-                    if pos_batiment:
-                        self.unit.deplacer_unite(joueur, type_unit, id_unite, pos_batiment)
+                        if pos_batiment:
+                            self.unit.deplacer_unite(joueur, type_unit, id_unite, pos_batiment)
 
-                action_a_executer.append(action_apres_deplacement)
+                    action_a_executer.append(action_apres_deplacement)
 
-                def deposer_ressources_in_batiment():
-                        quantite = 20
-                        ressource = 'f'
-                        self.ressource_collector.deposer_ressources(quantite, joueur, type_unit, id_unite, ressource)
+                    def deposer_ressources_in_batiment():
+                            quantite = 20
+                            self.ressource_collector.deposer_ressources(self.unit.position, quantite, joueur, type_unit, id_unite, ressource)
 
-                action_a_executer.append(deposer_ressources_in_batiment)
+                    action_a_executer.append(deposer_ressources_in_batiment)
+                
 
-        for j in tier2:
+
+        """for j in tier2:
                         # Trouver la position de la ressource la plus proche
             id_unite = j[3]
             type_unit = j[2]
@@ -140,14 +147,14 @@ class StratOffensive:
                 def action_apres_deplacement():
                     if int(self.gameObj.tuiles[self.unit.position]['unites'][joueur][type_unit][id_unite]['capacite']) == 20:
                         pos_batiment = self.ressource_collector.trouver_plus_proche_batiment(joueur, type_unit, id_unite)
-                    if pos_batiment:
-                        self.unit.deplacer_unite(joueur, type_unit, id_unite, pos_batiment)
+                        if pos_batiment:
+                            self.unit.deplacer_unite(joueur, type_unit, id_unite, pos_batiment)
 
                 action_a_executer.append(action_apres_deplacement)
 
                 def deposer_ressources_in_batiment():
                         quantite = 20
-                        ressource = 'g'
-                        self.ressource_collector.deposer_ressources(quantite, joueur, type_unit, id_unite, ressource)
+                        ressource = 'G'
+                        self.ressource_collector.deposer_ressources(self.unit.position, quantite, joueur, type_unit, id_unite, ressource)
 
-                action_a_executer.append(deposer_ressources_in_batiment)
+                action_a_executer.append(deposer_ressources_in_batiment)"""

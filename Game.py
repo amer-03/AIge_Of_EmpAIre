@@ -640,7 +640,9 @@ class Game:
                     for position in self.tuiles:
                         if 'unites' in self.tuiles[position]:
                             print (position, self.tuiles[position]['unites'])
-
+                
+                if event.type == KEYDOWN and event.key == K_b:
+                    print ('action_a_executer', action_a_executer)
                 
                 if (event.type == KEYDOWN and event.key == K_ESCAPE) or event.type == pygame.QUIT:
                     pygame.quit()
@@ -729,7 +731,7 @@ class Game:
                     action_a_executer.append(deposer_ressources_in_batiment)
 
                 if event.type == KEYDOWN and event.key == K_KP_MINUS:  # Touche "-"
-                    self.unit.decrementer_hp_unite()
+                    print (self.tuiles)
 
                 if event.type == KEYDOWN and event.key == K_KP_PLUS:  # Touche "-"
                     self.buildings.decrementer_hp_batiments()
