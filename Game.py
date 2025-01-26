@@ -3,6 +3,8 @@ import sys
 import json
 from pygame.locals import *
 
+import Strategie_defensive
+from Strategie_defensive import Strat_defensive
 import Units
 from constants import *
 from TileMap import TileMap
@@ -21,6 +23,7 @@ import webbrowser
 import os
 from colorama import Fore, Style
 from collections import deque
+
 
 
 class Game:
@@ -81,6 +84,9 @@ class Game:
 
         # Save and Load
         self.save_and_load = Save_and_load()
+
+        #Strategies
+        self.strat_defensive = Strat_defensive(1)
 
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
@@ -609,6 +615,8 @@ class Game:
 
             events = pygame.event.get()
             for event in events:
+                if event.type == KEYDOWN and event.key == K_p:
+                    self.strat_defensive.execute_defensive_strategy()
                 if (event.type == KEYDOWN and event.key == K_ESCAPE) or event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()

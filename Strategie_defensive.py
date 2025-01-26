@@ -4,9 +4,11 @@ from Recolte_ressources import *
 
 
 class Strat_defensive:
-    def __init__(self, player_id, game):
+    def __init__(self, player_id, gameObj):
         self.player_id = f"joueur_{player_id}"
-        self.game = game
+        self.recolte = Recolte_ressources()
+        self.unit = Unit()
+        self.gameObj = gameObj
         self.phase = 1
 
     def execute_defensive_strategy(self):
@@ -19,23 +21,28 @@ class Strat_defensive:
         elif self.phase == 4:
             self.phase_4()
 
-    def phase_1(self):
-        # Étape 1
-        ids_villageois_libres = []
-        # Parcourir toutes les tuiles
-        for position, data in tuiles.items():
-            if "unites" in data and self.player_id in data["unites"]:
-                # Vérifier si le joueur possède des villageois (type "v")
-                villageois = data["unites"][self.player_id].get("v", {})
-                # Ajouter à la liste uniquement les villageois libres
-                for villager_id, villager_data in villageois.items():
-                    if villager_data.get("Status") == "libre":
-                        ids_villageois_libres.append(villager_id)
+    def getStatus(self, position, player_id, type_unit, id_unit):
+        return self.gameObj.tuiles[position]['unites'][player_id][type_unit][id_unit]['Status'] == 'libre'
 
-        for id_unite in ids_villageois_libres
-            Recolte_ressources.recolter_ressource_plus_proche_via_trouver(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[0], Recolte_ressources.trouver_plus_proche_ressource(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[0], 'W' ), recolte_max=20)
-            Recolte_ressources.recolter_ressource_plus_proche_via_trouver(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[1], Recolte_ressources.trouver_plus_proche_ressource(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[1], 'W' ), recolte_max=20)
-            Recolte_ressources.recolter_ressource_plus_proche_via_trouver(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[2], Recolte_ressources.trouver_plus_proche_ressource(Recolte_ressources.Recolte_ressources, self.player_id, 'v', ids_villageois_libres[2], 'G' ), recolte_max=20)
+    def phase_1(self, player_id):
+        # Étape 1
+        villageois_libres = []
+        # Parcourir toutes les tuiles
+        for position, tuile in self.gameObj.tuiles.items():
+            # Vérifier s'il y a des unités du joueur sur cette tuile
+            if 'unites' in tuile and player_id in tuile['unites']:
+                unites_joueur = tuile['unites'][player_id]
+                for type_unit, unites in unites_joueur.items():
+                    if type_unit == 'v':  # Vérifier que c'est une unité villageoise
+                        for id_unite, details_unite in unites.items():
+                            # Vérifier le statut de l'unité
+                            status = self.getStatus(position, player_id, type_unit, id_unite)
+                            if status:  # Si l'unité est inactive
+                                villageois_libres.append((position, player_id, type_unit, id_unite))
+
+        self.recolte.recolter_ressource_plus_proche_via_trouver(Recolte_ressources, self.player_id, 'v', villageois_libres[0], Recolte_ressources.trouver_plus_proche_ressource(Recolte_ressources, self.player_id, 'v', villageois_libres[0], 'W'))
+        self.recolte.recolter_ressource_plus_proche_via_trouver(Recolte_ressources, self.player_id, 'v', villageois_libres[1], Recolte_ressources.trouver_plus_proche_ressource(Recolte_ressources, self.player_id, 'v', villageois_libres[1], 'W'))
+        self.recolte.recolter_ressource_plus_proche_via_trouver(Recolte_ressources, self.player_id, 'v', villageois_libres[2], Recolte_ressources.trouver_plus_proche_ressource(Recolte_ressources, self.player_id, 'v', villageois_libres[2], 'G'))
 
         """        Unit.creation_unite('v', self.player_id)  # Former un villageois
         Buildings.assign_villagers_to_construction(self.player_id)
@@ -94,5 +101,5 @@ class Strat_defensive:
 
         # Distribution idéale des ressources
         self.assign_villagers_to_resources({'f': 40, 'W': 30, 'G': 30})
-
+"""
 
