@@ -1,5 +1,5 @@
 # coding: utf-8
-from Game import Game
+from game import Game
 
 
 if __name__ == "__main__":
