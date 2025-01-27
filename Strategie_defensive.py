@@ -218,6 +218,14 @@ class StratEconomique:
             if self.unit.verifier_presence_villageois(self.joueur, 'v', villageois, posress):
                 self.ressource_collector.recolter_ressource_plus_proche_via_trouver(self.joueur, 'v', villageois,
                                                                                     posress)
+#boucle pour trouver les villageois ayant 20 de ressources sur soit pour aller les déposer mais faut une autre boucle qui
+#doit trouver la position du town center le plus proche ou le camp le plus proche pour déplacer l'unité et lui faire deposer les ressources
+        for position, data in tuiles.items():
+            if 'unites' in data:
+                for joueur, unites in data['unites'].items():
+                    for type_unite, unites_type in unites.items():
+                        for id_unite, details in unites_type.items():
+                            if details.get('capacite', 0) == 20:
 
 
     def execute(self, joueur):
@@ -265,7 +273,6 @@ class StratOffensive:
         """
         food = self.ressources.get('F', 0)
         if food > 100:
-            print(f"{self.joueur} entraîne des unités militaires.")
             self.unit.creer_unite(self.joueur, 'militaire')
             self.ressources['F'] -= 100
 
