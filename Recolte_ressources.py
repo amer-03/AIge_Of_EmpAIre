@@ -26,9 +26,10 @@ class Recolte_ressources:
                     print(position_actuelle)
                     break"""
         
+        print("genre tu trouves")
         if position_unite is None:
             return None  # Unité non trouvée
-        
+        print("oui batard")
         # Collecter toutes les positions des ressources 'G' qui sont disponibles (quantité > 0)
         positions_ressources = []
         for position, data in self.gameObj.tuiles.items():
@@ -176,6 +177,7 @@ class Recolte_ressources:
 
         # Ajouter la ressource récoltée à la capacité de l'unité
         unite = self.gameObj.tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
+        print(self.gameObj.tuiles)
         unite['capacite'] = str(int(unite['capacite']) + quantite_a_recolter)
         
 

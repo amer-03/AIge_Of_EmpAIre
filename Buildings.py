@@ -5,6 +5,8 @@ from constants import *
 from colorama import Fore, Style
 import time
 import asyncio
+from random import randint
+from entity import *
 
 
 from constants import *
@@ -71,6 +73,14 @@ class Buildings:
         return coord_libres
 
     def trouver_coordonnees_motif(self, x, y, taille, max_x, max_y, offset_x, offset_y):
+
+
+        for i in range (1000):
+            x = randint(0, 119)
+            y = randint(0, 119)
+            if (x, y) not in self.gameObj.buildingsDict.keys() and (x, y) not in self.gameObj.ressourcesDict.keys():
+                return (x, y)
+        """"
         start_x = x + offset_x * taille
         start_y = y + offset_y * taille
 
@@ -98,7 +108,7 @@ class Buildings:
                 #print(start_x, start_y)
                 return start_x, start_y
 
-        return None
+        return None"""
 
 
 
@@ -372,8 +382,13 @@ class Buildings:
         for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
             x, y = position[idx]  # Point central pour ce joueur
             offsets = self.generer_offsets()
+            offset_x = None
+            offset_y = None 
+            taille = 1
 
-            for batiment, nombre in data['batiments'].items():
+            position_building = self.trouver_coordonnees_motif(x, y, taille, size, size, offset_x, offset_y)
+            self.gameObj.buildingsDict[position_building] = Building(self.gameObj, 'T', position_building, joueur)
+            """for batiment, nombre in data['batiments'].items():
                 taille = builds_dict[batiment]['taille']
 
                 for i in range(nombre):
@@ -383,6 +398,7 @@ class Buildings:
                             coord_libres = self.trouver_coordonnees_motif(
                                 x, y, taille, size, size, offset_x, offset_y
                             )
+
 
                             if coord_libres:  # Trouvé une position valide
                                 break
@@ -395,7 +411,7 @@ class Buildings:
                     if coord_libres:
                         bat_x, bat_y = coord_libres
                         in_game = 0
-                        self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, in_game)
+                        self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, in_game)"""
 
     def decrementer_hp_batiments(self):
         """Décroît les HP des bâtiments dans le dictionnaire tuiles, en tenant compte des bâtiments multi-tuiles."""

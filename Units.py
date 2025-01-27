@@ -9,7 +9,7 @@ import random
 import time
 from Global_image_load import *
 from numpy.random import poisson
-
+from entity import *
 
 class Units:
     def __init__(self, gameObj):
@@ -45,9 +45,12 @@ class Units:
             position_actuelle = None
             for position, data in self.gameObj.tuiles.items():
                 if 'unites' in data and joueur in data['unites'] and type_unite in data['unites'][joueur]:
+                    print ('if 1')
                     if id_unite in data['unites'][joueur][type_unite]:
+                        print ('if 2')
                         position_actuelle = position
                         self.position = position
+                        print('position_actuelle', position_actuelle)
                         break
             
             if not position_actuelle:
@@ -212,26 +215,25 @@ class Units:
 
     #pour del : del self.gameObj.tuiles[(60, 110)]['unites']['v'][0]
 
-    def initialisation_compteur(self, position):
+    def initialisation_compteur(self, positions):
+
         for idx, (joueur, data) in enumerate(compteurs_joueurs.items()):
-            x, y = position[idx]  # Position initiale de chaque joueur
+            (x, y) = positions[idx]  # Position initiale de chaque joueur
 
-            for unite, nombre in data['unites'].items():
-                compteurs_unites[unite] = 0
-
+            for typeName, nombre in data['unites'].items():
+                compteurs_unites[typeName] = 0
+                print("nombre", nombre)
                 for i in range(nombre):
-                    identifiant_unite = compteurs_unites[unite]
-                    compteurs_unites[unite] += 1
+                    identifiant_unite = compteurs_unites[typeName]
+                    #compteurs_unites[typeName] += 1
+ 
 
-                    # Si la tuile (x, y) n'existe pas ou n'est pas un dictionnaire, l'initialiser
-                    if (x, y) not in self.gameObj.tuiles or not isinstance(self.gameObj.tuiles[(x, y)], dict):
-                        self.gameObj.tuiles[(x, y)] = {}
-                        self.gameObj.tuiles[(x, y)]['unites'] = {}
-                        self.gameObj.tuiles[(x, y)]['unites'][joueur] = {}
+                    new_person = Person(self.gameObj, typeName, (x, y), joueur)
+                    self.gameObj.persons.append(new_person)
 
 
 
-                    # Vérifier s'il y a un conflit avec les bâtiments ou ressources
+                    """# Vérifier s'il y a un conflit avec les bâtiments ou ressources
                     batiments = self.gameObj.tuiles[(x, y)].get('batiments', {})
                     ressources = self.gameObj.tuiles[(x, y)].get('ressources', {})
 
@@ -286,7 +288,11 @@ class Units:
                         }
                         #self.gameObj.tuiles[(x, y)]['unites'][joueur][unite][identifiant_unite] = {
                         #    'occupé': False  # Récupérer les HP depuis units_images
-                        #}
+                        #}"""
+        print ("longueur persons", len(self.gameObj.persons))
+        for villageois in self.gameObj.persons:
+            print ('villageois pos', villageois.position)
+            print ('villageois player', villageois.playerName)
 
     def attack(self, joueur_a, type_a, id_a, joueur_b, type_b, id_b):
         # Recherche des informations de l'unité attaquante
