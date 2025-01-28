@@ -86,6 +86,8 @@ class TileMap:
 
                 # Vérifier si la nouvelle position est dans la carte et vide
                 if 0 <= new_x < size and 0 <= new_y < size:
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
                     map_data[new_y][new_x] = "G"  # Placer une tuile d'or
     
     def add_unit(self, unit, unit_class, quantity, player, unit_tiles):
@@ -93,6 +95,12 @@ class TileMap:
         for x in range (quantity):
             for y in range(quantity):
                 tile_position=Coordinates(unit.position.x+x, unit.position.y+y)
+=======
+                    tuiles[(new_x, new_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
+>>>>>>> Stashed changes
+=======
+                    tuiles[(new_x, new_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
+>>>>>>> Stashed changes
 
                 if tile_position not in unit_tiles:
                     unit_tiles[tile_position] = {}

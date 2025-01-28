@@ -53,7 +53,11 @@ class Game:
         self.n = 2  # Définition du nombre de joueurs
         self.plus = None
         self.moins = None
+        self.sauvegarde = None
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
         # TERMINAL
 
@@ -127,6 +131,7 @@ class Game:
         menu_text_rect = menu_text.get_rect(center=(screen_width // 2, 100))
         DISPLAYSURF.blit(menu_text, menu_text_rect)
 
+
         card_color1 = YELLOW if self.selected_unit == "Lean" else BLACK
         card_color2 = YELLOW if self.selected_unit == "Mean" else BLACK
         card_color3 = YELLOW if self.selected_unit == "Marines" else BLACK
@@ -139,6 +144,7 @@ class Game:
         card4_text = small_font.render("Map 1", True, card_color4)
         card5_text = small_font.render("Map 2", True, card_color5)
         start_text = small_font.render("Commencer la Partie", True, GREEN)
+        save_text = small_font.render("Sauvegardes", True, GREEN)
 
         self.card1_rect = card1_text.get_rect(topleft=(screen_width // 2 - 150, 200))
         self.card2_rect = card2_text.get_rect(topleft=(screen_width // 2 - 150, 250))
@@ -201,6 +207,9 @@ class Game:
         self.start_rect = start_text.get_rect(center=(screen_width // 2, 500))
         DISPLAYSURF.blit(start_text, self.start_rect.topleft)
 
+        self.save = save_text.get_rect(center=(screen_width // 2, 600))
+        DISPLAYSURF.blit(save_text, self.save.topleft)
+
         pygame.display.update()
 
     def handle_menu_events(self, event):
@@ -209,8 +218,19 @@ class Game:
             # Vérifier la sélection des unités
             x, y = event.pos
 
-            # Clic sur la flèche +
-            if self.plus.collidepoint(x, y):
+            if self.save.collidepoint(x, y):
+                fichier = self.save_and_load.choisir_fichier_sauvegarde()
+                if fichier:
+                    nouvelles_tuiles, nouveaux_compteurs = self.save_and_load.charger_jeu(fichier)
+                    if nouvelles_tuiles and nouveaux_compteurs:
+                        tuiles.clear()
+                        tuiles.update(nouvelles_tuiles)
+                        compteurs_joueurs.clear()
+                        compteurs_joueurs.update(nouveaux_compteurs)
+                self.menu_active = False
+                pygame.display.update()
+
+            elif self.plus.collidepoint(x, y):
                 if self.n < 10:  # Limiter à 10 joueurs
                     self.n += 1
 
@@ -259,6 +279,15 @@ class Game:
 
                 self.unit.initialisation_compteur(position)
                 self.draw_mini_map(DISPLAYSURF)
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> Stashed changes
+                #print(tuiles)
+
+
+>>>>>>> Stashed changes
 
     def draw_mini_map(self, display_surface):
         losange_surface = pygame.Surface((self.mini_map_size_x, self.mini_map_size_y), pygame.SRCALPHA)
@@ -483,10 +512,18 @@ class Game:
                 webbrowser.open(f"file://{file_path}")
                 print("Page HTML générée et ouverte dans le navigateur.")
 
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
             elif key == ord('p'):
+=======
+            elif key == curses.KEY_F9:
+>>>>>>> Stashed changes
+=======
+            elif key == curses.KEY_F9:
+>>>>>>> Stashed changes
                 self.ouvrir_terminal()
 
-            time.sleep(0.1)  # Pause pour éviter d'utiliser trop de CPU
+            #time.sleep(0.1)  # Pause pour éviter d'utiliser trop de CPU
 
     def ouvrir_terminal(self):
         if self.terminal_active:
@@ -559,7 +596,15 @@ class Game:
                 if event.type == KEYDOWN and event.key == K_F3:
                     self.Initialisation_compteur.f3_active = not self.Initialisation_compteur.f3_active
 
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 if event.type == KEYDOWN and event.key == K_p:
+=======
+                if event.type == KEYDOWN and event.key == K_F9:
+>>>>>>> Stashed changes
+=======
+                if event.type == KEYDOWN and event.key == K_F9:
+>>>>>>> Stashed changes
                     self.ouvrir_terminal()
 
                 if event.type == KEYDOWN and event.key == K_KP_MINUS:  # Touche "-"
@@ -605,8 +650,34 @@ class Game:
             else:
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
-                self.draw_mini_map(DISPLAYSURF)
+<<<<<<< Updated upstream
+=======
 
+>>>>>>> Stashed changes
+
+
+<<<<<<< Updated upstream
+=======
+                self.unit.update_position()
+                current_time = pygame.time.get_ticks()
+
+                for position, data in tuiles.items():
+                    if 'unites' in data:
+                        position_x, position_y=position
+                        self.unit.update_position()
+                        self.unit.diplay_unit(position_x, position_y, self.cam_x, self.cam_y, current_time, unit_image)
+                if self.unit.position:
+                    self.unit.diplay_unit(
+                        self.unit.position[0],
+                        self.unit.position[1],
+                        self.cam_x,
+                        self.cam_y,
+                        current_time,
+                        unit_image
+                    )
+                self.draw_mini_map(DISPLAYSURF)
+                self.unit.update_attacks()
+>>>>>>> Stashed changes
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
 
@@ -614,6 +685,13 @@ class Game:
 
                 self.buildings.affichage()
                 self.Initialisation_compteur.update_compteur()
+<<<<<<< Updated upstream
+=======
+                fps = int(FPSCLOCK.get_fps())
+                fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
+
+                DISPLAYSURF.blit(fps_text, (10, 10))
+>>>>>>> Stashed changes
                 pygame.display.update()
                 pygame.display.flip()
 

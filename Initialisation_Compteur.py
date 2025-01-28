@@ -27,7 +27,7 @@ class Initialisation_Compteur:
             Barre_ressources("images/Town_Center.webp", "T", screen_height // 45),
             Barre_ressources("images/House.webp", "H", screen_height // 45),
             Barre_ressources("images/Camp.png", "C", screen_height // 45),
-            Barre_ressources("images/Farm - Copie.png", "F", screen_height // 45),
+            Barre_ressources("images/Farm - Copie.png", "f", screen_height // 45),
             Barre_ressources("images/Barracks.png", "B", screen_height // 45),
             Barre_ressources("images/Stable.png", "S", screen_height // 45),
             Barre_ressources("images/Archery Range.png", "A", screen_height // 45),
@@ -44,10 +44,24 @@ class Initialisation_Compteur:
             compteurs_joueurs[f'joueur_{i}'] = {
                 # Ressources
                 'ressources': {
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
                     'w': 0,  # Bois
                     'f': 0,  # Nourriture
                     'g': 0,  # Or
                     'U': 0  # Unités générales (ou autre ressource spéciale)
+=======
+=======
+>>>>>>> Stashed changes
+                    'W': 0,  # Bois
+                    'f': 0,  # Nourriture
+                    'G': 0,  # Or
+                    'U': 0,  # Unités générales (ou autre ressource spéciale)
+                    'max_pop': 195
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
                 },
                 # Unités
                 'unites': {
@@ -78,10 +92,23 @@ class Initialisation_Compteur:
         # Parcourt chaque joueur dans le dictionnaire pour initialiser les ressources
         for joueur, compteurs in compteurs_joueurs.items():
             if unit == "Lean":
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 compteurs['ressources']['w'] = 200
                 compteurs['ressources']['f'] = 50
                 compteurs['ressources']['g'] = 50
                 compteurs['unites']['v'] = 1
+=======
+=======
+>>>>>>> Stashed changes
+                compteurs['ressources']['W'] = 6000
+                compteurs['ressources']['f'] = 1150
+                compteurs['ressources']['G'] = 1150
+                compteurs['unites']['v'] = 8
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
                 compteurs['unites']['a'] = 1
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
@@ -90,20 +117,52 @@ class Initialisation_Compteur:
                 compteurs['batiments']['S'] = 2
                 compteurs['batiments']['K'] = 2
                 compteurs['batiments']['H'] = 2
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
             elif unit == "Mean":
                 compteurs['ressources']['w'] = 2000
                 compteurs['ressources']['f'] = 2000
                 compteurs['ressources']['g'] = 2000
+=======
+                compteurs['batiments']['A'] = 1
+                compteurs['batiments']['F'] = 1
+
+            elif unit == "Mean":
+                compteurs['ressources']['W'] = 2000
+                compteurs['ressources']['f'] = 2000
+                compteurs['ressources']['G'] = 2000
+>>>>>>> Stashed changes
+=======
+                compteurs['batiments']['A'] = 1
+                compteurs['batiments']['F'] = 1
+
+            elif unit == "Mean":
+                compteurs['ressources']['W'] = 2000
+                compteurs['ressources']['f'] = 2000
+                compteurs['ressources']['G'] = 2000
+>>>>>>> Stashed changes
                 compteurs['unites']['v'] = 3
                 compteurs['unites']['a'] = 3
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
                 compteurs['batiments']['T'] = 1
             elif unit == "Marines":
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 compteurs['ressources']['w'] = 20000
                 compteurs['ressources']['f'] = 20000
                 compteurs['ressources']['g'] = 20000
+=======
+                compteurs['ressources']['W'] = 20000
+                compteurs['ressources']['f'] = 20000
+                compteurs['ressources']['G'] = 20000
+>>>>>>> Stashed changes
+=======
+                compteurs['ressources']['W'] = 20000
+                compteurs['ressources']['f'] = 20000
+                compteurs['ressources']['G'] = 20000
+>>>>>>> Stashed changes
                 compteurs['unites']['v'] = 15
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
@@ -134,9 +193,30 @@ class Initialisation_Compteur:
             if self.f1_active:
                 self.barres[0].barre(DISPLAYSURF, x_barre, y_barre)
                 for i, barre in enumerate(self.barres):
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
                     type = ["w", "g", "f", "U"][i]
                     barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
                                total_images)
+=======
+=======
+>>>>>>> Stashed changes
+                    type = ["W", "G", "f", "U"][i]
+                    if type == "U":
+                        max_value=self.compteur[joueur]['ressources']['max_pop']
+                        barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
+                               total_images,max_value)
+                        color = PLAYER_COLORS.get(joueur, (255, 255, 255))
+                        barre.draw_title(DISPLAYSURF, joueur, x_barre, y_barre,color)
+                    else :
+                        barre.draw(DISPLAYSURF, x_barre, y_barre, self.compteur[joueur]['ressources'][type], i,
+                                   total_images, None)
+                        color = PLAYER_COLORS.get(joueur, (255, 255, 255))
+                        barre.draw_title(DISPLAYSURF, joueur, x_barre, y_barre, color)
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 
             # Affiche les unités (f2_active)
             if self.f2_active:
@@ -145,8 +225,20 @@ class Initialisation_Compteur:
                 for i, barre in enumerate(self.barre_units):
                     type = ["v", "s", "h", "a"][i]
                     barre.draw_barre_units(DISPLAYSURF, x_barre, y_barre + barre_height,
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
                                            self.compteur[joueur]['unites'][type], i, total_images)
 
+=======
+                                       self.compteur[joueur]['unites'][type], i, total_images)
+
+
+>>>>>>> Stashed changes
+=======
+                                       self.compteur[joueur]['unites'][type], i, total_images)
+
+
+>>>>>>> Stashed changes
             # Affiche les constructions (f3_active)
             if self.f3_active:
                 for barre_builds in self.barres:
