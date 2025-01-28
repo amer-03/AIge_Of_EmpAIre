@@ -22,11 +22,13 @@ class Test:
         self.camera=Camera()
         self.tile_map = TileMap()
 
-        self.villager = Villager(villager1, Coordinates(60,60))
+        self.villager = Villager(villager1,Coordinates(60,50))
+        self.horseman = Horseman(h_man1,Coordinates(60,60))
         
         self.tiles={}
         
-        self.tile_map.add_unit(self.villager,Villager,1,1,self.tiles)        
+        self.tile_map.add_unit(self.villager,Villager,1,1,self.tiles)
+        self.tile_map.add_unit(self.horseman,Horseman,1,1,self.tiles)        
                        
         assert self.tiles!={}, "units not added"
         
@@ -51,7 +53,7 @@ class Test:
             y += 1
         elif direction == 'l' and x > 0:
             x -= 1
-        elif direction == 'r' and x < len(map_data[y]) - 1:
+        elif direction == 'r' and x < size - 1:
             x += 1
         self.position_init = (x, y)
 
@@ -59,7 +61,8 @@ class Test:
         running=True
         FPSCLOCK = pygame.time.Clock()
         while running:
-            dt=FPSCLOCK.tick(600)/1000            
+            dt=FPSCLOCK.tick(600)/1000
+            dt*=5            
             key = pygame.key.get_pressed()
             for event in pygame.event.get():
                 if event.type== pygame.QUIT:

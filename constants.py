@@ -29,8 +29,6 @@ tile_gold = Tile('images/cube_rocky2.png', 64, 64)
 size = 120
 half_size = size//2
 
-map_data = np.full((size, size), " ")
-
 barre_width = screen_width//2.5  # Largeur de la barre
 barre_height = screen_height//13.5 # Hauteur de la barre
 
@@ -136,7 +134,7 @@ builds_dict = {
 }
 
 
-tuiles = {}
+tiles = {}
 compteurs_unites = {}
 
 GRAY = (100, 100, 100)

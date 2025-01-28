@@ -1,10 +1,12 @@
 import pygame
 import random
 from constants import *
-from Units import Units
-from Buildings import Buildings
-from Coordinates import Coordinates
-
+import keyboard
+import curses
+import pygame
+import threading
+import time
+import numpy as np
 
 
 class TileMap:
@@ -32,8 +34,8 @@ class TileMap:
             start_x = random.randint(0, size - 1)
             start_y = random.randint(0, size - 1)
             wood_tiles = [(start_x, start_y)]
-            if map_data[start_x][start_y] == " ":
-                map_data[start_x][start_y] = "W"  # Placer la première tuile de bois
+            if (start_x, start_y) not in tuiles:
+                tuiles[(start_x, start_y)] = {'ressources': "W", 'quantite': ressources_dict['W']['quantite']}
 
             while len(wood_tiles) < patch_size:
                 tile_x, tile_y = random.choice(wood_tiles)
@@ -42,8 +44,8 @@ class TileMap:
                 new_y = tile_y + direction[1]
 
                 if 0 <= new_x < size and 0 <= new_y < size:
-                    if map_data[new_x][new_y] == " ":  # Placer du bois si la case est d'herbe
-                        map_data[new_x][new_y] = "W"
+                    if (new_x, new_y) not in tuiles:
+                        tuiles[(new_x, new_y)] = {'ressources': "W", 'quantite': ressources_dict['W']['quantite']}
                         wood_tiles.append((new_x, new_y))
 
     def add_gold_patches(self):
@@ -58,8 +60,8 @@ class TileMap:
             start_y = random.randint(0, size - 1)
 
             gold_tiles = [(start_x, start_y)]
-            if map_data[start_x][start_y] == " ":
-                map_data[start_x][start_y] = "G"  # Placer la première tuile d'or
+            if (start_x, start_y) not in tuiles:
+                tuiles[(start_x, start_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
 
             while len(gold_tiles) < patch_size:
                 tile_x, tile_y = random.choice(gold_tiles)
@@ -68,9 +70,19 @@ class TileMap:
                 new_y = tile_y + direction[1]
 
                 if 0 <= new_x < size and 0 <= new_y < size:
-                    if map_data[new_x][new_y] == " ":
-                        map_data[new_x][new_y] = "G"
+                    if (new_x, new_y) not in tuiles:
+                        tuiles[(new_x, new_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
                         gold_tiles.append((new_x, new_y))
+
+    def add_unit(self, unit_letter):
+        units = []
+        x = random.randint(0, size - 1)
+        y = random.randint(0, size - 1)
+        for _ in range(size):
+            if map_data[x][y] == " ":
+                map_data[x][y] = unit_letter
+                units.append((x, y))
+        return units
 
     def add_gold_middle(self):
         """Ajoute un paquet d'or (G) au centre de la carte."""
@@ -86,70 +98,8 @@ class TileMap:
 
                 # Vérifier si la nouvelle position est dans la carte et vide
                 if 0 <= new_x < size and 0 <= new_y < size:
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                    map_data[new_y][new_x] = "G"  # Placer une tuile d'or
-    
-    def add_unit(self, unit, unit_class, quantity, player, unit_tiles):
-        """Ajoute une unité dans la carte"""
-        for x in range (quantity):
-            for y in range(quantity):
-                tile_position=Coordinates(unit.position.x+x, unit.position.y+y)
-=======
                     tuiles[(new_x, new_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
->>>>>>> Stashed changes
-=======
-                    tuiles[(new_x, new_y)] = {'ressources': "G", 'quantite': ressources_dict['G']['quantite']}
->>>>>>> Stashed changes
 
-                if tile_position not in unit_tiles:
-                    unit_tiles[tile_position] = {}
-
-                if player not in unit_tiles[tile_position]:
-                    unit_tiles[tile_position][player] = []
-
-                if not isinstance(unit, Units):
-                    return
-                
-                #création à chaque fois d'une nouvelle instance et l'ajouter dans le dictionnaire tiles
-                nunit=unit_class(unit.image,tile_position)
-                unit_tiles[tile_position][player].append(nunit)
-        
-        for position, players in unit_tiles.items():
-            for player,units in players.items():
-                for unit in units:
-                    # vérifier si la position de l'unité et disponible ou pas et l'ajouter si dispo
-                    if Coordinates.to_tuple(position)[0] < size and Coordinates.to_tuple(position)[0] < size:
-                        if map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[0]] == " ":
-                            map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[1]] = unit.lettre
-                
-    def add_building(self, build, build_class, quantity, player, build_tiles):
-        """Ajoute un building dans la carte"""
-        # Si toutes les tuiles sont libres, les réserver et placer le bâtiment
-        for x in range(quantity):
-            for y in range(quantity):
-                tile_position=Coordinates(build.position.x+x, build.position.y+y)
-
-                # Initialiser la tuile si nécessaire
-                if tile_position not in build_tiles:
-                    build_tiles[tile_position] = {}
-
-                if player not in build_tiles[tile_position]:
-                    build_tiles[tile_position][player] = []
-
-                if not isinstance(build, Buildings):
-                    return
-                
-                nbuild=build_class(build.image, tile_position)
-                build_tiles[tile_position][player].append(nbuild)
-
-        for position, players in build_tiles.items():
-            for player,builds in players.items():
-                for build in builds:
-                    if Coordinates.to_tuple(position)[0] < size and Coordinates.to_tuple(position)[0] < size:
-                        if map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[0]] == " ":
-                            map_data[Coordinates.to_tuple(position)[0]][Coordinates.to_tuple(position)[1]] = build.letter
-    
     def apply_color_filter(self, surface, color):
         """
         Applique un filtre de couleur sur une surface pygame.Surface.
@@ -172,43 +122,140 @@ class TileMap:
 
         return image_with_filter
 
-    def display_map(self, cam_x, cam_y):
-        """Affiche la carte en fonction de la position de la caméra, centrée au milieu."""
+    def afficher_unite(self, tile_type, cart_x, cart_y, cam_x, cam_y, tile_grass, display_surface, grid_x, grid_y):
+        # Obtenir l'image correspondant au type d'unité
+
+        tuile = tuiles.get((grid_x, grid_y))
+        if not tuile or not tuile.get('unites'):
+            return
+
+        for joueur, buildings in tuile['unites'].items():
+
+            unit_tile = units_dict.get(tile_type, {}).get('image')
+            if not unit_tile:
+                return  # Si l'image n'existe pas, ne rien faire
+
+            if not unit_tile or not isinstance(unit_tile.image, pygame.Surface):
+                continue  # Si l'image n'est pas valide, passez à l'élément suivant
+
+            # Récupérer la couleur du joueur depuis PLAYER_COLORS
+            player_color = PLAYER_COLORS.get(joueur, (255, 255, 255))  # Blanc par défaut
+
+            # Appliquer un filtre de couleur sur une copie de l'image
+            unit_image_colored = self.apply_color_filter(unit_tile.image, player_color)
+
+            # Calculer les offsets
+            offset_x = tile_grass.width_half - unit_tile.width // 2
+            offset_y = tile_grass.height_half - unit_tile.height // 2
+
+            # Recalculer les coordonnées isométriques pour l'unité
+            iso_x = (cart_x - cart_y) - cam_x + offset_x
+            iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
+            #print("reel",iso_x, iso_y)
+
+            # print("units", cart_x,cart_y)
+            display_surface.blit(unit_image_colored, (iso_x, iso_y))
+
+    def afficher_buildings(self, grid_x, grid_y, cam_x, cam_y, display_surface):
+        tuile = tuiles.get((grid_x, grid_y))
+        if not tuile or not tuile.get('batiments'):
+            return
+
+        for joueur, buildings in tuile['batiments'].items():
+            for tile_type, data in buildings.items():
+                if isinstance(data, dict) and data.get('principal'):
+                    # Vérifiez si les données du bâtiment existent
+                    if tile_type not in builds_dict:
+                        return
+
+                    unit_tile = builds_dict.get(tile_type, {}).get('tile')
+                    if not unit_tile or not isinstance(unit_tile.image, pygame.Surface):
+                        continue  # Si l'image n'est pas valide, passez à l'élément suivant
+
+                    # Récupérer la couleur du joueur depuis PLAYER_COLORS
+                    player_color = PLAYER_COLORS.get(joueur, (255, 255, 255))  # Blanc par défaut
+
+                    # Appliquer un filtre de couleur sur une copie de l'image
+                    unit_image_colored = self.apply_color_filter(unit_tile.image, player_color)
+
+                    # Calculer les coordonnées cartésiennes de la tuile
+                    centered_col = grid_y - size // 2  # Décalage en X (par rapport à la grille)
+                    centered_row = grid_x - size // 2  # Décalage en Y (par rapport à la grille)
+
+                    offset_y = tile_grass.height_half - unit_tile.height
+                    offset_x = tile_grass.width_half - unit_tile.width
+
+                    # Calcul des coordonnées cartésiennes
+                    cart_x = centered_col * tile_grass.width_half
+                    cart_y = centered_row * tile_grass.height_half
+
+                    # Conversion en coordonnées isométriques
+                    iso_x = (cart_x - cart_y) - cam_x  # - offset_x
+                    iso_y = (cart_x + cart_y) / 2 - cam_y + offset_y
+
+                    display_surface.blit(unit_image_colored, (iso_x, iso_y))
+
+    def render(self, display_surface, cam_x, cam_y):
         for row in range(size):
             for col in range(size):
-                tile_type = map_data[row][col]
-                if tile_type == " ":
-                    tile = tile_grass
-                    offset_y = 0
-                elif tile_type == "W":
-                    tile = tile_wood
+                if (row, col) in tuiles:
+                    tile_data = tuiles[(row, col)]
+                    if 'batiments' in tile_data:
+                        # Prenez le premier type de bâtiment trouvé
+                        for joueur, batiments in tile_data['batiments'].items():
+                            for type_batiment in batiments.keys():
+                                tile_type = type_batiment
+                                break
+                    elif 'unites' in tile_data:
+                        # Prenez le premier type d'unité trouvé
+                        for joueur, unites in tile_data['unites'].items():
+                            for type_unite in unites.keys():
+                                tile_type = type_unite
+                                break
+                    elif 'ressources' in tile_data:
+                        tile_type = tile_data['ressources']
+                else:
+                    tile_type = " "  # Tuile par défaut (herbe)
+
+                if tile_type == "W":
+                    #print(row, col, tile_type)
+                    tile = ressources_dict['W']['image']
                     offset_y = tile.height - tile_grass.height
-                    if (row, col) not in tuiles:
-                        tuiles[(row, col)] = {'ressources': {}}  # Initialiser 'unites' à un dictionnaire vide
-                    tuiles[(row, col)]['ressources'] = "W"
                 elif tile_type == "G":
-                    tile = tile_gold
+                    tile = ressources_dict['G']['image']
                     offset_y = tile.height - tile_grass.height
-                    if (row, col) not in tuiles:
-                        tuiles[(row, col)] = {'ressources': {}}  # Initialiser 'unites' à un dictionnaire vide
-                    tuiles[(row, col)]['ressources'] = "G"
                 else:
                     tile = tile_grass
                     offset_y = 0
 
-                centered_col = col - half_size
-                centered_row = row - half_size 
+                # Coordonnées cartésiennes centrées
+                centered_col = col - half_size  # Décalage en X
+                centered_row = row - half_size  # Décalage en Y
+
+                # Conversion en coordonnées isométriques
                 cart_x = centered_col * tile_grass.width_half
                 cart_y = centered_row * tile_grass.height_half
+
                 iso_x = (cart_x - cart_y) - cam_x
                 iso_y = (cart_x + cart_y) / 2 - cam_y - offset_y
 
-                DISPLAYSURF.blit(tile.image, (iso_x, iso_y))
+                display_surface.blit(tile.image, (iso_x, iso_y))
+                #print(tile_type)
+                if tile_type in ["T", "H", "C", "F", "B", "S", "A", "K"]:
+                    self.afficher_buildings(row, col, cam_x, cam_y, display_surface)
 
-                #self.test_color_filter(display_surface)
 
-    def get_map_data(self):
-        #Retourne la carte actuelle pour affichage.
-        return map_data
-    
+    def move_player(self, direction):
+        x, y = self.position_initiale
+        tuiles[y,x] = " "  # Efface l'ancienne position
 
+        if direction == 'up' and y > 0:
+            y -= 1
+        elif direction == 'down' and y < size - 1:
+            y += 1
+        elif direction == 'left' and x > 0:
+            x -= 1
+        elif direction == 'right' and x < size - 1:
+            x += 1
+
+        self.position_initiale = (x, y)

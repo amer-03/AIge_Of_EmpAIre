@@ -5,10 +5,10 @@ from colorama import Fore, Style
 from constants import *
 
 class Buildings:
-    def __init__(self, image, position, letter, cost, construction_time, hp, size, walkable):
+    def __init__(self, image, position, lettre, cost, construction_time, hp, size, walkable):
         self.image = image
         self.position = position
-        self.letter = letter
+        self.lettre = lettre
         self.cost = cost
         self.construction_time = construction_time
         self.hp = hp
@@ -29,7 +29,7 @@ class Buildings:
             player_positions.append((cart_x-2, cart_y-2))  # Ajouter les coordonnées à la liste
         return player_positions
 
-    def trouver_coordonnees_motif(self, x, y, taille, tuiles, max_x, max_y, offset_x, offset_y):
+    def trouver_coordonnees_motif(self, x, y, taille, tiles , max_x, max_y, offset_x, offset_y):
         start_x = x + offset_x * taille
         start_y = y + offset_y * taille
 
@@ -40,7 +40,7 @@ class Buildings:
             for dx in range(taille):
                 for dy in range(taille):
                     tuile_position = (start_x + dx, start_y + dy)
-                    if tuile_position in tuiles :  # Vérifie si la position est déjà occupée
+                    if tuile_position in tiles  :  # Vérifie si la position est déjà occupée
                         #print(f"Tuile occupée détectée : {tuile_position}")
                         espace_libre = False
                         break
@@ -49,11 +49,11 @@ class Buildings:
 
             # Si l'espace est libre, retourne les coordonnées
             if espace_libre:
-                # Marquer toutes les tuiles comme occupées
+                # Marquer toutes les tiles  comme occupées
                 for dx in range(taille):
                     for dy in range(taille):
                         tuile_position = (start_x + dx, start_y + dy)
-                        tuiles[tuile_position] = "occupé"  # Marquer la tuile comme occupée
+                        tiles [tuile_position] = "occupé"  # Marquer la tuile comme occupée
                 #print(start_x, start_y)
                 return start_x, start_y
 
@@ -89,7 +89,7 @@ class Buildings:
                     while coord_libres is None:
                         for offset_x, offset_y in offsets:
                             coord_libres = self.trouver_coordonnees_motif(
-                                x, y, taille, tuiles, size, size, offset_x, offset_y
+                                x, y, taille, tiles , size, size, offset_x, offset_y
                             )
                             if coord_libres:  # Trouvé une position valide
                                 break
@@ -102,9 +102,45 @@ class Buildings:
                     if coord_libres:
                         bat_x, bat_y = coord_libres
                         identifiant = f"{batiment}{i}"
-                        #self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, tuiles, identifiant)
+                        #self.ajouter_batiment(joueur, batiment, bat_x, bat_y, taille, tiles , identifiant)
 
-        return tuiles
+        return tiles
+    
+    def damage(self, attack):
+        """Décroît les HP des bâtiments dans le dictionnaire tiles, en tenant compte des bâtiments multi-tiles."""
+        traites = set()  # Pour éviter de traiter plusieurs fois le même bâtiment
+
+        for (x, y), data in list(tiles.items()):
+            if isinstance(data, dict) and 'batiments' in data:
+                batiments = data['batiments']
+
+                for joueur, joueur_batiments in list(batiments.items()):
+                    for unite, stats in list(joueur_batiments.items()):
+                        if isinstance(stats, dict):
+                            # Identifier la tuile principale
+                            parent = stats.get('parent', (x, y))
+                            identifiant = stats.get('id', 'Inconnu')
+
+                            # Si déjà traité, passer
+                            if (joueur, identifiant) in traites:
+                                continue
+
+                            # Ajouter à la liste des traités
+                            traites.add((joueur, identifiant))
+
+                            if 'HP' in stats:
+                                stats['HP'] -= 250
+
+                                # Si les HP tombent à 0, supprimer le bâtiment
+                                if stats['HP'] <= 0:
+                                    stats['HP'] = 0
+                                    self.remove_building(tiles, joueur, identifiant, parent)
+                                    if joueur in compteurs_joueurs:
+                                        if unite in compteurs_joueurs[joueur]['batiments'] and \
+                                                compteurs_joueurs[joueur]['batiments'][unite] > 0:
+                                            compteurs_joueurs[joueur]['batiments'][unite] -= 1
+                                return
+                            
     
     def display_building(self, cam_x, cam_y):             
         #coordonnées isométrique    
