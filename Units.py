@@ -688,25 +688,3 @@ class Unit:
                         print(
                             f"Unité {first_unit['type']} en cours pour {first_unit['player']} à {position}. Temps restant : {int(remaining_time)} sec")
 
-
-
-
-
-class Villager(Unit):
-    def __init__(self, image, lettre='v', cout={'Gold': 0, 'Food': 50, 'Wood': 0}, hp=25, temps_entrainement= 25,attaque=2, vitesse=0.8):
-        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
-
-
-class Swordman(Unit):
-    def __init__(self, image, lettre='s', cout={'Gold': 20, 'Food': 50, 'Wood': 0}, hp=40, temps_entrainement= 20,attaque=4, vitesse=0.9):
-        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
-
-
-class Horseman(Unit):
-    def __init__(self,image, lettre='h', cout={'Gold': 20, 'Food': 80, 'Wood': 0}, hp=45, temps_entrainement= 30,attaque=4, vitesse=1.2):
-        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
-
-
-class Archer(Unit):
-    def __init__(self, image, lettre='a', cout={'Gold': 45, 'Food': 0, 'Wood': 25}, hp=30, temps_entrainement= 35, attaque=4, vitesse=1):
-        super().__init__(image, lettre, cout, hp, temps_entrainement, attaque, vitesse)
