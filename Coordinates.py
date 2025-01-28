@@ -1,31 +1,35 @@
+from TileMap import *
 from constants import *
 
 class Coordinates:
-    """Classe gérant les coordonnées."""
+    def __init__(self):
+        self.x=0
+        self.y=0
 
-    def __init__(self,x,y):
-        self.x=x
-        self.y=y
-    
-    def to_tuple(self):
-        t=(self.x,self.y)
-        return t
-    
-    def to_iso(self,cam_x,cam_y):
+    def get_x(self):
+        return self.x
+
+    def get_y(self):
+        return self.y
+
+    def to_iso(self,x, y, cam_x, cam_y, unit_tile):
         half_size = size // 2  # Assurez-vous que la taille de la carte est correctement définie
 
-        # Décalage centré pour le joueur
-        centered_col = self.y - half_size
-        centered_row = self.x - half_size
+        offset_x = tile_grass.width_half - unit_tile.get_width() // 2
+        offset_y = tile_grass.height_half - unit_tile.get_height() // 2
+
+        centered_col = x - half_size  # Décalage en X
+        centered_row = y - half_size  # Décalage en Y
 
         # Conversion en coordonnées isométriques
-        cart_x = centered_row * tile_grass.width_half
-        cart_y = centered_col * tile_grass.height_half
+        cart_y = centered_col * tile_grass.width_half
+        cart_x = centered_row * tile_grass.height_half
 
-        iso_x = cart_x - cart_y-cam_x # Ne pas soustraire cam_x ici
-        iso_y = (cart_x + cart_y) / 2  -cam_y
+        iso_x = (cart_x - cart_y) - cam_x -70#+ offset_x
+        iso_y = (cart_x + cart_y) / 2 - cam_y -81 #- offset_y
+
+        #iso_x = (int(current_y - current_x)) * tile_grass.width - cam_x
+        #iso_y = (int(current_x + current_y)//2) * tile_grass.height - cam_y
+        #print(cart_x,cart_y)
+        #print(iso_x, iso_y)
         return iso_x,iso_y
-    
-    def __str__(self):
-        return f"Position: {self.x},{self.y}"
-    

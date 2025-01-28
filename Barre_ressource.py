@@ -32,7 +32,7 @@ class Barre_ressources:
         # Dessine un rectangle noir à la position (x, y)
         pygame.draw.rect(surface, self.color, (x, y, barre_width, barre_height))
 
-    def draw(self, surface, x_barre, y_barre, compteur, index, total_images):
+    def draw(self, surface, x_barre, y_barre, compteur, index, total_images,max_value):
         # Calculer l'espacement pour répartir les images
         espace = barre_width // total_images  # Espacement égal entre chaque image
 
@@ -44,8 +44,10 @@ class Barre_ressources:
         surface.blit(self.image, (x_image, y_image))
 
         # Générer le texte avec le compteur
-        texte = self.font.render(f" {compteur}", True, (255, 255, 255))  # Texte en blanc
-
+        if max_value :
+            texte = self.font.render(f" {compteur}/{max_value}", True, (255, 255, 255))  # Texte en blanc
+        else :
+            texte = self.font.render(f" {compteur}", True, (255, 255, 255))
         # Centrer le texte sous l'image
         text_x = x_image + (self.image.get_width() - texte.get_width()) // 2
         text_y = y_image + self.image.get_height() + 5  # Placer juste en dessous de l'image

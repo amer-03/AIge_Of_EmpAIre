@@ -7,10 +7,12 @@ import Units
 from constants import *
 from TileMap import TileMap
 from Barre_ressource import Barre_ressources
-from Units import Units
+from Units import Unit
 from Buildings import Buildings
-
+from Page_HTML import Page_HTML
+from Save_and_load import Save_and_load
 from Initialisation_Compteur import Initialisation_Compteur
+from Recolte_ressources import Recolte_ressources
 import curses
 import keyboard
 import time
@@ -18,6 +20,7 @@ import threading
 import webbrowser
 import os
 from colorama import Fore, Style
+from collections import deque
 
 
 class Game:
@@ -29,6 +32,7 @@ class Game:
         self.scroll_speed = 30
         self.tile_map = None
         self.tile_map = TileMap()
+        self.cam_x, self.cam_y = self.center_camera_on_tile()
 
         # MINIMAP
         self.mini_map_size_x = 490  # Largeur de la mini-carte
@@ -37,7 +41,6 @@ class Game:
         self.cam_mini_x, self.cam_mini_y = self.center_camera_on_tile()
 
         # BARRE JOUEURS
-
 
         # MENU DEPART
 
@@ -54,10 +57,6 @@ class Game:
         self.plus = None
         self.moins = None
         self.sauvegarde = None
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 
         # TERMINAL
 
@@ -66,15 +65,23 @@ class Game:
         self.terminal_active = False
         self.position_initiale = (size // 2, size // 2)  # Position initiale du joueur
 
-
         # UNITS
         # self.swordsman = Units.Swordsman()
-        self.unit = Units()
+        self.unit = Unit()
+        self.tiles = {}
+        self.test = deque()
+
+        # RECOLTE_RESSOURCES
+        self.recolte = Recolte_ressources()
 
         # BUILDS
         self.buildings = Buildings()
 
+        # Page HTML
+        self.page_html = Page_HTML()
 
+        # Save and Load
+        self.save_and_load = Save_and_load()
 
     def calculate_camera_limits(self):
         """Calcule les limites de la caméra pour empêcher le défilement hors de la carte."""
@@ -152,17 +159,15 @@ class Game:
         self.card4_rect = card4_text.get_rect(topleft=(screen_width // 2 + 50, 200))
         self.card5_rect = card5_text.get_rect(topleft=(screen_width // 2 + 50, 250))
 
-
         DISPLAYSURF.blit(card1_text, self.card1_rect.topleft)
         DISPLAYSURF.blit(card2_text, self.card2_rect.topleft)
         DISPLAYSURF.blit(card3_text, self.card3_rect.topleft)
         DISPLAYSURF.blit(card4_text, self.card4_rect.topleft)
         DISPLAYSURF.blit(card5_text, self.card5_rect.topleft)
 
-
         mini_texte = pygame.font.Font(None, 24)
         box_text = mini_texte.render(f"{self.n} joueurs", True, BLACK)
-        box_text_render = box_text.get_rect(topleft=(screen_width*0.48, 400))
+        box_text_render = box_text.get_rect(topleft=(screen_width * 0.48, 400))
         rectangle_width = box_text_render.width + 15 * 2  # Largeur du texte + marge gauche/droite
         rectangle_height = box_text_render.height + 10 * 2  # Hauteur du texte + marge haut/bas
 
@@ -171,22 +176,21 @@ class Game:
         pygame.draw.rect(DISPLAYSURF, GRAY, pygame.Rect(rectangle_topleft, (rectangle_width, rectangle_height)))
         DISPLAYSURF.blit(box_text, box_text_render)
 
-
         plus_text = mini_texte.render("+", True, BLACK)
         plus_text_render = plus_text.get_rect()
         rectangle_plus_width = plus_text_render.width + 10 * 2  # Largeur du texte + marge gauche/droite
         rectangle_plus_height = plus_text_render.height + 10 * 2  # Hauteur du texte + marge haut/bas
         rectangle_plus_topleft = (
-        box_text_render.x + 108, box_text_render.y + (box_text_render.height - rectangle_plus_height) // 2)
+            box_text_render.x + 108, box_text_render.y + (box_text_render.height - rectangle_plus_height) // 2)
         pygame.draw.rect(DISPLAYSURF, WHITE,
                          pygame.Rect(rectangle_plus_topleft, (rectangle_plus_width, rectangle_plus_height)))
         plus_text_render.center = (
-        rectangle_plus_topleft[0] + rectangle_plus_width // 2, rectangle_plus_topleft[1] + rectangle_plus_height // 2)
+            rectangle_plus_topleft[0] + rectangle_plus_width // 2,
+            rectangle_plus_topleft[1] + rectangle_plus_height // 2)
 
         DISPLAYSURF.blit(plus_text, plus_text_render)
 
         self.plus = pygame.Rect(rectangle_plus_topleft, (rectangle_plus_width, rectangle_plus_height))
-
 
         minus_text = mini_texte.render("-", True, BLACK)
         minus_text_render = minus_text.get_rect()
@@ -211,6 +215,27 @@ class Game:
         DISPLAYSURF.blit(save_text, self.save.topleft)
 
         pygame.display.update()
+
+    def ajouter_unite(self, joueur, type_unite, id_unite, position, hp, status="libre"):
+        # Vérifie si la position existe dans map_data, sinon initialise une entrée.
+        if position not in tuiles:
+            tuiles[position] = {'unites': {}}
+
+        # Vérifie si le joueur existe dans la position, sinon initialise une entrée.
+        if joueur not in tuiles[position]['unites']:
+            tuiles[position]['unites'][joueur] = {}
+
+        # Vérifie si le type d'unité existe pour ce joueur, sinon initialise une entrée.
+        if type_unite not in tuiles[position]['unites'][joueur]:
+            tuiles[position]['unites'][joueur][type_unite] = {}
+
+        # Ajoute ou met à jour l'unité.
+        tuiles[position]['unites'][joueur][type_unite][id_unite] = {
+            'HP': hp,
+            'Status': status
+        }
+
+        print(f"Unité ajoutée: {tuiles[position]['unites'][joueur][type_unite][id_unite]}")
 
     def handle_menu_events(self, event):
         """Gère les événements liés au menu principal."""
@@ -264,8 +289,7 @@ class Game:
                 self.tile_map.add_wood_patches()
 
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
-                #pygame.display.update()
-
+                # pygame.display.update()
                 with open("test.txt", 'w') as f:
                     for row in map_data:
                         # Convertir chaque ligne en une chaîne de caractères avec des espaces entre les éléments
@@ -274,20 +298,15 @@ class Game:
                 position = self.unit.placer_joueurs_cercle(self.n, 40, size // 2, size // 2)
                 self.Initialisation_compteur.initialize_resources(self.selected_unit, self.n)
 
+
                 self.buildings.initialisation_compteur(position)
-                self.buildings.affichage()
+
 
                 self.unit.initialisation_compteur(position)
                 self.draw_mini_map(DISPLAYSURF)
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
                 #print(tuiles)
 
 
->>>>>>> Stashed changes
 
     def draw_mini_map(self, display_surface):
         losange_surface = pygame.Surface((self.mini_map_size_x, self.mini_map_size_y), pygame.SRCALPHA)
@@ -300,15 +319,24 @@ class Game:
 
         for row in range(size):
             for col in range(size):
-                tile_type = map_data[row][col]
-                if tile_type == "W":
-                    color = (139, 69, 19)  # Marron pour le bois
-                elif tile_type == "G":
-                    color = (255, 215, 0)  # Jaune pour l'or
-                elif tile_type == "T" or tile_type == "H" or tile_type == "C" or tile_type == "F" or tile_type == "B" or tile_type == "S" or tile_type == "A" or tile_type == "K":
-                    color = (128, 128, 128)  # Gris pour le bloc spécial
-                elif tile_type == "v" or tile_type == "a" or tile_type == "s" or tile_type == "h":
-                    color = (255,0,0)
+                tile = tuiles.get((row, col), {})  # Récupérer les données de la tuile ou un dictionnaire vide
+                color = (34, 139, 34)  # Vert par défaut pour les tuiles vides
+
+                # Vérification des ressources
+                if "ressources" in tile:
+                    ressource = tile["ressources"]
+                    if ressource == "G":
+                        color = (255, 215, 0)  # Jaune pour l'or
+                    elif ressource == "W":
+                        color = (139, 69, 19)  # Marron pour le bois
+
+                # Vérification des bâtiments
+                elif "batiments" in tile:
+                    color = (128, 128, 128)  # Gris pour les bâtiments
+
+                # Vérification des unités
+                elif "unites" in tile:
+                    color = (255, 0, 0)  # Rouge pour les unités
                 else:
                     color = (34, 139, 34)
 
@@ -325,10 +353,10 @@ class Game:
                 pygame.draw.rect(mini_map_surface, color, (iso_x, iso_y, self.mini_map_scale, self.mini_map_scale))
 
         losange_points = [
-            (self.mini_map_size_x // 2 + 2, 12),  # Point supérieur
-            (self.mini_map_size_x + 1, self.mini_map_size_y // 2),  # Point droit
-            (self.mini_map_size_x // 2 + 2, self.mini_map_size_y - 12),  # Point inférieur
-            (2, self.mini_map_size_y // 2)  # Point gauche
+            (self.mini_map_size_x // 2 + 2, 12),
+            (self.mini_map_size_x + 1, self.mini_map_size_y // 2),
+            (self.mini_map_size_x // 2 + 2, self.mini_map_size_y - 12),
+            (2, self.mini_map_size_y // 2)
         ]
 
         pygame.draw.polygon(losange_surface, (0, 0, 0), losange_points, 2)  # Contour noir de 2 pixels
@@ -372,8 +400,6 @@ class Game:
             self.cam_x = world_x - screen_width // 2
             self.cam_y = world_y - screen_height // 2
 
-
-
     def init_player_colors(self):
         curses.start_color()
         curses.use_default_colors()
@@ -381,8 +407,7 @@ class Game:
         for idx, (player, (fg, bg)) in enumerate(MAP_COLORS.items(), start=1):
             curses.init_pair(idx, fg, bg)
 
-
-    def get_player_color(self,player_name):
+    def get_player_color(self, player_name):
         player_index = list(MAP_COLORS.keys()).index(player_name) + 1
         return curses.color_pair(player_index)
 
@@ -391,14 +416,15 @@ class Game:
         stdscr.clear()
         stdscr.nodelay(1)
         stdscr.timeout(500)
+        curses.init_color(12, 120, 120, 120)
+        curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
-        max_rows, max_cols = stdscr.getmaxyx()
         map_rows = size
         map_cols = size
 
         while self.terminal_active:
             stdscr.clear()
-
+            max_rows, max_cols = stdscr.getmaxyx()
             player_x, player_y = self.tile_map.position_initiale
             view_top = max(0, min(player_x - max_rows // 2, map_rows - max_rows))
             view_left = max(0, min(player_y - max_cols // 2, map_cols - max_cols))
@@ -407,9 +433,8 @@ class Game:
                 for col in range(view_left, min(view_left + max_cols, map_cols)):
 
                     if (row, col) == (player_x, player_y):
-                        #print(curses.color_pair(1))
                         stdscr.addstr(row - view_top, col - view_left, "P",
-                                      curses.color_pair(1))  # Rouge pour le joueur
+                                      curses.color_pair(12))  # Rouge pour le joueur
                     else:
 
                         tile = tuiles.get((row, col), {})
@@ -420,7 +445,7 @@ class Game:
 
                         if "batiments" in tile:
                             for joueur, batiments_joueur in tile["batiments"].items():
-                                #print(row, col ,batiments_joueur)
+                                # print(row, col ,batiments_joueur)
                                 for batiment_type, details in batiments_joueur.items():
 
                                     if batiment_type == "T":
@@ -432,8 +457,8 @@ class Game:
                                     elif batiment_type == "C":
                                         char = "C"
                                         color = self.get_player_color(joueur)
-                                    elif batiment_type == "F":
-                                        char = "F"
+                                    elif batiment_type == "f":
+                                        char = "f"
                                         color = self.get_player_color(joueur)
                                     elif batiment_type == "B":
                                         char = "B"
@@ -447,7 +472,7 @@ class Game:
                                     elif batiment_type == "K":
                                         char = "K"
                                         color = self.get_player_color(joueur)
-                                    else :
+                                    else:
                                         char = " "
                                     break
                                 break
@@ -459,7 +484,7 @@ class Game:
                                     if unite_type == "v":
                                         char = "v"
                                         color = self.get_player_color(joueur)
-                                        #print(color)
+                                        # print(color)
                                     elif unite_type == "a":
                                         char = "a"
                                         color = self.get_player_color(joueur)
@@ -469,7 +494,7 @@ class Game:
                                     elif unite_type == "s":
                                         char = "s"
                                         color = self.get_player_color(joueur)
-                                    else :
+                                    else:
                                         char = " "
 
                                     break
@@ -484,13 +509,21 @@ class Game:
                                 char = "W"
                             else:
                                 char = " "
-                        if color != 0:
-                            stdscr.addstr(row - view_top, col - view_left, char,
-                                          color)
-                        else:
-                            stdscr.addstr(row - view_top, col - view_left, char)  # Pas de couleur
-            stdscr.refresh()
+                        if 0 <= row - view_top < max_rows and 0 <= col - view_left < max_cols:
+                            if char is None:
+                                char = " "  # Par défaut, espace vide
+                            elif not isinstance(char, str):
+                                char = str(char)  # Assurez-vous que char est une chaîne
 
+                            # Affichage avec ou sans couleur
+                            try:
+                                if color != 0:
+                                    stdscr.addstr(row - view_top, col - view_left, char, color)
+                                else:
+                                    stdscr.addstr(row - view_top, col - view_left, char)
+                            except curses.error as e:
+                                print(f"Erreur à ({row}, {col}): {e}")
+            stdscr.refresh()
 
             # Gestion des touches pour déplacer le joueur
             key = stdscr.getch()  # Attendre une touche
@@ -504,23 +537,29 @@ class Game:
                 self.tile_map.move_player('right')
             elif key == ord('j'):
                 self.buildings.decrementer_hp_batiments()
+            elif key == ord('k'):
+                joueur = 'joueur_1'
+                type_unite = 'v'
+                id_unite = 0
+
+                position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='W')
+                self.unit.deplacer_unite(joueur='joueur_1',
+                                         type_unite='v',
+                                         id_unite=0,
+                                         nouvelle_position=position,
+                                         )
+
+                self.recolte.recolter_ressource_plus_proche_via_trouver(joueur, type_unite,
+                                                                        id_unite, ressource='W', posress=position)
             elif key == ord('-'):
                 self.unit.decrementer_hp_unite()
 
             elif key == 9:  # Code ASCII pour Tab
                 file_path = self.page_html.generate_html(tuiles)
-                webbrowser.open(f"file://{file_path}")
-                print("Page HTML générée et ouverte dans le navigateur.")
+                browser = webbrowser.get("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe %s")
+                browser.open(f"file:///{file_path}")
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            elif key == ord('p'):
-=======
             elif key == curses.KEY_F9:
->>>>>>> Stashed changes
-=======
-            elif key == curses.KEY_F9:
->>>>>>> Stashed changes
                 self.ouvrir_terminal()
 
             #time.sleep(0.1)  # Pause pour éviter d'utiliser trop de CPU
@@ -560,7 +599,7 @@ class Game:
             cart_x = (iso_x + 2 * iso_y) / 2
             cart_y = (2 * iso_y - iso_x) / 2  # Formule inverse pour obtenir cart_y
 
-            half_size = len(self.tile_map.get_map_data()) // 2  # Taille centrée de la carte
+            half_size = size // 2  # Taille centrée de la carte
 
             centered_col = int(cart_y / tile_grass.height_half)  # Indice de la colonne
             centered_row = int(cart_x / tile_grass.width_half)  # Indice de la ligne
@@ -576,12 +615,15 @@ class Game:
             terminal_thread.daemon = True
             terminal_thread.start()
 
+
     def run(self):
         """Boucle principale du jeu."""
         running = True
         pygame.display.set_caption("Carte et mini-carte")
 
         while running:
+            dt = FPSCLOCK.tick(600) / 1000
+
             events = pygame.event.get()
             for event in events:
                 if (event.type == KEYDOWN and event.key == K_ESCAPE) or event.type == pygame.QUIT:
@@ -596,16 +638,80 @@ class Game:
                 if event.type == KEYDOWN and event.key == K_F3:
                     self.Initialisation_compteur.f3_active = not self.Initialisation_compteur.f3_active
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                if event.type == KEYDOWN and event.key == K_p:
-=======
                 if event.type == KEYDOWN and event.key == K_F9:
->>>>>>> Stashed changes
-=======
-                if event.type == KEYDOWN and event.key == K_F9:
->>>>>>> Stashed changes
                     self.ouvrir_terminal()
+
+                if event.type == KEYDOWN and event.key == K_u:
+                    # self.unit.creation_unite('v', 'joueur_1')
+                    taille = builds_dict["f"]['taille']
+                    in_game = 1
+                    self.buildings.ajouter_batiment("joueur_2", "f", 60, 60, taille, tuiles, in_game)
+                if event.type == KEYDOWN and event.key == K_y:
+                    self.unit.creation_unite('a', 'joueur_1')
+                    self.unit.creation_unite('v', 'joueur_1')
+                    self.unit.creation_unite('h', 'joueur_1')
+                    self.unit.creation_unite('s', 'joueur_1')
+
+                if event.type == KEYDOWN and event.key == K_g:
+                    position_a = None
+                    joueur_a = 'joueur_2'
+                    type_a = 'T'
+                    id_a = 'T0'
+                    for pos, data in tuiles.items():
+                        if 'unites' in data and joueur_a in data['unites'] and type_a in data['unites'][joueur_a]:
+                            print(data['unites'][joueur_a])
+                            if id_a in data['unites'][joueur_a][type_a]:
+                                position_a = pos
+                                break
+
+
+                    for pos, data in tuiles.items():
+                        if 'batiments' in data and joueur_a in data['batiments'] and type_a in data['batiments'][joueur_a]:
+                            #print("ok")
+                            if data['batiments'][joueur_a][type_a]['id'] == id_a:
+                                print("ok")
+                                position_a = pos  # Récupérer la position du bâtiment
+                                print(f"Bâtiment trouvé à la position : {position_a}")
+                                break
+                    x,y = position_a
+                    new_pos = (x-units_dict['v'].get('range', 1),y)
+                    print(new_pos)
+
+                    self.unit.deplacer_unite('joueur_1','a',0,new_pos )
+                    print(tuiles)
+
+                if event.type == KEYDOWN and event.key == K_f:
+                    self.unit.attack_building('joueur_1','a',0, 'joueur_2','T','T0')
+
+                if event.type == KEYDOWN and event.key == K_h:
+
+
+                    joueur = 'joueur_1'
+                    type_unite = 'v'
+                    id_unite = 0
+
+                    position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='F')
+                    print(position)
+
+                    self.unit.deplacer_unite(joueur, type_unite, id_unite, position)
+                    action_a_executer.append(
+                        lambda posress=position: self.recolte.recolter_ressource_plus_proche_via_trouver(joueur, type_unite, id_unite, posress=posress))
+                    def action_apres_deplacement():
+                        if int(tuiles[self.unit.position]['unites'][joueur][type_unite][id_unite]['capacite']) == 20:
+                            pos_batiment = self.recolte.trouver_plus_proche_batiment(joueur, type_unite, id_unite)
+                            if pos_batiment:
+
+                                self.unit.deplacer_unite(joueur, type_unite, id_unite, pos_batiment)
+
+                    action_a_executer.append(action_apres_deplacement)
+
+                    def deposer_ressources_in_batiment():
+                            quantite = 20
+                            ressource = 'f'
+                            self.recolte.deposer_ressources(quantite, joueur, type_unite, id_unite, ressource)
+
+                    action_a_executer.append(deposer_ressources_in_batiment)
+
 
                 if event.type == KEYDOWN and event.key == K_KP_MINUS:  # Touche "-"
                     self.unit.decrementer_hp_unite()
@@ -614,7 +720,7 @@ class Game:
                     self.buildings.decrementer_hp_batiments()
 
                 if event.type == KEYDOWN and event.key == K_F11:
-                    self.save_and_load.sauvegarder_jeu(tuiles,compteurs_joueurs)
+                    self.save_and_load.sauvegarder_jeu(tuiles, compteurs_joueurs)
 
                 if event.type == KEYDOWN and event.key == K_F12:
                     fichier = self.save_and_load.choisir_fichier_sauvegarde()
@@ -625,18 +731,11 @@ class Game:
                             tuiles.update(nouvelles_tuiles)
                             compteurs_joueurs.clear()
                             compteurs_joueurs.update(nouveaux_compteurs)
-                            print(f"Jeu chargé depuis {fichier}.")
-                            print(tuiles)
-                        else:
-                            print("Le chargement a échoué.")
-                    else:
-                        print("Aucun fichier sélectionné.")
 
-                if event.type == KEYDOWN and event.key == K_KP9:
+                if event.type == KEYDOWN and event.key == K_TAB:
                     file_path = self.page_html.generate_html(tuiles)
                     browser = webbrowser.get("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe %s")
                     browser.open(f"file:///{file_path}")
-
 
                 if self.menu_active:
                     self.handle_menu_events(event)
@@ -648,16 +747,13 @@ class Game:
             if self.menu_active:
                 self.show_menu()
             else:
+                # self.unit.show_remaining_time()
+                self.unit.update_creation_times()
+                self.buildings.update_creation_times()
                 DISPLAYSURF.fill(BLACK)
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 
 
-<<<<<<< Updated upstream
-=======
                 self.unit.update_position()
                 current_time = pygame.time.get_ticks()
 
@@ -677,24 +773,19 @@ class Game:
                     )
                 self.draw_mini_map(DISPLAYSURF)
                 self.unit.update_attacks()
->>>>>>> Stashed changes
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
 
                 self.Initialisation_compteur.draw_ressources()
 
-                self.buildings.affichage()
                 self.Initialisation_compteur.update_compteur()
-<<<<<<< Updated upstream
-=======
                 fps = int(FPSCLOCK.get_fps())
                 fps_text = pygame.font.Font(None, 24).render(f"FPS: {fps}", True, (255, 255, 255))
 
                 DISPLAYSURF.blit(fps_text, (10, 10))
->>>>>>> Stashed changes
                 pygame.display.update()
                 pygame.display.flip()
 
-
             pygame.display.update()
             FPSCLOCK.tick(60)
+

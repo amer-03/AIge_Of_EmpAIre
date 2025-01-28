@@ -1,0 +1,3724 @@
+{
+    "tuiles": {
+        "(54, 36)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(55, 36)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(50, 39)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(51, 39)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(51, 38)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(85, 71)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(84, 71)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(83, 71)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(83, 72)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(83, 73)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(100, 85)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(100, 84)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(100, 83)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(99, 85)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(65, 27)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(64, 27)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(49, 46)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(50, 46)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(83, 32)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(83, 33)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(83, 34)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(82, 33)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(105, 49)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(105, 50)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(104, 49)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(105, 51)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(44, 37)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(44, 36)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(45, 37)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(113, 73)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(112, 73)": {
+            "ressources": "G",
+            "quantite": 800
+        },
+        "(85, 77)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(86, 77)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(85, 78)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(86, 78)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(85, 79)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(84, 77)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(87, 78)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(83, 77)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(87, 77)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(6, 25)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(5, 25)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(6, 26)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(6, 24)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(6, 27)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(4, 25)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(4, 26)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(7, 26)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(5, 26)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(6, 28)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(5, 27)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(3, 26)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(6, 29)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(32, 62)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(33, 62)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(31, 62)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(31, 61)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(32, 61)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(34, 62)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(35, 62)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(36, 62)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(32, 63)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(34, 63)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(52, 28)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(52, 27)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(53, 27)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(53, 28)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(51, 27)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(51, 28)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(53, 29)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(51, 26)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(51, 29)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(52, 29)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(51, 25)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(50, 25)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(50, 26)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(50, 24)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(54, 29)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(119, 91)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(119, 92)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(119, 93)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(118, 93)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(119, 90)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(118, 91)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(118, 92)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(119, 94)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(41, 50)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(40, 50)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(41, 51)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(41, 52)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(40, 51)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(40, 49)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(40, 52)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(40, 48)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(39, 49)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(38, 49)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(75, 0)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(74, 0)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(74, 1)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(75, 1)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(75, 2)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(76, 1)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(76, 2)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(73, 1)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(74, 2)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(73, 0)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(72, 0)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(73, 2)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(47, 86)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(47, 87)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(47, 85)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(48, 85)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(47, 84)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(48, 84)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(49, 85)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(47, 88)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(49, 86)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(46, 87)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(47, 89)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(45, 87)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(117, 83)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(117, 84)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(118, 83)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(116, 83)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(115, 83)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(115, 82)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(118, 84)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(116, 84)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(1, 23)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(1, 24)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(0, 23)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(0, 24)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(2, 24)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(0, 22)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(1, 22)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(1, 21)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(2, 23)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(2, 21)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(10, 99)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(11, 99)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(10, 98)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(11, 98)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(11, 97)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(12, 97)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(10, 97)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(11, 100)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(28, 32)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(28, 31)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(28, 30)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(29, 32)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(30, 32)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(30, 31)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(28, 29)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(31, 31)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(29, 31)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(60, 79)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(60, 80)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(59, 79)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(59, 78)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(60, 78)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(61, 80)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(61, 79)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(59, 77)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(62, 80)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(61, 81)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(62, 81)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(61, 78)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(60, 81)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(60, 82)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(59, 76)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(103, 55)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(102, 55)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(101, 55)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(102, 56)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(101, 56)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(102, 57)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(102, 54)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(100, 55)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(104, 55)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(95, 104)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(94, 104)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(96, 104)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(95, 103)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(96, 105)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(94, 103)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(94, 102)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(93, 104)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(96, 106)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(97, 104)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(106, 41)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(106, 42)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(105, 41)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(106, 43)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(107, 43)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(105, 40)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(106, 40)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(104, 41)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(105, 42)": {
+            "ressources": "W",
+            "quantite": 100
+        },
+        "(58, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 101)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 101)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 101)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": true,
+                        "taille": 4,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 101)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            98
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 94)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 95)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 96)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 97)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 94)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 95)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 96)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 97)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 94)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 95)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 96)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 97)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 94)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 95)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": true,
+                        "taille": 4,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 96)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 97)": {
+            "batiments": {
+                "joueur_1": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            94
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(56, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "H": {
+                        "id": "H0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            98
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(56, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "H": {
+                        "id": "H0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            98
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(57, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "H": {
+                        "id": "H0",
+                        "principal": true,
+                        "taille": 2,
+                        "parent": [
+                            56,
+                            98
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(57, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "H": {
+                        "id": "H0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            98
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(58, 102)": {
+            "batiments": {
+                "joueur_1": {
+                    "H": {
+                        "id": "H1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            102
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(58, 103)": {
+            "batiments": {
+                "joueur_1": {
+                    "H": {
+                        "id": "H1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            102
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(59, 102)": {
+            "batiments": {
+                "joueur_1": {
+                    "H": {
+                        "id": "H1",
+                        "principal": true,
+                        "taille": 2,
+                        "parent": [
+                            58,
+                            102
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(59, 103)": {
+            "batiments": {
+                "joueur_1": {
+                    "H": {
+                        "id": "H1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            102
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(56, 96)": {
+            "batiments": {
+                "joueur_1": {
+                    "F": {
+                        "id": "F0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            96
+                        ],
+                        "HP": 100,
+                        "quantite": 300
+                    }
+                }
+            }
+        },
+        "(56, 97)": {
+            "batiments": {
+                "joueur_1": {
+                    "F": {
+                        "id": "F0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            96
+                        ],
+                        "HP": 100,
+                        "quantite": 300
+                    }
+                }
+            }
+        },
+        "(57, 96)": {
+            "batiments": {
+                "joueur_1": {
+                    "F": {
+                        "id": "F0",
+                        "principal": true,
+                        "taille": 2,
+                        "parent": [
+                            56,
+                            96
+                        ],
+                        "HP": 100,
+                        "quantite": 300
+                    }
+                }
+            }
+        },
+        "(57, 97)": {
+            "batiments": {
+                "joueur_1": {
+                    "F": {
+                        "id": "F0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            96
+                        ],
+                        "HP": 100,
+                        "quantite": 300
+                    }
+                }
+            }
+        },
+        "(58, 104)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            104
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 105)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            104
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 106)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            104
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 104)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            104
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 105)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            104
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 106)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            104
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 104)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            104
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 105)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B0",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            58,
+                            104
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 106)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            104
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(55, 101)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            101
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(55, 102)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            101
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(55, 103)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            101
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(56, 101)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            101
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(56, 102)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            101
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(56, 103)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            101
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(57, 101)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            101
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(57, 102)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B1",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            55,
+                            101
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(57, 103)": {
+            "batiments": {
+                "joueur_1": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            101
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(52, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(52, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(52, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(53, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(53, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(53, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(54, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(54, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S0",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            52,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(54, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(64, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(64, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(64, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(65, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(65, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(65, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(66, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(66, 99)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S1",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            64,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(66, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            98
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 89)": {
+            "batiments": {
+                "joueur_1": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            89
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 90)": {
+            "batiments": {
+                "joueur_1": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            89
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 91)": {
+            "batiments": {
+                "joueur_1": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            89
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 89)": {
+            "batiments": {
+                "joueur_1": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            89
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 90)": {
+            "batiments": {
+                "joueur_1": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            89
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 91)": {
+            "batiments": {
+                "joueur_1": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            89
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 89)": {
+            "batiments": {
+                "joueur_1": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            89
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 90)": {
+            "batiments": {
+                "joueur_1": {
+                    "A": {
+                        "id": "A0",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            58,
+                            89
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 91)": {
+            "batiments": {
+                "joueur_1": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            89
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(57, 100)": {
+            "batiments": {
+                "joueur_1": {
+                    "K": {
+                        "id": "K0",
+                        "principal": true,
+                        "taille": 1,
+                        "parent": [
+                            57,
+                            100
+                        ],
+                        "HP": 800
+                    }
+                }
+            }
+        },
+        "(55, 98)": {
+            "batiments": {
+                "joueur_1": {
+                    "K": {
+                        "id": "K1",
+                        "principal": true,
+                        "taille": 1,
+                        "parent": [
+                            55,
+                            98
+                        ],
+                        "HP": 800
+                    }
+                }
+            }
+        },
+        "(58, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 21)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 21)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 21)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": true,
+                        "taille": 4,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 21)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            18
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 14)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 15)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 16)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(58, 17)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 14)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 15)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 16)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(59, 17)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 14)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 15)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 16)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(60, 17)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 14)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 15)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": true,
+                        "taille": 4,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 16)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(61, 17)": {
+            "batiments": {
+                "joueur_2": {
+                    "T": {
+                        "id": "T1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            14
+                        ],
+                        "HP": 10
+                    }
+                }
+            }
+        },
+        "(56, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "H": {
+                        "id": "H0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            18
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(56, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "H": {
+                        "id": "H0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            18
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(57, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "H": {
+                        "id": "H0",
+                        "principal": true,
+                        "taille": 2,
+                        "parent": [
+                            56,
+                            18
+                        ],
+                        "HP": 200
+                    }
+                }
+            },
+            "unites": {
+                "joueur_1": {
+                    "a": {
+                        "0": {
+                            "HP": 30,
+                            "Status": "libre",
+                            "capacite": "0"
+                        }
+                    }
+                }
+            }
+        },
+        "(57, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "H": {
+                        "id": "H0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            18
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(58, 22)": {
+            "batiments": {
+                "joueur_2": {
+                    "H": {
+                        "id": "H1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            22
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(58, 23)": {
+            "batiments": {
+                "joueur_2": {
+                    "H": {
+                        "id": "H1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            22
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(59, 22)": {
+            "batiments": {
+                "joueur_2": {
+                    "H": {
+                        "id": "H1",
+                        "principal": true,
+                        "taille": 2,
+                        "parent": [
+                            58,
+                            22
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(59, 23)": {
+            "batiments": {
+                "joueur_2": {
+                    "H": {
+                        "id": "H1",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            22
+                        ],
+                        "HP": 200
+                    }
+                }
+            }
+        },
+        "(56, 16)": {
+            "batiments": {
+                "joueur_2": {
+                    "F": {
+                        "id": "F0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            16
+                        ],
+                        "HP": 100,
+                        "quantite": 300
+                    }
+                }
+            }
+        },
+        "(56, 17)": {
+            "batiments": {
+                "joueur_2": {
+                    "F": {
+                        "id": "F0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            16
+                        ],
+                        "HP": 100,
+                        "quantite": 300
+                    }
+                }
+            }
+        },
+        "(57, 16)": {
+            "batiments": {
+                "joueur_2": {
+                    "F": {
+                        "id": "F0",
+                        "principal": true,
+                        "taille": 2,
+                        "parent": [
+                            56,
+                            16
+                        ],
+                        "HP": 100,
+                        "quantite": 300
+                    }
+                }
+            }
+        },
+        "(57, 17)": {
+            "batiments": {
+                "joueur_2": {
+                    "F": {
+                        "id": "F0",
+                        "principal": false,
+                        "parent": [
+                            56,
+                            16
+                        ],
+                        "HP": 100,
+                        "quantite": 300
+                    }
+                }
+            }
+        },
+        "(58, 24)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            24
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 25)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            24
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 26)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            24
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 24)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            24
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 25)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            24
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 26)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            24
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 24)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            24
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 25)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B0",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            58,
+                            24
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 26)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            24
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(55, 21)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            21
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(55, 22)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            21
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(55, 23)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            21
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(56, 21)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            21
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(56, 22)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            21
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(56, 23)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            21
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(57, 21)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            21
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(57, 22)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B1",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            55,
+                            21
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(57, 23)": {
+            "batiments": {
+                "joueur_2": {
+                    "B": {
+                        "id": "B1",
+                        "principal": false,
+                        "parent": [
+                            55,
+                            21
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(52, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(52, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(52, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(53, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(53, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(53, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(54, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(54, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S0",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            52,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(54, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S0",
+                        "principal": false,
+                        "parent": [
+                            52,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(64, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(64, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(64, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(65, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(65, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(65, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(66, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(66, 19)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S1",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            64,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(66, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "S": {
+                        "id": "S1",
+                        "principal": false,
+                        "parent": [
+                            64,
+                            18
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 9)": {
+            "batiments": {
+                "joueur_2": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            9
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 10)": {
+            "batiments": {
+                "joueur_2": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            9
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(58, 11)": {
+            "batiments": {
+                "joueur_2": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            9
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 9)": {
+            "batiments": {
+                "joueur_2": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            9
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 10)": {
+            "batiments": {
+                "joueur_2": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            9
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(59, 11)": {
+            "batiments": {
+                "joueur_2": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            9
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 9)": {
+            "batiments": {
+                "joueur_2": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            9
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 10)": {
+            "batiments": {
+                "joueur_2": {
+                    "A": {
+                        "id": "A0",
+                        "principal": true,
+                        "taille": 3,
+                        "parent": [
+                            58,
+                            9
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(60, 11)": {
+            "batiments": {
+                "joueur_2": {
+                    "A": {
+                        "id": "A0",
+                        "principal": false,
+                        "parent": [
+                            58,
+                            9
+                        ],
+                        "HP": 500
+                    }
+                }
+            }
+        },
+        "(57, 20)": {
+            "batiments": {
+                "joueur_2": {
+                    "K": {
+                        "id": "K0",
+                        "principal": true,
+                        "taille": 1,
+                        "parent": [
+                            57,
+                            20
+                        ],
+                        "HP": 800
+                    }
+                }
+            }
+        },
+        "(55, 18)": {
+            "batiments": {
+                "joueur_2": {
+                    "K": {
+                        "id": "K1",
+                        "principal": true,
+                        "taille": 1,
+                        "parent": [
+                            55,
+                            18
+                        ],
+                        "HP": 800
+                    }
+                }
+            }
+        },
+        "(62, 102)": {
+            "unites": {
+                "joueur_1": {
+                    "v": {
+                        "0": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "1": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "2": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "3": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "4": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "5": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "6": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "7": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        }
+                    }
+                }
+            }
+        },
+        "(62, 22)": {
+            "unites": {
+                "joueur_2": {
+                    "v": {
+                        "0": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "1": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "2": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "3": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "4": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "5": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "6": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        },
+                        "7": {
+                            "HP": 25,
+                            "Status": "libre",
+                            "capacite": "0"
+                        }
+                    },
+                    "a": {
+                        "0": {
+                            "HP": 30,
+                            "Status": "libre",
+                            "capacite": "0"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "compteurs_unites": {
+        "joueur_1": {
+            "ressources": {
+                "W": 6000,
+                "f": 1150,
+                "G": 1150,
+                "U": 9,
+                "max_pop": 195
+            },
+            "unites": {
+                "v": 8,
+                "s": 0,
+                "h": 0,
+                "a": 1
+            },
+            "batiments": {
+                "T": 2,
+                "H": 2,
+                "C": 0,
+                "F": 1,
+                "B": 2,
+                "S": 2,
+                "A": 1,
+                "K": 2
+            }
+        },
+        "joueur_2": {
+            "ressources": {
+                "W": 6000,
+                "f": 1150,
+                "G": 1150,
+                "U": 9,
+                "max_pop": 195
+            },
+            "unites": {
+                "v": 8,
+                "s": 0,
+                "h": 0,
+                "a": 1
+            },
+            "batiments": {
+                "T": 2,
+                "H": 2,
+                "C": 0,
+                "F": 1,
+                "B": 2,
+                "S": 2,
+                "A": 1,
+                "K": 2
+            }
+        }
+    }
+}
