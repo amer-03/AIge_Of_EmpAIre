@@ -647,10 +647,10 @@ class Game:
                     in_game = 1
                     self.buildings.ajouter_batiment("joueur_2", "f", 60, 60, taille, tuiles, in_game)
                 if event.type == KEYDOWN and event.key == K_y:
-                    self.unit.creation_unite('a', 'joueur_1')
+                    #self.unit.creation_unite('a', 'joueur_1')
                     self.unit.creation_unite('v', 'joueur_1')
-                    self.unit.creation_unite('h', 'joueur_1')
-                    self.unit.creation_unite('s', 'joueur_1')
+                    #self.unit.creation_unite('h', 'joueur_1')
+                    #  self.unit.creation_unite('s', 'joueur_1')
 
                 if event.type == KEYDOWN and event.key == K_g:
                     position_a = None
@@ -685,33 +685,35 @@ class Game:
 
                 if event.type == KEYDOWN and event.key == K_h:
 
-
                     joueur = 'joueur_1'
                     type_unite = 'v'
                     id_unite = 0
 
-                    position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='F')
+                    position = self.recolte.trouver_plus_proche_ressource(joueur, type_unite, id_unite, ressource='W')
                     print(position)
 
                     self.unit.deplacer_unite(joueur, type_unite, id_unite, position)
                     action_a_executer.append(
-                        lambda posress=position: self.recolte.recolter_ressource_plus_proche_via_trouver(joueur, type_unite, id_unite, posress=posress))
+                        lambda posress=position: self.recolte.recolter_ressource_plus_proche_via_trouver(joueur,
+                                                                                                         type_unite,
+                                                                                                         id_unite,
+                                                                                                         posress=posress))
+
                     def action_apres_deplacement():
+
                         if int(tuiles[self.unit.position]['unites'][joueur][type_unite][id_unite]['capacite']) == 20:
                             pos_batiment = self.recolte.trouver_plus_proche_batiment(joueur, type_unite, id_unite)
                             if pos_batiment:
-
                                 self.unit.deplacer_unite(joueur, type_unite, id_unite, pos_batiment)
 
                     action_a_executer.append(action_apres_deplacement)
 
                     def deposer_ressources_in_batiment():
-                            quantite = 20
-                            ressource = 'f'
-                            self.recolte.deposer_ressources(quantite, joueur, type_unite, id_unite, ressource)
+                        quantite = 20
+                        ressource = 'W'
+                        self.recolte.deposer_ressources(quantite, joueur, type_unite, id_unite, ressource)
 
                     action_a_executer.append(deposer_ressources_in_batiment)
-
 
                 if event.type == KEYDOWN and event.key == K_KP_MINUS:  # Touche "-"
                     self.unit.decrementer_hp_unite()
@@ -754,25 +756,17 @@ class Game:
                 self.tile_map.render(DISPLAYSURF, self.cam_x, self.cam_y)
 
 
-                self.unit.update_position()
+                #self.unit.update_position()
                 current_time = pygame.time.get_ticks()
 
-                for position, data in tuiles.items():
-                    if 'unites' in data:
-                        position_x, position_y=position
-                        self.unit.update_position()
-                        self.unit.diplay_unit(position_x, position_y, self.cam_x, self.cam_y, current_time, unit_image)
-                if self.unit.position:
-                    self.unit.diplay_unit(
-                        self.unit.position[0],
-                        self.unit.position[1],
-                        self.cam_x,
-                        self.cam_y,
-                        current_time,
-                        unit_image
-                    )
+                #for position, data in tuiles.items():
+                    #if 'unites' in data:
+                        #position_x, position_y=position
+                self.unit.update_position()
+                        #self.unit.diplay_unit(position_x, position_y, self.cam_x, self.cam_y, current_time, unit_image)
+
                 self.draw_mini_map(DISPLAYSURF)
-                self.unit.update_attacks()
+                #self.unit.update_attacks()
                 keys = pygame.key.get_pressed()
                 self.handle_camera_movement(keys)
 

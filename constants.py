@@ -47,11 +47,11 @@ tile_gold = Tile('images/cube_rocky2.png', 64, 64)
 
 
 
-swordsman_image = pygame.image.load("images/epeiste.png")  # Remplace "swordsman.png" par le nom de ton fichier
-swordsman_image = pygame.transform.scale(swordsman_image, (32, 32))
+#swordsman_image = pygame.image.load("images/epeiste.png")  # Remplace "swordsman.png" par le nom de ton fichier
+#swordsman_image = pygame.transform.scale(swordsman_image, (32, 32))
 
-unit_tile="images/img_1.webp"
-unit_image=  pygame.image.load(unit_tile).convert_alpha()
+#unit_tile="images/img_1.webp"
+#unit_image=  pygame.image.load(unit_tile).convert_alpha()
 
 #unit_images = [
 #    pygame.image.load("images/img_1.webp").convert_alpha(),
@@ -74,7 +74,7 @@ ressources_dict = {
 
 units_dict = {
     'v': {
-        'image': Tile("images/sprites/Unit/villager/img_0.webp", 32, 32),
+        'image': Tile("images/villageois.webp", 32, 32),
         'cout': {'G': 0, 'f': 50, 'W': 0},
         'hp': 25,
         'temps_entrainement': 25,
@@ -83,7 +83,7 @@ units_dict = {
         'capacité' : 20
     },
     's': {  # Épéiste
-        'image': Tile("images/sprites/Unit/swordman/img_0.webp", 32, 32),
+        'image': Tile("images/epeiste.png", 32, 32),
         'cout': {'G': 20, 'f': 50, 'W': 0},
         'hp': 40,
         'temps_entrainement': 20,
@@ -91,7 +91,7 @@ units_dict = {
         'vitesse': 0.9
     },
     'h': {  # Cavalier
-        'image': Tile("images/sprites/Unit/horseman/img_0.webp", 32, 32),
+        'image': Tile("images/cavalier.png", 32, 32),
         'cout': {'G': 20, 'f': 80, 'W': 0},
         'hp': 45,
         'temps_entrainement': 30,
@@ -99,7 +99,7 @@ units_dict = {
         'vitesse': 1.2
     },
     'a': {  # Archer
-        'image': Tile("images/sprites/Unit/archer/img_0.webp", 30, 30),
+        'image': Tile("images/archer.png", 30, 30),
         'cout': {'G': 45, 'f': 0, 'W': 25},
         'hp': 30,
         'temps_entrainement': 35,

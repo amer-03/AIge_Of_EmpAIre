@@ -243,6 +243,8 @@ class TileMap:
                 #print(tile_type)
                 if tile_type in ["T", "H", "C", "F", "B", "S", "A", "K"]:
                     self.afficher_buildings(row, col, cam_x, cam_y, display_surface)
+                if tile_type in ["v", "a", "s", "h"]:
+                    self.afficher_unite(tile_type, cart_x,cart_y, cam_x, cam_y, tile_grass, display_surface,row, col)
 
 
     def move_player(self, direction):

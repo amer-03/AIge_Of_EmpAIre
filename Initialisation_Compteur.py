@@ -86,24 +86,16 @@ class Initialisation_Compteur:
                 compteurs['ressources']['W'] = 6000
                 compteurs['ressources']['f'] = 1150
                 compteurs['ressources']['G'] = 1150
-                compteurs['unites']['v'] = 8
-                compteurs['unites']['a'] = 1
+                compteurs['unites']['v'] = 3
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
-                compteurs['batiments']['T'] = 2
-                compteurs['batiments']['B'] = 2
-                compteurs['batiments']['S'] = 2
-                compteurs['batiments']['K'] = 2
-                compteurs['batiments']['H'] = 2
-                compteurs['batiments']['A'] = 1
-                compteurs['batiments']['F'] = 1
+                compteurs['batiments']['T'] = 1
 
             elif unit == "Mean":
                 compteurs['ressources']['W'] = 2000
                 compteurs['ressources']['f'] = 2000
                 compteurs['ressources']['G'] = 2000
                 compteurs['unites']['v'] = 3
-                compteurs['unites']['a'] = 3
                 if isinstance(compteurs['unites'], dict):
                     compteurs['ressources']['U'] = sum(compteurs['unites'].values())
                 compteurs['batiments']['T'] = 1

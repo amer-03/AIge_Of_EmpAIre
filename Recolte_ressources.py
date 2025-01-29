@@ -12,8 +12,10 @@ class Recolte_ressources:
     def __init__(self):
         self.tile_grass = tile_grass
         self.unit=Unit()
+        self.action_a_executer = []
 
     def trouver_plus_proche_ressource(self, joueur, type_unite, id_unite, ressource):
+        print(tuiles)
         position_unite = None
         for position, data in tuiles.items():
             if 'unites' in data and joueur in data['unites']:
@@ -30,16 +32,15 @@ class Recolte_ressources:
         for position, data in tuiles.items():
             if 'ressources' in data and data['ressources'] == ressource and data.get('quantite', 0) > 0:
                 positions_ressources.append(position)
-                # Vérifier les bâtiments comme sources de ressources
-            elif 'batiments' in data and ressource == 'F':  # Supposons que la ressource 'Farm' désigne les fermes
+            elif 'batiments' in data and ressource == 'F':  # Fermes comme ressources
                 for joueur_b, batiments in data['batiments'].items():
                     for type_b, infos_batiment in batiments.items():
-                        if type_b == 'F' and infos_batiment.get('quantite',
-                                                                0) > 0:  # Vérifier les fermes avec quantité > 0
+                        if type_b == 'F' and infos_batiment.get('quantite', 0) > 0:
                             positions_ressources.append(position)
                             break
+        # Distance de Manhattan
         def distance(pos1, pos2):
-            return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])  # Distance de Manhattan
+            return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
 
         plus_proche = None
         distance_minimale = float('inf')
@@ -50,6 +51,12 @@ class Recolte_ressources:
                 plus_proche = pos
 
         return plus_proche
+
+    def executer_actions(self):
+        """ Cette fonction est appelée à chaque itération du jeu pour exécuter les actions. """
+        while self.action_a_executer:
+            action = self.action_a_executer.pop(0)
+            action()
 
     def trouver_plus_proche_batiment(self, joueur, type_unite, id_unite):
         # Trouver la position de l'unité
@@ -169,9 +176,9 @@ class Recolte_ressources:
 
         # Ajouter la ressource récoltée à la capacité de l'unité
         unite = tuiles[position_unite]['unites'][joueur][type_unite][id_unite]
-        print(tuiles)
-        unite['capacite'] = str(int(unite['capacite']) + quantite_a_recolter)
 
+        unite['capacite'] = str(int(unite['capacite']) + quantite_a_recolter)
+        print(tuiles)
         # Exécuter une action si elle est définie
         if action_a_executer:
             action = action_a_executer.pop(0)

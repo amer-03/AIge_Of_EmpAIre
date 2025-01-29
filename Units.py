@@ -28,26 +28,27 @@ class Unit:
         self.moving = False
         self.deplacement_termine = False
         self.move_start_time = 0
-        self.move_duration = 0
+        self.move_duration = None
         self.frame_index = 0
         self.direction_index = 0
         self.last_time = pygame.time.get_ticks()
         self.destination = None
         self.moving_unit=None
+        self.last_update_time = None
+        self.vitesse = 0.1
 
         self.start_time_offset = 0
         self.attacks_in_progress = []
 
-
     def deplacer_unite(self, joueur, type_unite, id_unite, nouvelle_position):
+        """ Démarre le déplacement de l'unité vers la nouvelle position """
+        # Recherche de l'unité dans la position actuelle
         position_actuelle = None
         for position, data in tuiles.items():
             if 'unites' in data and joueur in data['unites'] and type_unite in data['unites'][joueur]:
                 if id_unite in data['unites'][joueur][type_unite]:
-
                     position_actuelle = position
                     self.position = position
-                    print(position_actuelle)
                     break
 
         if not position_actuelle:
@@ -55,6 +56,8 @@ class Unit:
             return
 
         unite_data = tuiles[position_actuelle]['unites'][joueur][type_unite].pop(id_unite)
+
+        # Suppression de l'unité de la tuile actuelle
         if not tuiles[position_actuelle]['unites'][joueur][type_unite]:
             del tuiles[position_actuelle]['unites'][joueur][type_unite]
         if not tuiles[position_actuelle]['unites'][joueur]:
@@ -63,11 +66,14 @@ class Unit:
             del tuiles[position_actuelle]['unites']
 
         # Vérification si la clé 'unites' a été supprimée, alors supprimer complètement la tuile
-        if 'unites' not in tuiles[position_actuelle]:
+        if 'unites' not in tuiles[position_actuelle] and 'ressources' in tuiles[position_actuelle] or 'batiments' in tuiles[position_actuelle]:
+            # La clé 'unites' est supprimée, mais la tuile contient encore des ressources, on ne supprime pas la tuile
+            pass
+        elif 'unites' not in tuiles[position_actuelle]:
+            # Si la tuile ne contient plus d'unités et plus de ressources, supprimer la tuile
             del tuiles[position_actuelle]
 
-
-        self.target_position = nouvelle_position
+        # Démarrer le mouvement
         self.start_moving(nouvelle_position[0], nouvelle_position[1])
 
         self.moving_unit = {
@@ -78,100 +84,83 @@ class Unit:
             "unite_data": unite_data
         }
 
-    def start_moving(self, new_x, new_y, duration=2000):
+    def start_moving(self, new_x, new_y):
+        # Calcul de la distance entre la position actuelle et la position cible
+        start_x, start_y = self.position
+        distance = ((new_x - start_x) ** 2 + (new_y - start_y) ** 2) ** 0.5
+
+        # Calcul du nombre de secondes pour se déplacer jusqu'à la destination (par exemple, 1 tuile par seconde)
+        self.move_duration = distance  # 1 tuile par seconde, donc la durée en secondes correspond à la distance
+
+        # Initialisation des variables pour le mouvement
         self.target_position = (new_x, new_y)
         self.move_start_time = pygame.time.get_ticks()
-        self.start_time_offset = self.move_start_time
-        self.move_duration = duration
+
+        # Assure-toi que last_update_time est également initialisé
+        self.last_update_time = self.move_start_time  # Initialisation de last_update_time
+
         self.moving = True
 
     def update_position(self):
         if not self.moving:
             return
 
+        if self.move_start_time is None:
+            print("Le mouvement n'a pas été correctement initialisé.")
+            return
+
         current_time = pygame.time.get_ticks()
-        elapsed_time = current_time - self.start_time_offset
+        elapsed_time = current_time - self.move_start_time
+        time_since_last_update = current_time - self.last_update_time
 
+        # Si 1 seconde s'est écoulée, met à jour la position
+        if time_since_last_update >= 100:  # 1000 ms = 1 seconde
+            self.last_update_time = current_time
 
-        if elapsed_time >= self.move_duration:
-            self.position = self.target_position
-            self.moving = False
-
-            if self.moving_unit:
-                nouvelle_position = self.moving_unit["nouvelle_position"]
-                joueur = self.moving_unit["joueur"]
-                type_unite = self.moving_unit["type_unite"]
-                id_unite = self.moving_unit["id_unite"]
-                unite_data = self.moving_unit["unite_data"]
-
-                if nouvelle_position not in tuiles:
-                    tuiles[nouvelle_position] = {'unites': {}}
-                if 'unites' not in tuiles[nouvelle_position]:
-                    tuiles[nouvelle_position]['unites'] = {}
-                if joueur not in tuiles[nouvelle_position]['unites']:
-                    tuiles[nouvelle_position]['unites'][joueur] = {}
-                if type_unite not in tuiles[nouvelle_position]['unites'][joueur]:
-                    tuiles[nouvelle_position]['unites'][joueur][type_unite] = {}
-
-                tuiles[nouvelle_position]['unites'][joueur][type_unite][id_unite] = unite_data
-                self.moving_unit = None
-                self.deplacement_termine = True
-
-
-            if self.deplacement_termine and action_a_executer:
-                action = action_a_executer.pop(0)
-                action()
-
-
-        else:
-
-            progress = elapsed_time / self.move_duration
+            # Calcul de la progression du mouvement en fonction du temps écoulé
+            progress = elapsed_time / (self.move_duration * 1000)  # Convertir en millisecondes
             start_x, start_y = self.position
             target_x, target_y = self.target_position
 
+            # Calcul de la nouvelle position intermédiaire de l'unité
             new_x = start_x + (target_x - start_x) * progress
             new_y = start_y + (target_y - start_y) * progress
             self.position = (new_x, new_y)
 
+            # Si l'unité a atteint sa destination, met à jour la position finale
+            if elapsed_time >= self.move_duration * 100:
+                self.position = self.target_position
+                self.moving = False
+
+                # Déplacer l'unité dans la nouvelle position de la carte (tuiles)
+                if self.moving_unit:
+                    nouvelle_position = self.moving_unit["nouvelle_position"]
+                    joueur = self.moving_unit["joueur"]
+                    type_unite = self.moving_unit["type_unite"]
+                    id_unite = self.moving_unit["id_unite"]
+                    unite_data = self.moving_unit["unite_data"]
+
+                    if nouvelle_position not in tuiles:
+                        tuiles[nouvelle_position] = {'unites': {}}
+                    if 'unites' not in tuiles[nouvelle_position]:
+                        tuiles[nouvelle_position]['unites'] = {}
+                    if joueur not in tuiles[nouvelle_position]['unites']:
+                        tuiles[nouvelle_position]['unites'][joueur] = {}
+                    if type_unite not in tuiles[nouvelle_position]['unites'][joueur]:
+                        tuiles[nouvelle_position]['unites'][joueur][type_unite] = {}
+
+                    tuiles[nouvelle_position]['unites'][joueur][type_unite][id_unite] = unite_data
+                    self.moving_unit = None
+                    self.deplacement_termine = True
 
 
+                if self.deplacement_termine and action_a_executer:
 
+                    action = action_a_executer.pop(0)  # Prendre la première action dans la liste
+                    action()  # Exécuter l'action après le déplacement
 
-    def animation(self, current_time):  # fonction qui modifie l'indice des frames et le dernier temps du frame
-        if current_time - self.last_time > 1000 // 30:  # 1000//30: 30 frames par 1000 millisecondes
-            self.last_time = current_time
-            self.frame_index = (self.frame_index + 1) % 30
-
-    def frame_coordinates(self, unit_image):
-        # calcul des tailles du chaque frame en divisant la taille de l'image principal par le nombre des frames
-        frame_width = unit_image.get_width() // 30  # 30 nombre des frames par lignes
-        frame_height = unit_image.get_height() // 16  # 16 nombre des frames par colonnes
-
-        # multiplication de l'indice du frame par la taille de chaque frame pour chercher les vrai coordonnees
-        frame_x = self.frame_index * frame_width
-        frame_y = self.direction_index * frame_height
-
-        return frame_x, frame_y, frame_width, frame_height
-
-
-    def diplay_unit(self,position_x, position_y, cam_x, cam_y, current_time, unit_image):
-        # coordonnées isométrique
-        self.update_position()
-        iso_x, iso_y = self.coordinates.to_iso(position_x, position_y, cam_x, cam_y,unit_image)
-
-        # appel de la fonction de l'animation
-        self.animation(current_time)
-
-        # appel de la fonction frame_coordinates
-        frame_x, frame_y, frame_width, frame_height = self.frame_coordinates(unit_image)
-
-        # enlever un frame de l'image principal et l'afficher a la fois
-        frame_rect = pygame.Rect(frame_x, frame_y, frame_width, frame_height)
-        unit_frame = unit_image.subsurface(frame_rect)
-
-        DISPLAYSURF.blit(unit_frame, (iso_x, iso_y))
-
-
+                    # Réinitialiser `self.deplacement_termine` pour permettre une autre action après un prochain déplacement
+                    self.deplacement_termine = False
 
     def conversion(self, x, y):
 
@@ -520,11 +509,7 @@ class Unit:
                             compteurs_joueurs[player]["ressources"]['W'] -= required_cost['W']
                             compteurs_joueurs[player]["ressources"]['f'] -= required_cost['f']
                             compteurs_joueurs[player]["ressources"]['G'] -= required_cost['G']
-                            if player in compteurs_joueurs:
-                                if unit_type in compteurs_joueurs[player]['unites']:
-                                    compteurs_joueurs[player]['unites'][unit_type] += 1
-                                    compteurs_joueurs[player]['ressources']['U'] += 1
-                                    print("incrémentation compteur", compteurs_joueurs[player]['ressources']['U'])
+
                             self.add_unit_to_queue(unit_type, player, (x, y))
 
                             return
@@ -659,10 +644,20 @@ class Unit:
                             # Rechercher une position vide
                             for adj_pos in sorted(adjacent_positions):  # Tri optionnel pour un placement plus stable
                                 if self.is_tile_empty(adj_pos):
-                                    self.add_unit_to_tile(first_unit["type"], first_unit["player"], adj_pos)
-                                    print(f"Unité {first_unit['type']} placée pour {first_unit['player']} à {adj_pos}.")
-                                    queue.pop(0)  # Retirer l'unité de la file d'attente
-                                    break
+                                    if tile["unit_creation_queue"]:  # Vérifier que la file d'attente n'est pas vide
+                                        first_unit = tile["unit_creation_queue"][0]
+                                        unit_type = first_unit["type"]
+                                        player = first_unit["player"]
+                                        self.add_unit_to_tile(first_unit["type"], first_unit["player"], adj_pos)
+                                        print(f"Unité {first_unit['type']} placée pour {first_unit['player']} à {adj_pos}.")
+                                        queue.pop(0)  # Retirer l'unité de la file d'attente
+                                        if player in compteurs_joueurs:  # Vérification que le joueur existe dans les compteurs
+                                            if unit_type in compteurs_joueurs[player]['unites']:
+                                                compteurs_joueurs[player]['unites'][
+                                                    unit_type] += 1  # Incrémenter le nombre d'unités pour ce type
+                                                compteurs_joueurs[player]['ressources'][
+                                                    'U'] += 1  # Incrémenter les ressources "U"
+                                        break
                             else:
                                 # Si aucune tuile vide n'est trouvée dans ce rayon, augmenter le rayon
                                 radius += 1
